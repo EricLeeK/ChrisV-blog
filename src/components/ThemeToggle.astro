@@ -83,10 +83,7 @@
       return root.classList.contains('theme-dark');
     }
 
-    updateUI(isDark());
-
-    toggle?.addEventListener('click', () => {
-      const dark = !isDark();
+    function applyTheme(dark) {
       root.classList.toggle('theme-dark', dark);
       try {
         localStorage.setItem('theme', dark ? 'dark' : 'light');
@@ -94,6 +91,24 @@
         // ignore storage errors
       }
       updateUI(dark);
+    }
+
+    // Sync UI on load using the persisted preference (fallback to system).
+    let dark = isDark();
+    try {
+      const saved = localStorage.getItem('theme');
+      if (saved) {
+        dark = saved === 'dark';
+      } else {
+        dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
+    } catch {
+      // ignore storage errors
+    }
+    applyTheme(dark);
+
+    toggle?.addEventListener('click', () => {
+      applyTheme(!isDark());
     });
   })();
 </script>

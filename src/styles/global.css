@@ -15,6 +15,7 @@
   --color-800: #303030;
   --color-900: #19191b;
   --color-999: #19191b;
+  --color-999-rgb: 25, 25, 27;
 
   --accent-light: #ececec;
   --accent-regular: #606060;
@@ -120,6 +121,7 @@
   --color-800: #f3f4f7;
   --color-900: #f9f8f7;
   --color-999: #f9f8f7;
+  --color-999-rgb: 249, 248, 247;
   --border: #ececec;
 
   --accent-light: #808080;

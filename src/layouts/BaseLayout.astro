@@ -12,7 +12,7 @@ const { title = 'ChrisV', description = 'A researcher who builds, designs, and w
 ---
 
 <!doctype html>
-<html lang="zh-CN" class="theme-dark">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,10 +20,24 @@ const { title = 'ChrisV', description = 'A researcher who builds, designs, and w
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script is:inline>
+      (function () {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const dark = saved ? saved === 'dark' : prefersDark;
+        document.documentElement.classList.toggle('theme-dark', dark);
+      })();
+    </script>
   </head>
   <body class="flex min-h-screen flex-col bg-canvas text-ink">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:rounded focus:bg-[var(--color-0)] focus:px-4 focus:py-2 focus:text-[var(--color-999)]"
+    >
+      跳到主要内容
+    </a>
     <Nav />
-    <main class="flex-1">
+    <main id="main-content" class="flex-1">
       <slot />
     </main>
     <Footer />
