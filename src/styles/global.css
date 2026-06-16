@@ -5,7 +5,6 @@
 :root {
   /* Colors — dark mode default */
   --color-0: #f7f5f3;
-  --color-50: #f7f5f3;
   --color-100: #101010;
   --color-200: #303030;
   --color-300: #d6d5d4;
@@ -15,25 +14,17 @@
   --color-700: #e0e0e0;
   --color-800: #303030;
   --color-900: #19191b;
-  --color-999-basis: 225, 31%, 5%;
   --color-999: #19191b;
-  --color-999-rgb: 25, 25, 27;
-  --color-999_40: hsla(var(--color-999-basis), 0.4);
 
   --accent-light: #ececec;
   --accent-regular: #606060;
   --accent-dark: #ececec;
   --accent-overlay: hsla(0, 0%, 64%, 0.75);
-  --accent-subtle-overlay: hsla(0, 0%, 9%, 0.33);
-  --accent-text-over: var(--color-0);
 
   --link-color: var(--accent-dark);
 
   --color-selected: #B1CBFF;
-  --color-actived: #B1CBFF;
-  --color-link: #222;
   --color-white: #fff;
-  --color-white-rgb: 255, 255, 255;
   --color-primary-lighter: #e0ecfd;
   --color-primary-light: #73abf9;
   --color-primary-main: #499ad5;
@@ -45,80 +36,34 @@
   --color-green: #1bc47d;
   --color-orange: #ff5a19;
   --color-errors: #ff2c60;
-  --color-featured: #f8f0ee;
-  --color-underlined: 68, 211, 141;
-  --color-divider: #272f3f;
   --border: #323232;
   --border-color: rgb(49, 48, 53);
   --card-color: rgba(40, 80, 120, 0.15);
   --card-color-selected: rgba(60, 90, 125, 0.3);
 
-  /* Gradients */
-  --gradient-stop-1: var(--accent-light);
-  --gradient-stop-2: var(--accent-regular);
-  --gradient-stop-3: var(--accent-dark);
-  --gradient-subtle: linear-gradient(150deg, var(--color-900) 19%, var(--color-999) 81%);
-  --gradient-accent: linear-gradient(150deg, var(--gradient-stop-1), var(--gradient-stop-2), var(--gradient-stop-3));
-  --gradient-accent-orange: linear-gradient(150deg, #ca7879, var(--accent-regular), var(--accent-light));
-  --gradient-stroke: linear-gradient(180deg, var(--color-600), var(--color-800));
-
-  /* Shadows */
-  --shadow-sm: 0px 6px 3px rgba(9, 11, 17, 0.01), 0px 4px 2px rgba(9, 11, 17, 0.01), 0px 2px 2px rgba(9, 11, 17, 0.02), 0px 0px 1px rgba(9, 11, 17, 0.03);
-  --shadow-md: 0px 28px 11px rgba(9, 11, 17, 0.01), 0px 16px 10px rgba(9, 11, 17, 0.03), 0px 7px 7px rgba(9, 11, 17, 0.05), 0px 2px 4px rgba(9, 11, 17, 0.06);
-  --shadow-lg: 0px 62px 25px rgba(9, 11, 17, 0.01), 0px 35px 21px rgba(9, 11, 17, 0.05), 0px 16px 16px rgba(9, 11, 17, 0.1), 0px 4px 9px rgba(9, 11, 17, 0.12);
-
   /* Layout */
   --max-width: 90%;
-  --size-top: 64px;
-  --size-bottom: 64px;
-  --sidebar-width: 280px;
-  --gutter: 20px;
   --gap: 16px;
-  --cell: 8px;
 
   /* Radius */
   --radius-small: 4px;
   --radius: 6px;
-  --radius-normal: 8px;
   --radius-large: 12px;
   --radius-pill: 36px;
 
   /* Button */
   --button-rounded: 8px;
-  --button-rounded-full: 72px;
   --button-height: 48px;
   --button-pad: 24px;
   --button-bg: var(--color-primary-main);
   --button-color: var(--color-white);
-  --button-color-border: var(--bg-1);
 
   /* Fonts */
   --font-system: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Lantinghei SC", "Microsoft YaHei", "HanHei SC", "Helvetica Neue", "Open Sans", "Hiragino Sans GB", 微软雅黑, STHeiti, "WenQuanYi Micro Hei", Arial, SimSun, sans-serif;
   --font-body: "Inter", "Noto Sans SC", system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "MiSans", "Lantinghei SC", "Noto Sans SC", "Microsoft YaHei", "HanHei SC", "Helvetica Neue", "Open Sans", "Hiragino Sans GB", 微软雅黑, STHeiti, "WenQuanYi Micro Hei", Arial, SimSun, sans-serif;
-  --font-brand: "Inter", "Noto Sans SC", var(--font-system);
-  --font-tag: "Special Elite", var(--font-system);
-  --font-display: "Huiwen-mincho", "Noto Serif SC", "Songti SC", "SimSun", serif;
-  --font-mono: "Inconsolata", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
 
   /* Type Scale */
   --text-size: 16px;
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text: 1rem;
-  --text-base: 1rem;
-  --text-md: 1.125rem;
-  --text-lg: 1.5rem;
-  --text-xl: 2rem;
-  --text-2xl: 2.25rem;
-  --text-3xl: 3rem;
-  --text-4xl: 4rem;
-  --text-5xl: 4.5rem;
-
-  /* Aspect ratios */
-  --img-resizing-site: 12 / 9;
-  --img-resizing-post: 10 / 6;
-  --img-resizing-paronamic: 2 / 1;
-  --img-resizing-desktop: 19 / 10;
 
   /* Transitions */
   --theme-transition: 0.25s ease-in-out;
@@ -165,7 +110,6 @@
 /* Light mode override */
 :root:not(.theme-dark) {
   --color-0: #000;
-  --color-50: #0a0a0a;
   --color-100: #101010;
   --color-200: #303030;
   --color-300: #505050;
@@ -175,28 +119,15 @@
   --color-700: #e0e0e0;
   --color-800: #f3f4f7;
   --color-900: #f9f8f7;
-  --color-999-basis: 0, 0%, 100%;
   --color-999: #f9f8f7;
-  --color-999-rgb: 249, 248, 247;
   --border: #ececec;
-  --color-underlined: 48, 48, 48;
 
   --accent-light: #808080;
   --accent-regular: #404040;
   --accent-dark: #202020;
   --accent-overlay: hsla(0, 0%, 0%, 0.35);
-  --accent-subtle-overlay: var(--accent-overlay);
-  --accent-text-over: var(--color-999);
 
   --link-color: var(--accent-regular);
-
-  --gradient-stop-1: var(--accent-light);
-  --gradient-stop-2: var(--accent-regular);
-  --gradient-stop-3: var(--accent-dark);
-  --gradient-subtle: linear-gradient(150deg, var(--color-900) 19%, var(--color-999) 150%);
-  --gradient-accent: linear-gradient(150deg, var(--gradient-stop-1), var(--gradient-stop-2), var(--gradient-stop-3));
-  --gradient-accent-orange: linear-gradient(150deg, #ca7879, var(--accent-regular), var(--accent-dark));
-  --gradient-stroke: linear-gradient(180deg, var(--color-900), var(--color-700));
 }
 
 @theme {
@@ -212,7 +143,6 @@
   --color-surface-3: var(--color-400);
   --color-border: var(--border);
   --color-border-subtle: var(--border-color);
-  --color-divider: var(--color-divider);
   --color-card: var(--card-color);
   --color-card-selected: var(--card-color-selected);
   --color-overlay: var(--accent-overlay);
@@ -227,37 +157,100 @@
   --color-ricoui-cyan: var(--color-cyan);
   --color-ricoui-orange: var(--color-orange);
   --color-ricoui-error: var(--color-errors);
-  --color-ricoui-featured: var(--color-featured);
 
   /* Typography */
   --font-sans: var(--font-body);
-  --font-display: var(--font-display);
-  --font-tag: var(--font-tag);
-  --font-mono: var(--font-mono);
+  --font-display: "Huiwen-mincho", "Noto Serif SC", "Songti SC", "SimSun", serif;
+  --font-tag: "Special Elite", var(--font-system);
+  --font-mono: "Inconsolata", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
 
   /* Type Scale */
-  --text-xs: var(--text-xs);
-  --text-sm: var(--text-sm);
-  --text-base: var(--text-base);
-  --text-md: var(--text-md);
-  --text-lg: var(--text-lg);
-  --text-xl: var(--text-xl);
-  --text-2xl: var(--text-2xl);
-  --text-3xl: var(--text-3xl);
-  --text-4xl: var(--text-4xl);
-  --text-display: var(--text-5xl);
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.5rem;
+  --text-xl: 2rem;
+  --text-2xl: 2.25rem;
+  --text-3xl: 3rem;
+  --text-4xl: 4rem;
+  --text-display: 4.5rem;
 
   /* Border Radius */
   --radius-sm: var(--radius-small);
   --radius-card: var(--radius);
-  --radius-normal: var(--radius-normal);
+  --radius-normal: 8px;
   --radius-lg: var(--radius-large);
   --radius-pill: var(--radius-pill);
 
   /* Shadows */
-  --shadow-sm: var(--shadow-sm);
-  --shadow-md: var(--shadow-md);
-  --shadow-lg: var(--shadow-lg);
+  --shadow-sm: 0px 6px 3px rgba(9, 11, 17, 0.01), 0px 4px 2px rgba(9, 11, 17, 0.01), 0px 2px 2px rgba(9, 11, 17, 0.02), 0px 0px 1px rgba(9, 11, 17, 0.03);
+  --shadow-md: 0px 28px 11px rgba(9, 11, 17, 0.01), 0px 16px 10px rgba(9, 11, 17, 0.03), 0px 7px 7px rgba(9, 11, 17, 0.05), 0px 2px 4px rgba(9, 11, 17, 0.06);
+  --shadow-lg: 0px 62px 25px rgba(9, 11, 17, 0.01), 0px 35px 21px rgba(9, 11, 17, 0.05), 0px 16px 16px rgba(9, 11, 17, 0.1), 0px 4px 9px rgba(9, 11, 17, 0.12);
+}
+
+@utility ricoui-surface {
+  background-color: var(--color-200);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+@utility ricoui-card {
+  background-color: var(--card-color);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-normal);
+}
+
+@utility ricoui-card-selected {
+  background-color: var(--card-color-selected);
+  border: 1px solid var(--color-primary-main);
+}
+
+@utility ricoui-tag {
+  font-family: var(--font-tag);
+  font-size: var(--text-xs);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+@utility ricoui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--button-height);
+  padding-inline: var(--button-pad);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--button-color);
+  background-color: var(--button-bg);
+  border-radius: var(--button-rounded);
+  transition: opacity var(--theme-transition), transform var(--theme-transition);
+}
+
+.ricoui-button:hover {
+  opacity: 0.9;
+}
+
+.ricoui-button:active {
+  transform: translateY(1px);
+}
+
+@utility ricoui-cta-glow {
+  box-shadow: 0 0 24px 11px rgba(247, 210, 82, 0.75);
+}
+
+@utility ricoui-magic-glow {
+  box-shadow: 0 0 12px 6px rgba(247, 210, 82, 0.3);
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@utility container-inner {
+  width: min(var(--max-width), 100% - var(--pad-inner) * 2);
+  margin-inline: auto;
 }
 
 /* Base styles */
