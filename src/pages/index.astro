@@ -6,6 +6,7 @@ import FilterBar from '../components/FilterBar.astro';
 import CardGrid from '../components/CardGrid.astro';
 import { getCollection } from 'astro:content';
 import { site } from '../data/site';
+import { stripMarkdown } from '../lib/utils';
 
 const articles = await getCollection('articles');
 const projects = await getCollection('projects');
@@ -30,7 +31,7 @@ const randomCards: CardLike[] = randomNotes.map((entry) => ({
   collection: 'random',
   data: {
     title: '碎碎念',
-    description: entry.body?.trim() ?? '',
+    description: stripMarkdown(entry.body, 80),
     date: entry.data.date,
     category: '碎碎念',
     tags: entry.data.tags,

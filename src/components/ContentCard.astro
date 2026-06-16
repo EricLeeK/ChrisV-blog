@@ -1,5 +1,5 @@
 ---
-import { formatDate } from '../lib/utils';
+import { formatDate, getFilterSlugs } from '../lib/utils';
 
 interface Props {
   title: string;
@@ -24,10 +24,13 @@ const {
 } = Astro.props;
 
 const displayDate = date ? formatDate(date) : undefined;
+const filterSlugs = getFilterSlugs(category, tags);
 ---
 
 <a
   href={href}
+  data-categories={filterSlugs}
+  data-featured={featured ? 'true' : 'false'}
   class="group relative flex flex-col overflow-hidden rounded-[6px] border border-[var(--border)] bg-[var(--card-color)] transition-all duration-300 hover:shadow-[var(--shadow-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-main)]"
 >
   <div class="relative aspect-[2/3] overflow-hidden">

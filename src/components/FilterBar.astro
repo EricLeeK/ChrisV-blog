@@ -37,3 +37,62 @@ const { active = 'all' } = Astro.props;
     }
   </div>
 </nav>
+
+<script is:inline>
+  (function () {
+    function ready(fn) {
+      if (document.readyState !== 'loading') fn();
+      else document.addEventListener('DOMContentLoaded', fn);
+    }
+
+    ready(function () {
+      var filterBar = document.querySelector('nav[aria-label="内容筛选"]');
+      var grid = document.querySelector('[data-card-grid]');
+      if (!filterBar || !grid) return;
+
+      var buttons = filterBar.querySelectorAll('button[data-filter]');
+      var cards = grid.querySelectorAll('[data-categories]');
+
+      var activeClasses = ['bg-[#f4f3f0]', 'text-[var(--color-100)]'];
+      var inactiveClasses = [
+        'border',
+        'border-[var(--border)]',
+        'bg-[var(--color-900)]',
+        'text-[var(--color-500)]',
+      ];
+
+      function setActive(button) {
+        buttons.forEach(function (btn) {
+          btn.setAttribute('aria-pressed', 'false');
+          btn.classList.remove.apply(btn.classList, activeClasses);
+          btn.classList.add.apply(btn.classList, inactiveClasses);
+        });
+        button.setAttribute('aria-pressed', 'true');
+        button.classList.remove.apply(button.classList, inactiveClasses);
+        button.classList.add.apply(button.classList, activeClasses);
+      }
+
+      function applyFilter(filterId) {
+        cards.forEach(function (card) {
+          var visible = false;
+          if (filterId === 'all') {
+            visible = true;
+          } else if (filterId === 'featured') {
+            visible = card.getAttribute('data-featured') === 'true';
+          } else {
+            var categories = (card.getAttribute('data-categories') || '').split(',');
+            visible = categories.indexOf(filterId) !== -1;
+          }
+          card.style.display = visible ? '' : 'none';
+        });
+      }
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          setActive(btn);
+          applyFilter(btn.getAttribute('data-filter'));
+        });
+      });
+    });
+  })();
+</script>

@@ -3,9 +3,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import { getCollection } from 'astro:content';
 
-const resources = (await getCollection('resources')).sort((a, b) =>
-  a.data.category.localeCompare(b.data.category)
-);
+const resources = (await getCollection('resources')).sort((a, b) => {
+  const categoryCompare = a.data.category.localeCompare(b.data.category);
+  if (categoryCompare !== 0) return categoryCompare;
+  return a.data.title.localeCompare(b.data.title);
+});
 ---
 
 <BaseLayout title="资源 — ChrisV">
