@@ -1,0 +1,89 @@
+<h2>Homepage design directions</h2>
+<p class="subtitle">All three use the Ricoui dark theme, Huiwen Mincho title, pill filters, and masonry cards.</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Faithful Ricoui clone</h3>
+      <p>Hero tag “PORTFOLIO” → title “智能&艺术” → three category cards (Collection, Works, GitHub) → pill filter bar → masonry grid of articles/projects. Keeps every original component.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-header">Preview: ChrisV</div>
+        <div class="mockup-body" style="text-align:center;padding:24px">
+          <div class="label" style="margin-bottom:8px">PORTFOLIO</div>
+          <div style="font-size:28px;margin-bottom:8px">智能&艺术</div>
+          <div style="font-size:12px;color:#888">A researcher who builds, designs, and writes about intelligent systems.</div>
+          <div style="display:flex;justify-content:center;gap:8px;margin-top:12px">
+            <div class="placeholder" style="width:80px;height:40px">Card</div>
+            <div class="placeholder" style="width:80px;height:40px">Card</div>
+            <div class="placeholder" style="width:80px;height:40px">Card</div>
+          </div>
+          <div style="margin-top:12px;display:flex;justify-content:center;gap:6px">
+            <span class="mock-button" style="font-size:10px;padding:4px 10px">All</span>
+            <span class="mock-button" style="font-size:10px;padding:4px 10px">AI</span>
+            <span class="mock-button" style="font-size:10px;padding:4px 10px">Art</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Personalized Ricoui (recommended)</h3>
+      <p>Same structure as Ricoui, but category cards are tailored to you: “研究” / “项目” / “碎碎念”. Filters become: AI · 设计 · 艺术 · 岩土 · 碎碎念. Hero and card content are fully yours.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-header">Preview: ChrisV</div>
+        <div class="mockup-body" style="text-align:center;padding:24px">
+          <div class="label" style="margin-bottom:8px">CHRISV</div>
+          <div style="font-size:28px;margin-bottom:8px">智能&艺术</div>
+          <div style="font-size:12px;color:#888">A researcher who builds, designs, and writes about intelligent systems.</div>
+          <div style="display:flex;justify-content:center;gap:8px;margin-top:12px">
+            <div class="placeholder" style="width:80px;height:40px">研究</div>
+            <div class="placeholder" style="width:80px;height:40px">项目</div>
+            <div class="placeholder" style="width:80px;height:40px">碎碎念</div>
+          </div>
+          <div style="margin-top:12px;display:flex;justify-content:center;gap:6px">
+            <span class="mock-button" style="font-size:10px;padding:4px 10px">AI</span>
+            <span class="mock-button" style="font-size:10px;padding:4px 10px">设计</span>
+            <span class="mock-button" style="font-size:10px;padding:4px 10px">艺术</span>
+            <span class="mock-button" style="font-size:10px;padding:4px 10px">碎碎念</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Content-first minimal</h3>
+      <p>Larger hero, no category cards, latest articles/projects directly under the title. Cleaner and more serious, but less playful than Ricoui.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-header">Preview: ChrisV</div>
+        <div class="mockup-body" style="text-align:center;padding:24px">
+          <div class="label" style="margin-bottom:8px">CHRISV</div>
+          <div style="font-size:32px;margin-bottom:12px">智能&艺术</div>
+          <div style="font-size:12px;color:#888;margin-bottom:16px">A researcher who builds, designs, and writes about intelligent systems.</div>
+          <div style="display:flex;justify-content:center;gap:8px">
+            <div class="placeholder" style="width:90px;height:60px">Latest</div>
+            <div class="placeholder" style="width:90px;height:60px">Project</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Shared decisions so far</h3>
+  <ul>
+    <li>Sections: Home, Articles, Projects, Resources, About, 碎碎念</li>
+    <li>Hero title: 智能&艺术</li>
+    <li>Tagline: A researcher who builds, designs, and writes about intelligent systems.</li>
+    <li>Theme: Ricoui dark-first, unchanged</li>
+    <li>Effects: keep Magic Click 3D icon trail</li>
+    <li>Stack: Astro + Tailwind CSS</li>
+  </ul>
+</div>

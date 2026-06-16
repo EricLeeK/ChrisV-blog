@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ricoui — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Serif+SC:wght@500&family=Special+Elite&family=Inconsolata:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://chinese-fonts-cdn.deno.dev/packages/hwmct/dist/汇文明朝体/result.css">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --ric-canvas:#19191b;
+  --ric-canvas-rgb:25,25,27;
+  --ric-ink:#f7f5f3;
+  --ric-ink-muted:#d6d5d4;
+  --ric-ink-subtle:#909090;
+  --ric-ink-faint:#707070;
+  --ric-surface-1:#101010;
+  --ric-surface-2:#303030;
+  --ric-surface-3:#505050;
+  --ric-border:#323232;
+  --ric-divider:#272f3f;
+  --ric-blue:#499ad5;
+  --ric-blue-light:#73abf9;
+  --ric-blue-lighter:#e0ecfd;
+  --ric-yellow:#f7d252;
+  --ric-yellow-dark:#ecba0e;
+  --ric-green:#1bc47d;
+  --ric-purple:#6127ff;
+  --ric-pink:#ff419c;
+  --ric-cyan:#00d0ff;
+  --ric-orange:#ff5a19;
+  --ric-error:#ff2c60;
+  --ric-card:rgba(40,80,120,.15);
+  --ric-card-selected:rgba(60,90,125,.3);
+  --ric-overlay:hsla(0,0%,64%,.75);
+
+  --ric-radius-sm:4px;
+  --ric-radius-md:6px;
+  --ric-radius-lg:12px;
+  --ric-radius-pill:36px;
+  --ric-radius-full:9999px;
+
+  --ric-shadow-sm:0px 6px 3px rgba(9,11,17,.01),0px 4px 2px rgba(9,11,17,.01),0px 2px 2px rgba(9,11,17,.02),0px 0px 1px rgba(9,11,17,.03);
+  --ric-shadow-md:0px 28px 11px rgba(9,11,17,.01),0px 16px 10px rgba(9,11,17,.03),0px 7px 7px rgba(9,11,17,.05),0px 2px 4px rgba(9,11,17,.06);
+  --ric-shadow-lg:0px 62px 25px rgba(9,11,17,.01),0px 35px 21px rgba(9,11,17,.05),0px 16px 16px rgba(9,11,17,.1),0px 4px 9px rgba(9,11,17,.12);
+  --ric-shadow-cta:0 0 24px 11px rgba(247,210,82,.75);
+  --ric-shadow-magic:0 0 12px 6px rgba(247,210,82,.3);
+
+  --font-display:"Huiwen-mincho","Noto Serif SC","Songti SC",serif;
+  --font-body:"Inter","Noto Sans SC",system-ui,-apple-system,sans-serif;
+  --font-tag:"Special Elite",system-ui,monospace;
+  --font-mono:"Inconsolata","SFMono-Regular",Menlo,Consolas,monospace;
+
+  --page-max:1040px;
+  --page-pad:32px;
+}
+
+html.theme-light{
+  --ric-canvas:#f9f8f7;
+  --ric-canvas-rgb:249,248,247;
+  --ric-ink:#101010;
+  --ric-ink-muted:#505050;
+  --ric-ink-subtle:#707070;
+  --ric-ink-faint:#909090;
+  --ric-surface-1:#f3f4f7;
+  --ric-surface-2:#ececec;
+  --ric-surface-3:#707070;
+  --ric-border:#ececec;
+  --ric-divider:#e0e0e0;
+  --ric-card:rgba(40,80,120,.08);
+  --ric-overlay:hsla(0,0%,0%,.35);
+}
+
+::selection{background:rgba(73,154,213,.3);color:var(--ric-ink)}
+html{scroll-behavior:smooth}
+
+body{
+  font-family:var(--font-body);
+  background:var(--ric-canvas);
+  color:var(--ric-ink);
+  font-size:16px;
+  line-height:1.5;
+  letter-spacing:.2px;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  transition:background .25s ease,color .25s ease;
+}
+
+.page{max-width:var(--page-max);margin:0 auto;padding:0 var(--page-pad) 120px}
+
+/* ── NAV ── */
+.nav{
+  display:flex;justify-content:space-between;align-items:center;
+  height:64px;padding:0 16px;position:sticky;top:0;z-index:100;
+  background:rgba(var(--ric-canvas-rgb),.72);
+  backdrop-filter:saturate(300%) blur(5px);
+  -webkit-backdrop-filter:saturate(300%) blur(5px);
+  border-bottom:1px solid var(--ric-border);
+  margin:0 calc(var(--page-pad) * -1);
+}
+.nav-left,.nav-right{display:flex;align-items:center;gap:12px}
+.nav-wordmark{
+  font-family:var(--font-body);font-size:18px;font-weight:600;letter-spacing:-.35px;
+  color:var(--ric-ink);text-decoration:none;
+}
+.nav-tag{
+  font-family:var(--font-tag);font-size:11px;font-weight:400;color:var(--ric-ink-subtle);
+  background:transparent;padding:4px 10px 2px;border-radius:var(--ric-radius-pill);
+  border:1px solid var(--ric-border);letter-spacing:1px;text-transform:uppercase;
+}
+.nav-links{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.nav-link{
+  font-size:13px;font-weight:500;color:var(--ric-ink-muted);text-decoration:none;
+  padding:6px 10px;border-radius:var(--ric-radius-md);transition:all .2s;white-space:nowrap;
+}
+.nav-link:hover{color:var(--ric-ink);background:var(--ric-surface-1)}
+.nav-link--active{color:var(--ric-ink);background:var(--ric-surface-1)}
+.theme-toggle{
+  width:36px;height:36px;border-radius:50%;border:1px solid var(--ric-border);
+  background:var(--ric-surface-1);color:var(--ric-ink-subtle);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;
+}
+.theme-toggle:hover{color:var(--ric-ink);border-color:var(--ric-surface-3)}
+.theme-toggle .moon{display:none}
+html.theme-light .theme-toggle .sun{display:none}
+html.theme-light .theme-toggle .moon{display:block}
+
+/* ── SECTIONS ── */
+.section{
+  padding:80px 0 0;
+  border-top:1px solid var(--ric-border);
+  margin-top:64px;
+}
+.section-header{margin-bottom:40px}
+.section-label{
+  font-size:11px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ric-blue);margin-bottom:8px;
+}
+.section-title{
+  font-family:var(--font-body);font-size:32px;font-weight:600;letter-spacing:-.5px;line-height:1.15;
+  color:var(--ric-ink);
+}
+.section-desc{
+  font-size:15px;line-height:1.6;color:var(--ric-ink-muted);
+  margin-top:12px;max-width:560px;
+}
+
+/* ── HERO / SECTION HEADER ── */
+.hero{
+  padding:80px 0 48px;
+  border-bottom:1px solid var(--ric-border);
+  text-align:center;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;width:420px;height:420px;
+  background:radial-gradient(circle,rgba(97,39,255,.10),transparent 70%);
+  border-radius:50%;filter:blur(90px);right:-120px;top:-120px;pointer-events:none;
+}
+.hero::after{
+  content:'';position:absolute;width:360px;height:360px;
+  background:radial-gradient(circle,rgba(0,208,255,.08),transparent 70%);
+  border-radius:50%;filter:blur(80px);left:10%;bottom:-120px;pointer-events:none;
+}
+.hero-tag{
+  display:inline-block;font-family:var(--font-tag);font-size:13px;font-weight:400;
+  letter-spacing:1px;text-transform:uppercase;color:var(--ric-ink-subtle);
+  padding:8px 22px 4px;border:1px solid #4b4b4b;border-radius:var(--ric-radius-pill);
+}
+.hero-title{
+  font-family:var(--font-display);font-size:clamp(48px,8vw,72px);
+  font-weight:500;line-height:1.2;color:var(--ric-ink);margin-top:24px;
+}
+.hero-desc{
+  font-size:16px;line-height:1.6;color:var(--ric-ink-muted);
+  max-width:480px;margin:16px auto 0;
+}
+.hero-social{display:flex;justify-content:center;gap:18px;margin-top:24px}
+.social-link{
+  color:var(--ric-surface-3);opacity:.75;transition:opacity .2s,color .2s;
+  display:flex;align-items:center;justify-content:center;
+}
+.social-link:hover{opacity:1}
+.social-link:hover[data-platform="x"]{color:#8ec5ff}
+.social-link:hover[data-platform="github"]{color:var(--ric-ink)}
+.social-link:hover[data-platform="dribbble"]{color:#d145bf}
+.social-link:hover[data-platform="rss"]{color:#ee802f}
+.hero-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:32px}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:inherit;font-size:13px;font-weight:600;line-height:1;
+  padding:10px 22px;border-radius:var(--ric-radius-md);cursor:pointer;
+  text-decoration:none;white-space:nowrap;transition:all .2s;border:1px solid transparent;
+}
+.btn:active{transform:scale(.97)}
+.btn-primary{
+  background:var(--ric-yellow);color:var(--ric-surface-1);
+}
+.btn-primary:hover{background:var(--ric-yellow-dark);box-shadow:var(--ric-shadow-cta)}
+.btn-secondary{
+  background:transparent;color:var(--ric-ink);border:1px solid var(--ric-border);
+}
+.btn-secondary:hover{border-color:var(--ric-surface-3);background:var(--ric-surface-1)}
+
+/* ── COLOR TOKENS ── */
+.color-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px;
+}
+.color-token{
+  background:var(--ric-surface-1);border:1px solid var(--ric-border);
+  border-radius:var(--ric-radius-lg);overflow:hidden;transition:border-color .2s,transform .2s;
+}
+.color-token:hover{border-color:var(--ric-surface-3);transform:translateY(-2px)}
+.color-swatch{width:100%;height:84px}
+.color-info{padding:14px 16px}
+.color-name{font-size:13px;font-weight:600;letter-spacing:.01em;color:var(--ric-ink)}
+.color-hex{
+  font-size:12px;font-weight:500;color:var(--ric-ink-subtle);margin-top:2px;
+  font-variant-numeric:tabular-nums;letter-spacing:.02em;
+}
+.color-role{font-size:11px;color:var(--ric-ink-faint);margin-top:6px;line-height:1.4}
+
+/* ── GRADIENT TOKENS ── */
+.gradient-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.gradient-token{
+  border-radius:var(--ric-radius-lg);padding:24px;border:1px solid var(--ric-border);
+  min-height:120px;display:flex;flex-direction:column;justify-content:flex-end;
+}
+.gradient-name{font-size:12px;font-weight:500;color:var(--ric-ink-subtle);letter-spacing:.02em;margin-bottom:4px}
+.gradient-desc{font-size:12px;color:var(--ric-ink-faint);line-height:1.4}
+
+/* ── TYPE SCALE ── */
+.type-table{
+  display:flex;flex-direction:column;border:1px solid var(--ric-border);
+  border-radius:var(--ric-radius-lg);overflow:hidden;
+}
+.type-row{
+  display:grid;grid-template-columns:110px 1fr 220px;align-items:center;
+  padding:18px 24px;border-bottom:1px solid var(--ric-border);
+}
+.type-row:last-child{border-bottom:none}
+.type-row:hover{background:rgba(127,127,127,.04)}
+.type-meta{
+  font-size:10px;font-weight:600;color:var(--ric-blue);
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.type-sample{color:var(--ric-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.type-specs{
+  font-size:11px;color:var(--ric-ink-subtle);text-align:right;
+  font-variant-numeric:tabular-nums;letter-spacing:.02em;
+}
+
+/* ── SPACING ── */
+.spacing-bars{display:flex;align-items:flex-end;gap:16px;height:130px}
+.spacing-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.spacing-bar{
+  width:100%;border-radius:var(--ric-radius-md);
+  background:linear-gradient(180deg,var(--ric-blue),var(--ric-cyan));
+  opacity:.35;transition:opacity .3s;
+}
+.spacing-col:hover .spacing-bar{opacity:.7}
+.spacing-val{font-size:11px;font-weight:600;color:var(--ric-ink);letter-spacing:.02em}
+.spacing-name{font-size:10px;font-weight:500;color:var(--ric-ink-subtle);letter-spacing:.02em}
+
+/* ── SHAPES ── */
+.shapes-row{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end}
+.shape-item{display:flex;flex-direction:column;align-items:center;gap:8px}
+.shape-box{
+  width:72px;height:72px;background:var(--ric-surface-1);
+  border:1.5px solid var(--ric-border);transition:all .3s cubic-bezier(.22,1,.36,1);
+}
+.shape-box:hover{border-color:var(--ric-blue);transform:scale(1.06)}
+.shape-label{font-size:11px;font-weight:500;color:var(--ric-ink-subtle);letter-spacing:.02em;white-space:nowrap}
+.shape-value{font-size:10px;font-weight:400;color:var(--ric-ink-faint);letter-spacing:.02em;font-variant-numeric:tabular-nums}
+
+/* ── SHADOWS ── */
+.shadow-row{display:flex;flex-wrap:wrap;gap:16px}
+.shadow-box{
+  width:150px;height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-radius:var(--ric-radius-md);background:var(--ric-surface-1);border:1px solid var(--ric-border);
+}
+.shadow-label{font-size:11px;font-weight:500;color:var(--ric-ink-subtle);letter-spacing:.02em;margin-bottom:4px}
+.shadow-value{font-size:10px;color:var(--ric-ink-faint);letter-spacing:.02em;text-align:center;padding:0 8px}
+
+/* ── DEPTH ── */
+.depth-row{
+  display:flex;align-items:center;gap:20px;padding:20px 0;
+  border-bottom:1px solid var(--ric-border);
+}
+.depth-row:last-child{border-bottom:none}
+.depth-swatch{width:56px;height:56px;border-radius:var(--ric-radius-md);flex-shrink:0;border:1px solid var(--ric-border)}
+.depth-info{flex:1}
+.depth-name{font-size:14px;font-weight:600;letter-spacing:.01em;color:var(--ric-ink)}
+.depth-desc{font-size:12px;color:var(--ric-ink-subtle);margin-top:2px;letter-spacing:.02em}
+.depth-value{font-size:12px;font-weight:500;color:var(--ric-ink-faint);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+/* ── SURFACES ── */
+.surface-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
+.surface-item{
+  border-radius:var(--ric-radius-lg);padding:28px 20px;
+  text-align:center;border:1px solid var(--ric-border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;min-height:110px;transition:transform .3s;
+}
+.surface-item:hover{transform:scale(1.02)}
+.surface-name{font-size:14px;font-weight:600;letter-spacing:.01em}
+.surface-val{font-size:11px;font-weight:500;color:var(--ric-ink-subtle);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+/* ── COMPONENTS ── */
+.component-card{
+  background:var(--ric-card);border:1px solid var(--ric-border);
+  border-radius:var(--ric-radius-lg);padding:28px;margin-bottom:20px;
+  transition:border-color .2s;
+}
+.component-card:hover{border-color:var(--ric-surface-3)}
+.component-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;gap:16px}
+.component-name{font-size:15px;font-weight:600;letter-spacing:.01em;color:var(--ric-ink)}
+.component-role{font-size:12px;color:var(--ric-ink-subtle);margin-top:4px;letter-spacing:.02em}
+.component-class{
+  font-size:11px;font-weight:500;color:var(--ric-blue);
+  background:rgba(73,154,213,.08);padding:3px 10px;border-radius:var(--ric-radius-pill);
+  border:1px solid rgba(73,154,213,.12);letter-spacing:.02em;
+  font-family:var(--font-mono);white-space:nowrap;
+}
+.component-preview{
+  display:flex;gap:16px;align-items:center;flex-wrap:wrap;
+  padding:20px;background:var(--ric-canvas);border-radius:var(--ric-radius-md);
+  border:1px solid var(--ric-border);
+}
+.component-desc{
+  font-size:12px;color:var(--ric-ink-faint);line-height:1.5;
+  margin-top:12px;max-width:560px;
+}
+
+/* Component-specific previews */
+.nav-preview{
+  width:100%;height:52px;border-radius:var(--ric-radius-md);
+  background:rgba(var(--ric-canvas-rgb),.72);
+  border:1px solid var(--ric-border);display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px;backdrop-filter:saturate(300%) blur(5px);
+}
+.nav-preview-links{display:flex;gap:8px;font-size:12px;color:var(--ric-ink-muted)}
+.filter-tag{
+  font-size:15px;padding:10px 24px;border-radius:32px;border:1px solid #696765;
+  background:var(--ric-canvas);color:var(--ric-ink-muted);cursor:pointer;transition:all .35s cubic-bezier(.075,.82,.165,1);
+}
+.filter-tag:hover{color:var(--ric-ink)}
+.filter-tag--active{background:#f4f3f0;color:#19191b;font-weight:500;border-color:#f4f3f0}
+.work-card{max-width:260px;width:100%}
+.work-figure{
+  position:relative;width:100%;padding-bottom:calc(2 * 100% / 3);
+  border-radius:var(--ric-radius-md);border:1px solid var(--ric-border);
+  background:linear-gradient(135deg,var(--ric-surface-1),var(--ric-surface-2));
+  overflow:hidden;
+}
+.work-figure::after{
+  content:'2:3';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:14px;color:var(--ric-ink-subtle);
+}
+.work-tags{display:flex;gap:8px;margin:12px 0 10px}
+.work-type{
+  font-size:12px;height:20px;line-height:20px;padding:0 10px;border-radius:var(--ric-radius-sm);
+  background:var(--ric-surface-1);color:var(--ric-ink);
+}
+.work-head{display:flex;align-items:center;gap:8px;justify-content:space-between}
+.work-title{font-size:18px;font-weight:600;color:var(--ric-surface-2)}
+.badge{
+  font-size:12px;height:22px;line-height:22px;padding:0 8px;border-radius:var(--ric-radius-sm);
+  background:var(--ric-blue);color:var(--ric-ink);white-space:nowrap;
+}
+.work-meta{font-size:14px;color:var(--ric-ink-subtle);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.work-arrow{
+  width:32px;height:32px;border-radius:50%;border:1px solid var(--ric-border);
+  display:flex;align-items:center;justify-content:center;color:var(--ric-ink-subtle);
+  transition:transform .3s,color .3s;cursor:pointer;margin-top:12px;
+}
+.work-arrow:hover{color:var(--ric-ink);transform:rotate(45deg)}
+.cta-pill{
+  font-family:var(--font-body);font-size:14px;font-weight:600;color:#101010;
+  background:var(--ric-yellow);border-radius:var(--ric-radius-pill);
+  padding:1.125em 2em;min-width:144px;border:none;cursor:pointer;transition:all .2s;
+}
+.cta-pill:hover{background:var(--ric-yellow-dark);box-shadow:var(--ric-shadow-cta)}
+.toggle-track{
+  width:64px;height:34px;border-radius:var(--ric-radius-full);background:var(--ric-canvas);
+  border:1px solid var(--ric-border);position:relative;cursor:pointer;
+  box-shadow:inset 0 0 8px var(--ric-overlay);padding:4px;display:flex;align-items:center;justify-content:space-between;
+}
+.toggle-knob{
+  position:absolute;left:4px;top:4px;width:24px;height:24px;border-radius:50%;
+  background:var(--ric-ink);transition:transform .25s ease;box-shadow:var(--ric-shadow-md);
+}
+html.theme-light .toggle-knob{transform:translateX(30px)}
+.toggle-icon{width:14px;height:14px;color:var(--ric-ink-subtle);margin:0 4px}
+.footer-preview{
+  width:100%;text-align:center;color:var(--ric-surface-3);font-size:14px;padding:24px 0;
+  border-top:1px solid var(--ric-border);
+}
+
+/* ── DO/DON'T ── */
+.guide-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.guide-card{
+  border-radius:var(--ric-radius-lg);padding:28px;
+  border:1px solid var(--ric-border);
+}
+.guide-card--do{background:rgba(27,196,125,.04);border-color:rgba(27,196,125,.15)}
+.guide-card--dont{background:rgba(255,44,96,.04);border-color:rgba(255,44,96,.12)}
+.guide-label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px}
+.guide-card--do .guide-label{color:var(--ric-green)}
+.guide-card--dont .guide-label{color:var(--ric-error)}
+.guide-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.guide-list li{
+  font-size:13px;line-height:1.5;padding-left:22px;position:relative;
+  color:var(--ric-ink-muted);
+}
+.guide-card--do .guide-list li::before{
+  content:'✓';position:absolute;left:0;color:var(--ric-green);font-weight:700;font-size:12px;
+}
+.guide-card--dont .guide-list li::before{
+  content:'✕';position:absolute;left:0;color:var(--ric-error);font-weight:700;font-size:12px;
+}
+
+/* ── FOOTER ── */
+.footer{
+  margin-top:96px;padding:32px 0;
+  border-top:1px solid var(--ric-border);
+  display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.footer-left{font-size:14px;font-weight:500;color:var(--ric-ink-subtle);opacity:.8}
+.footer-right{display:flex;gap:20px;flex-wrap:wrap}
+.footer-link{
+  font-size:12px;font-weight:500;color:var(--ric-ink-subtle);text-decoration:none;
+  transition:color .2s;letter-spacing:.02em;
+}
+.footer-link:hover{color:var(--ric-blue)}
+
+/* ── REVEAL ANIMATION ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  :root{--page-pad:20px}
+  .hero{padding-top:56px}
+  .section-title{font-size:26px}
+  .type-row{grid-template-columns:80px 1fr;gap:8px}
+  .type-specs{display:none}
+  .guide-grid{grid-template-columns:1fr}
+  .color-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .nav-links{display:none}
+  .footer{flex-direction:column;align-items:flex-start}
+}
+@media(min-width:769px){
+  .nav-links{display:flex}
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-left">
+      <a href="#" class="nav-wordmark">Ricoui</a>
+      <span class="nav-tag">Design System</span>
+    </div>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="#colors" class="nav-link nav-link--active">Colors</a>
+        <a href="#gradients" class="nav-link">Gradients</a>
+        <a href="#typography" class="nav-link">Type</a>
+        <a href="#spacing" class="nav-link">Spacing</a>
+        <a href="#depth" class="nav-link">Depth</a>
+        <a href="#components" class="nav-link">Components</a>
+        <a href="#guidelines" class="nav-link">Guidelines</a>
+      </div>
+      <button class="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
+        <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+        <svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO / SECTION HEADER -->
+  <header class="hero reveal" id="hero">
+    <span class="hero-tag">PORTFOLIO</span>
+    <h1 class="hero-title">设计&编程</h1>
+    <p class="hero-desc">A dark, editorial designer portfolio where Chinese calligraphy meets code — restrained drama, warm off-whites, and vivid accents.</p>
+    <div class="hero-social">
+      <a class="social-link" data-platform="x" href="#" aria-label="X / Twitter">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <a class="social-link" data-platform="github" href="#" aria-label="GitHub">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+      </a>
+      <a class="social-link" data-platform="dribbble" href="#" aria-label="Dribbble">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.375 0 0 5.375 0 12s5.375 12 12 12 12-5.375 12-12S18.625 0 12 0zm7.164 5.49a10.132 10.132 0 0 1 2.336 6.348c-.37-.078-4.102-.83-7.866-.36-.092-.21-.18-.423-.272-.633a22.833 22.833 0 0 0-.67-1.432c4.287-1.74 6.29-4.184 6.472-3.923zM12 2.012a10.12 10.12 0 0 1 6.566 2.395c-.128.174-1.883 2.432-6.27 3.944A67.32 67.32 0 0 0 8.303 3.33 10.09 10.09 0 0 1 12 2.012zM7.781 3.966a69.85 69.85 0 0 1 1.876 4.892c-2.976.794-5.59.782-5.885.78A10.113 10.113 0 0 1 7.78 3.966zM2.012 12c0-.07.003-.138.005-.207.29.006 3.535.034 6.846-.9.19.37.372.745.545 1.12l-.242.067c-3.253 1.048-4.983 3.958-5.105 4.168A10.1 10.1 0 0 1 2.012 12zm5.757 7.758a10.072 10.072 0 0 1-3.024-4.264c.217-.374 1.74-2.79 5.35-4.063.871 2.266 1.802 5.11 2.09 7.14a10.135 10.135 0 0 1-4.416 1.187zm4.946.236c-.227-1.7-.988-4.18-1.736-6.2 2.66-.422 5.002.272 5.3.37a10.103 10.103 0 0 1-3.564 5.83z"/></svg>
+      </a>
+      <a class="social-link" data-platform="rss" href="#" aria-label="RSS">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3a2 2 0 0 0-2 2v.006a2 2 0 0 0 2 2c7.18 0 13 5.82 13 13a2 2 0 0 0 2 2h.006A2 2 0 0 0 24 21c0-10.493-8.507-19-19-19zM5 11a2 2 0 0 0-2 2v.006A2 2 0 0 0 5 15c2.76 0 5 2.24 5 5a2 2 0 0 0 2 2h.006A2 2 0 0 0 14 20c0-4.97-4.03-9-9-9zM5.5 21.5A2.5 2.5 0 1 1 8 19a2.5 2.5 0 0 1-2.5 2.5z"/></svg>
+      </a>
+    </div>
+    <div class="hero-actions">
+      <a href="DESIGN.md" class="btn btn-primary" download>Download Spec</a>
+      <a href="variables.css" class="btn btn-secondary" download>variables.css</a>
+      <a href="theme.css" class="btn btn-secondary" download>theme.css</a>
+      <a href="tokens.json" class="btn btn-secondary" download>tokens.json</a>
+    </div>
+  </header>
+
+  <!-- COLORS -->
+  <section class="section reveal" id="colors">
+    <div class="section-header">
+      <div class="section-label">Foundation</div>
+      <h2 class="section-title">Color Tokens</h2>
+      <p class="section-desc">Near-black surfaces and warm off-white text, accented by a soft blue, warm yellow, and a small palette of functional brights.</p>
+    </div>
+    <div class="color-grid">
+      <div class="color-token"><div class="color-swatch" style="background:#19191b"></div><div class="color-info"><div class="color-name">Canvas</div><div class="color-hex">#19191b</div><div class="color-role">Primary page background</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#f7f5f3"></div><div class="color-info"><div class="color-name">Ink</div><div class="color-hex">#f7f5f3</div><div class="color-role">Primary headings & emphasized body</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#d6d5d4"></div><div class="color-info"><div class="color-name">Ink Muted</div><div class="color-hex">#d6d5d4</div><div class="color-role">Secondary text, card meta</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#909090"></div><div class="color-info"><div class="color-name">Ink Subtle</div><div class="color-hex">#909090</div><div class="color-role">Tertiary text, captions</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#707070"></div><div class="color-info"><div class="color-name">Ink Faint</div><div class="color-hex">#707070</div><div class="color-role">Disabled or least-prominent details</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#101010"></div><div class="color-info"><div class="color-name">Surface 1</div><div class="color-hex">#101010</div><div class="color-role">Card titles, active nav text</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#303030"></div><div class="color-info"><div class="color-name">Surface 2</div><div class="color-hex">#303030</div><div class="color-role">Borders, dividers, subtle backgrounds</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#505050"></div><div class="color-info"><div class="color-name">Surface 3</div><div class="color-hex">#505050</div><div class="color-role">Footer text, muted UI</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#323232"></div><div class="color-info"><div class="color-name">Border</div><div class="color-hex">#323232</div><div class="color-role">Card borders, hairlines</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#272f3f"></div><div class="color-info"><div class="color-name">Divider</div><div class="color-hex">#272f3f</div><div class="color-role">Section divider lines</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#499ad5"></div><div class="color-info"><div class="color-name">Blue</div><div class="color-hex">#499ad5</div><div class="color-role">Links, recommendation badges</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#73abf9"></div><div class="color-info"><div class="color-name">Blue Light</div><div class="color-hex">#73abf9</div><div class="color-role">Hover blues</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#f7d252"></div><div class="color-info"><div class="color-name">Yellow</div><div class="color-hex">#f7d252</div><div class="color-role">Primary CTA, Magic Click glow</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#ecba0e"></div><div class="color-info"><div class="color-name">Yellow Dark</div><div class="color-hex">#ecba0e</div><div class="color-role">CTA hover state</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#1bc47d"></div><div class="color-info"><div class="color-name">Green</div><div class="color-hex">#1bc47d</div><div class="color-role">Success, category tags</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#6127ff"></div><div class="color-info"><div class="color-name">Purple</div><div class="color-hex">#6127ff</div><div class="color-role">Decorative accents</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#ff419c"></div><div class="color-info"><div class="color-name">Pink</div><div class="color-hex">#ff419c</div><div class="color-role">Decorative accents</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#00d0ff"></div><div class="color-info"><div class="color-name">Cyan</div><div class="color-hex">#00d0ff</div><div class="color-role">Decorative accents</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#ff5a19"></div><div class="color-info"><div class="color-name">Orange</div><div class="color-hex">#ff5a19</div><div class="color-role">Decorative accents</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:#ff2c60"></div><div class="color-info"><div class="color-name">Error</div><div class="color-hex">#ff2c60</div><div class="color-role">Error states</div></div></div>
+      <div class="color-token"><div class="color-swatch" style="background:rgba(40,80,120,.15)"></div><div class="color-info"><div class="color-name">Card BG</div><div class="color-hex">rgba(40,80,120,.15)</div><div class="color-role">Subtle card surface tint</div></div></div>
+    </div>
+  </section>
+
+  <!-- GRADIENTS -->
+  <section class="section reveal" id="gradients">
+    <div class="section-header">
+      <div class="section-label">Foundation</div>
+      <h2 class="section-title">Gradients</h2>
+      <p class="section-desc">Soft editorial gradients for background accents, dividers, and expressive text treatments.</p>
+    </div>
+    <div class="gradient-grid">
+      <div class="gradient-token" style="background:linear-gradient(150deg,#19191b 19%,#f7f5f3 150%)">
+        <div class="gradient-name">gradient-subtle</div>
+        <div class="gradient-desc">Background gradient accents on dark canvas</div>
+      </div>
+      <div class="gradient-token" style="background:linear-gradient(150deg,#ececec,#606060,#ececec)">
+        <div class="gradient-name">gradient-accent</div>
+        <div class="gradient-desc">Title / text gradient in dark mode</div>
+      </div>
+      <div class="gradient-token" style="background:linear-gradient(150deg,#ca7879,#606060,#ececec)">
+        <div class="gradient-name">gradient-accent-orange</div>
+        <div class="gradient-desc">Warm variant for decorative moments</div>
+      </div>
+      <div class="gradient-token" style="background:linear-gradient(180deg,#707070,#303030)">
+        <div class="gradient-name">gradient-stroke</div>
+        <div class="gradient-desc">Divider and stroke gradients</div>
+      </div>
+      <div class="gradient-token" style="background:linear-gradient(90deg,#f29914 15%,#0bbbe3 76%)">
+        <div class="gradient-name">text-gradient</div>
+        <div class="gradient-desc">Special gradient text treatment</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TYPOGRAPHY -->
+  <section class="section reveal" id="typography">
+    <div class="section-header">
+      <div class="section-label">Typography</div>
+      <h2 class="section-title">Type Scale</h2>
+      <p class="section-desc">A classical Ming-style display face for heroes, Inter / Noto Sans SC for everything else, and Special Elite for uppercase tags.</p>
+    </div>
+    <div class="type-table">
+      <div class="type-row">
+        <span class="type-meta">display</span>
+        <span class="type-sample" style="font-family:var(--font-display);font-size:clamp(36px,5vw,72px);font-weight:500;line-height:1.2">设计&编程</span>
+        <span class="type-specs">72px / 1.2 / 500</span>
+      </div>
+      <div class="type-row">
+        <span class="type-meta">display-lg</span>
+        <span class="type-sample" style="font-family:var(--font-display);font-size:clamp(32px,4.5vw,64px);font-weight:500;line-height:1.1">设计&编程</span>
+        <span class="type-specs">64px / 1.1 / 500</span>
+      </div>
+      <div class="type-row">
+        <span class="type-meta">heading-1</span>
+        <span class="type-sample" style="font-family:var(--font-body);font-size:clamp(28px,3.5vw,48px);font-weight:600;line-height:1.1">Major section heading</span>
+        <span class="type-specs">48px / 1.1 / 600</span>
+      </div>
+      <div class="type-row">
+        <span class="type-meta">heading-2</span>
+        <span class="type-sample" style="font-family:var(--font-body);font-size:clamp(24px,3vw,36px);font-weight:600;line-height:1.1">Section subheading</span>
+        <span class="type-specs">36px / 1.1 / 600</span>
+      </div>
+      <div class="type-row">
+        <span class="type-meta">heading-3</span>
+        <span class="type-sample" style="font-family:var(--font-body);font-size:clamp(22px,2.8vw,32px);font-weight:600;line-height:1.1">Card group title</span>
+        <span class="type-specs">32px / 1.1 / 600</span>
+      </div>
+      <div class="type-row">
+        <span class="type-meta">subheading</span>
+        <span class="type-sample" style="font-family:var(--font-body);font-size:24px;font-weight:500;line-height:1.4">Subheading text</span>
+        <span class="type-specs">24px / 1.4 / 500</span>
+      </div>
+      <div class="type-row">
+        <span class="type-meta">lead</span>
+        <span class="type-sample" style="font-family:var(--font-body);font-size:18px;font-weight:400;line-height:1.6">Lead paragraph with comfortable measure</span>
+        <span class="type-specs">18px / 1.6 / 400</span>
+      </div>
+      <div class="type-row">
+        <span class="type-meta">body</span>
+        <span class="type-sample" style="font-family:var(--font-body);font-size:16px;font-weight:400;line-height:1.5;letter-spacing:.2px">Default body text on dark canvas</span>
+        <span class="type-specs">16px / 1.5 / 400 / 0.2px</span>
+      </div>
+      <div class="type-row">
+        <span class="type-meta">body-sm</span>
+        <span class="type-sample" style="font-family:var(--font-body);font-size:14px;font-weight:400;line-height:1.5">Small body text and meta details</span>
+        <span class="type-specs">14px / 1.5 / 400</span>
+      </div>
+      <div class="type-row">
+        <span class="type-meta">caption</span>
+        <span class="type-sample" style="font-family:var(--font-body);font-size:12px;font-weight:400;line-height:1.4;letter-spacing:1px;text-transform:uppercase">Caption label</span>
+        <span class="type-specs">12px / 1.4 / 1px uppercase</span>
+      </div>
+      <div class="type-row">
+        <span class="type-meta">tag</span>
+        <span class="type-sample" style="font-family:var(--font-tag);font-size:13px;font-weight:400;line-height:1;letter-spacing:1px;text-transform:uppercase">PORTFOLIO</span>
+        <span class="type-specs">13px / 1 / 1px uppercase</span>
+      </div>
+    </div>
+
+    <h3 style="font-size:14px;font-weight:600;color:var(--ric-ink);margin:40px 0 20px;letter-spacing:.01em">Fonts</h3>
+    <div style="display:flex;flex-direction:column;border:1px solid var(--ric-border);border-radius:var(--ric-radius-lg);overflow:hidden">
+      <div style="padding:20px 24px;border-bottom:1px solid var(--ric-border);display:flex;align-items:baseline;gap:16px;flex-wrap:wrap">
+        <span style="font-size:10px;font-weight:600;color:var(--ric-blue);letter-spacing:.06em;text-transform:uppercase;flex:0 0 70px">Display</span>
+        <span style="font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--ric-ink)">Huiwen-mincho / Noto Serif SC</span>
+        <span style="font-size:11px;color:var(--ric-ink-subtle);letter-spacing:.02em">500 · hero titles only</span>
+      </div>
+      <div style="padding:20px 24px;border-bottom:1px solid var(--ric-border);display:flex;align-items:baseline;gap:16px;flex-wrap:wrap">
+        <span style="font-size:10px;font-weight:600;color:var(--ric-blue);letter-spacing:.06em;text-transform:uppercase;flex:0 0 70px">Body</span>
+        <span style="font-family:var(--font-body);font-size:16px;font-weight:500;color:var(--ric-ink)">Inter / Noto Sans SC</span>
+        <span style="font-size:11px;color:var(--ric-ink-subtle);letter-spacing:.02em">400–600 · UI, body, headings</span>
+      </div>
+      <div style="padding:20px 24px;border-bottom:1px solid var(--ric-border);display:flex;align-items:baseline;gap:16px;flex-wrap:wrap">
+        <span style="font-size:10px;font-weight:600;color:var(--ric-blue);letter-spacing:.06em;text-transform:uppercase;flex:0 0 70px">Tag</span>
+        <span style="font-family:var(--font-tag);font-size:13px;font-weight:400;color:var(--ric-ink);letter-spacing:1px;text-transform:uppercase">Special Elite</span>
+        <span style="font-size:11px;color:var(--ric-ink-subtle);letter-spacing:.02em">400 · uppercase page tags</span>
+      </div>
+      <div style="padding:20px 24px;display:flex;align-items:baseline;gap:16px;flex-wrap:wrap">
+        <span style="font-size:10px;font-weight:600;color:var(--ric-blue);letter-spacing:.06em;text-transform:uppercase;flex:0 0 70px">Mono</span>
+        <span style="font-family:var(--font-mono);font-size:14px;font-weight:500;color:var(--ric-ink)">Inconsolata</span>
+        <span style="font-size:11px;color:var(--ric-ink-subtle);letter-spacing:.02em">400 · code & inline mono</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPACING & SHAPES -->
+  <section class="section reveal" id="spacing">
+    <div class="section-header">
+      <div class="section-label">Layout</div>
+      <h2 class="section-title">Spacing & Shapes</h2>
+      <p class="section-desc">8px base grid, comfortable density, and a consistently rounded language from 4px corners to full pills.</p>
+    </div>
+
+    <h3 style="font-size:14px;font-weight:600;color:var(--ric-ink);margin-bottom:20px;letter-spacing:.01em">Spacing Scale</h3>
+    <div class="spacing-bars">
+      <div class="spacing-col"><div class="spacing-bar" style="height:7.5px"></div><span class="spacing-val">4</span><span class="spacing-name">4px</span></div>
+      <div class="spacing-col"><div class="spacing-bar" style="height:15px"></div><span class="spacing-val">8</span><span class="spacing-name">8px</span></div>
+      <div class="spacing-col"><div class="spacing-bar" style="height:22.5px"></div><span class="spacing-val">12</span><span class="spacing-name">12px</span></div>
+      <div class="spacing-col"><div class="spacing-bar" style="height:30px"></div><span class="spacing-val">16</span><span class="spacing-name">16px</span></div>
+      <div class="spacing-col"><div class="spacing-bar" style="height:37.5px"></div><span class="spacing-val">20</span><span class="spacing-name">20px</span></div>
+      <div class="spacing-col"><div class="spacing-bar" style="height:45px"></div><span class="spacing-val">24</span><span class="spacing-name">24px</span></div>
+      <div class="spacing-col"><div class="spacing-bar" style="height:60px"></div><span class="spacing-val">32</span><span class="spacing-name">32px</span></div>
+      <div class="spacing-col"><div class="spacing-bar" style="height:90px"></div><span class="spacing-val">48</span><span class="spacing-name">48px</span></div>
+      <div class="spacing-col"><div class="spacing-bar" style="height:130px"></div><span class="spacing-val">64</span><span class="spacing-name">64px</span></div>
+    </div>
+
+    <h3 style="font-size:14px;font-weight:600;color:var(--ric-ink);margin:40px 0 20px;letter-spacing:.01em">Border Radius</h3>
+    <div class="shapes-row">
+      <div class="shape-item"><div class="shape-box" style="border-radius:4px"></div><span class="shape-label">small</span><span class="shape-value">4px</span></div>
+      <div class="shape-item"><div class="shape-box" style="border-radius:6px"></div><span class="shape-label">card</span><span class="shape-value">6px</span></div>
+      <div class="shape-item"><div class="shape-box" style="border-radius:12px"></div><span class="shape-label">large</span><span class="shape-value">12px</span></div>
+      <div class="shape-item"><div class="shape-box" style="border-radius:36px"></div><span class="shape-label">pill</span><span class="shape-value">36px</span></div>
+      <div class="shape-item"><div class="shape-box" style="border-radius:9999px"></div><span class="shape-label">full</span><span class="shape-value">9999px</span></div>
+    </div>
+
+    <h3 style="font-size:14px;font-weight:600;color:var(--ric-ink);margin:40px 0 20px;letter-spacing:.01em">Shadows</h3>
+    <div class="shadow-row">
+      <div class="shadow-box" style="box-shadow:var(--ric-shadow-sm)"><span class="shadow-label">shadow-sm</span><span class="shadow-value">small layered</span></div>
+      <div class="shadow-box" style="box-shadow:var(--ric-shadow-md)"><span class="shadow-label">shadow-md</span><span class="shadow-value">medium layered</span></div>
+      <div class="shadow-box" style="box-shadow:var(--ric-shadow-lg)"><span class="shadow-label">shadow-lg</span><span class="shadow-value">large layered</span></div>
+      <div class="shadow-box" style="box-shadow:var(--ric-shadow-cta);background:#19191b"><span class="shadow-label" style="color:#f7d252">cta-glow</span><span class="shadow-value" style="color:#d6d5d4">yellow glow</span></div>
+      <div class="shadow-box" style="box-shadow:var(--ric-shadow-magic);background:#19191b"><span class="shadow-label" style="color:#f7d252">magic-glow</span><span class="shadow-value" style="color:#d6d5d4">switch glow</span></div>
+    </div>
+  </section>
+
+  <!-- DEPTH & SURFACES -->
+  <section class="section reveal" id="depth">
+    <div class="section-header">
+      <div class="section-label">Elevation</div>
+      <h2 class="section-title">Depth & Surfaces</h2>
+      <p class="section-desc">Translucency, subtle tints, and layered shadows create depth without heavy chrome.</p>
+    </div>
+
+    <h3 style="font-size:14px;font-weight:600;color:var(--ric-ink);margin-bottom:16px;letter-spacing:.01em">Depth Levels</h3>
+    <div style="margin-bottom:40px">
+      <div class="depth-row">
+        <div class="depth-swatch" style="background:var(--ric-canvas)"></div>
+        <div class="depth-info"><div class="depth-name">Canvas</div><div class="depth-desc">Base page background — the editorial stage</div></div>
+        <div class="depth-value">Level 0</div>
+      </div>
+      <div class="depth-row">
+        <div class="depth-swatch" style="background:var(--ric-surface-1)"></div>
+        <div class="depth-info"><div class="depth-name">Surface 1</div><div class="depth-desc">Deepest UI elements, card titles, active text</div></div>
+        <div class="depth-value">Level 1</div>
+      </div>
+      <div class="depth-row">
+        <div class="depth-swatch" style="background:var(--ric-surface-2)"></div>
+        <div class="depth-info"><div class="depth-name">Surface 2</div><div class="depth-desc">Borders, dividers, subtle backgrounds</div></div>
+        <div class="depth-value">Level 2</div>
+      </div>
+      <div class="depth-row">
+        <div class="depth-swatch" style="background:rgba(var(--ric-canvas-rgb),.65);border-radius:var(--ric-radius-lg)"></div>
+        <div class="depth-info"><div class="depth-name">Translucent</div><div class="depth-desc">Sticky nav backdrop with blur + saturation</div></div>
+        <div class="depth-value">Level 3</div>
+      </div>
+      <div class="depth-row">
+        <div class="depth-swatch" style="background:var(--ric-card);border-radius:var(--ric-radius-md)"></div>
+        <div class="depth-info"><div class="depth-name">Card Tint</div><div class="depth-desc">Subtle blue-tinted card surface</div></div>
+        <div class="depth-value">Level 4</div>
+      </div>
+    </div>
+
+    <h3 style="font-size:14px;font-weight:600;color:var(--ric-ink);margin-bottom:16px;letter-spacing:.01em">Surface System</h3>
+    <div class="surface-grid">
+      <div class="surface-item" style="background:var(--ric-canvas)"><span class="surface-name">Canvas</span><span class="surface-val">#19191b</span></div>
+      <div class="surface-item" style="background:var(--ric-surface-1)"><span class="surface-name">Surface 1</span><span class="surface-val">#101010</span></div>
+      <div class="surface-item" style="background:var(--ric-surface-2)"><span class="surface-name">Surface 2</span><span class="surface-val">#303030</span></div>
+      <div class="surface-item" style="background:var(--ric-card);border-color:rgba(73,154,213,.25)"><span class="surface-name">Card Tint</span><span class="surface-val">rgba(40,80,120,.15)</span></div>
+    </div>
+  </section>
+
+  <!-- COMPONENTS -->
+  <section class="section reveal" id="components">
+    <div class="section-header">
+      <div class="section-label">Components</div>
+      <h2 class="section-title">Live Previews</h2>
+      <p class="section-desc">Reusable UI pieces from the Ricoui portfolio, rendered with real tokens and interaction states.</p>
+    </div>
+
+    <div class="component-card">
+      <div class="component-header">
+        <div><div class="component-name">Sticky Navigation</div><div class="component-role">Primary wayfinding with translucent backdrop</div></div>
+        <span class="component-class">.nav</span>
+      </div>
+      <div class="component-preview">
+        <div class="nav-preview">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:28px;height:28px;border-radius:50%;background:var(--ric-surface-2)"></div>
+            <span style="font-size:13px;font-weight:600;color:var(--ric-ink)">Ricoui</span>
+          </div>
+          <div class="nav-preview-links">
+            <span>Works</span>
+            <span>About</span>
+            <span>Notes</span>
+          </div>
+          <div style="width:30px;height:16px;border-radius:999px;background:var(--ric-canvas);border:1px solid var(--ric-border);box-shadow:inset 0 0 4px var(--ric-overlay)"></div>
+        </div>
+      </div>
+      <div class="component-desc">saturate(300%) blur(5px) backdrop over rgba(25,25,27,.72). Logo left, links center/right, theme toggle far right.</div>
+    </div>
+
+    <div class="component-card">
+      <div class="component-header">
+        <div><div class="component-name">Section Header</div><div class="component-role">Hero typography block</div></div>
+        <span class="component-class">.section-header</span>
+      </div>
+      <div class="component-preview" style="justify-content:center">
+        <div style="text-align:center">
+          <span class="hero-tag">PORTFOLIO</span>
+          <div style="font-family:var(--font-display);font-size:clamp(36px,6vw,56px);font-weight:500;line-height:1.2;color:var(--ric-ink);margin-top:16px">设计&编程</div>
+          <p style="font-size:14px;color:var(--ric-ink-muted);max-width:420px;margin:10px auto 0">Short centered description in muted ink, max-width 480px.</p>
+        </div>
+      </div>
+      <div class="component-desc">Uppercase Special Elite pill tag, 72px Huiwen Mincho title, centered description, social icons below.</div>
+    </div>
+
+    <div class="component-card">
+      <div class="component-header">
+        <div><div class="component-name">Filter Tags</div><div class="component-role">Category filter for the masonry grid</div></div>
+        <span class="component-class">.filter-tag</span>
+      </div>
+      <div class="component-preview" style="justify-content:center">
+        <button class="filter-tag filter-tag--active">全部</button>
+        <button class="filter-tag">设计</button>
+        <button class="filter-tag">编程</button>
+        <button class="filter-tag">开源</button>
+      </div>
+      <div class="component-desc">32px pill radius, 10px 24px padding, dark default with #696765 border, light inverse active state.</div>
+    </div>
+
+    <div class="component-card">
+      <div class="component-header">
+        <div><div class="component-name">Work Card</div><div class="component-role">Portfolio item in the masonry grid</div></div>
+        <span class="component-class">.work-card</span>
+      </div>
+      <div class="component-preview">
+        <article class="work-card">
+          <div class="work-figure"></div>
+          <div class="work-tags">
+            <span class="work-type">- Web -</span>
+            <span class="work-type">(056)</span>
+          </div>
+          <div class="work-head">
+            <h3 class="work-title">Project Title</h3>
+            <span class="badge">推荐</span>
+          </div>
+          <p class="work-meta">Design & Frontend · 2024</p>
+          <div class="work-arrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </div>
+        </article>
+      </div>
+      <div class="component-desc">2:3 aspect image, 6px radius, 1px border, type tags, 18px title, blue recommendation badge, arrow rotates 45° on hover.</div>
+    </div>
+
+    <div class="component-card">
+      <div class="component-header">
+        <div><div class="component-name">Primary CTA</div><div class="component-role">Main call-to-action button</div></div>
+        <span class="component-class">.post-btn</span>
+      </div>
+      <div class="component-preview">
+        <button class="cta-pill">Get in touch</button>
+        <button class="cta-pill" style="background:var(--ric-yellow-dark);box-shadow:var(--ric-shadow-cta)">Hover state</button>
+      </div>
+      <div class="component-desc">Yellow (#f7d252) pill, dark text, 36px radius, hover darkens to #ecba0e and emits a yellow glow.</div>
+    </div>
+
+    <div class="component-card">
+      <div class="component-header">
+        <div><div class="component-name">Theme Toggle</div><div class="component-role">Dark / light mode switch</div></div>
+        <span class="component-class">.theme-toggle</span>
+      </div>
+      <div class="component-preview" style="justify-content:center">
+        <div class="toggle-track theme-toggle" role="button" tabindex="0" aria-label="Toggle theme">
+          <svg class="toggle-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+          <svg class="toggle-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <div class="toggle-knob"></div>
+        </div>
+      </div>
+      <div class="component-desc">Circular track with 999rem radius, inset overlay shadow, sun/moon icons, and a sliding pill indicator.</div>
+    </div>
+
+    <div class="component-card">
+      <div class="component-header">
+        <div><div class="component-name">Footer</div><div class="component-role">Closing sign-off</div></div>
+        <span class="component-class">.footer</span>
+      </div>
+      <div class="component-preview" style="padding:0;background:transparent;border:none">
+        <footer class="footer-preview">© 2024 Ricoui · Crafted with design & code</footer>
+      </div>
+      <div class="component-desc">Centered, muted Surface 3 text, generous top margin, simple copyright or sign-off.</div>
+    </div>
+  </section>
+
+  <!-- DO'S & DON'TS -->
+  <section class="section reveal" id="guidelines">
+    <div class="section-header">
+      <div class="section-label">Guidelines</div>
+      <h2 class="section-title">Do's & Don'ts</h2>
+    </div>
+    <div class="guide-grid">
+      <div class="guide-card guide-card--do">
+        <div class="guide-label">Do — Embrace</div>
+        <ul class="guide-list">
+          <li>Use #19191b as the default dark canvas background.</li>
+          <li>Set primary headings in 汇文明朝体 at 72px for the editorial hero feel.</li>
+          <li>Use #f7f5f3 for primary text to maintain high contrast.</li>
+          <li>Reserve #499ad5 for links, recommendation badges, and interactive accents.</li>
+          <li>Use #f7d252 only for primary CTAs and the Magic Click switch glow.</li>
+          <li>Apply 32px–36px pill radius for tags, filters, and CTA buttons.</li>
+          <li>Keep card images in a 2:3 ratio with 6px radius and a subtle 1px border.</li>
+        </ul>
+      </div>
+      <div class="guide-card guide-card--dont">
+        <div class="guide-label">Don't — Avoid</div>
+        <ul class="guide-list">
+          <li>Don't use Huiwen Mincho for body text or UI labels — display-only.</li>
+          <li>Don't place saturated accent colors on large backgrounds.</li>
+          <li>Don't use sharp 0px radius on interactive components.</li>
+          <li>Don't let body text exceed a 480–640px measure.</li>
+          <li>Don't ignore the 8px base grid.</li>
+          <li>Don't render the 3D image trail on mobile.</li>
+          <li>Don't use pure white #fff as the default text color.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer reveal">
+    <div class="footer-left">Ricoui Design System</div>
+    <div class="footer-right">
+      <a href="#colors" class="footer-link">Colors</a>
+      <a href="#typography" class="footer-link">Typography</a>
+      <a href="#spacing" class="footer-link">Spacing</a>
+      <a href="#components" class="footer-link">Components</a>
+      <a href="DESIGN.md" class="footer-link" download>Download Spec</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  // Theme toggle
+  function toggleTheme(){
+    const html = document.documentElement;
+    html.classList.toggle('theme-light');
+  }
+  document.querySelectorAll('.theme-toggle').forEach(btn => {
+    btn.addEventListener('click', toggleTheme);
+    btn.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTheme(); } });
+  });
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+        revealObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.06, rootMargin: '0px 0px -20px 0px' });
+  revealEls.forEach(el => revealObs.observe(el));
+
+  // Active nav link spy
+  const sections = document.querySelectorAll('section[id], header[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+  const spyObs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        const id = entry.target.getAttribute('id');
+        navLinks.forEach(link => {
+          link.classList.toggle('nav-link--active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { threshold: 0.25, rootMargin: '-80px 0px -60% 0px' });
+  sections.forEach(sec => spyObs.observe(sec));
+</script>
+
+</body>
+</html>

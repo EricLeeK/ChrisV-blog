@@ -1,0 +1,134 @@
+<h2>Detailed design: ChrisV Blog</h2>
+<p class="subtitle">Personalized Ricoui direction (B) — dark theme, Astro + Tailwind CSS.</p>
+
+<div class="section">
+  <h3>1. Navigation</h3>
+  <div class="mockup">
+    <div class="mockup-header">Sticky nav</div>
+    <div class="mockup-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:28px;height:28px;border-radius:50%;background:#323232;display:flex;align-items:center;justify-content:center;font-weight:600">CV</div>
+          <span>ChrisV</span>
+        </div>
+        <div style="display:flex;gap:16px;align-items:center">
+          <span>首页</span>
+          <span>文章</span>
+          <span>项目</span>
+          <span>资源</span>
+          <span>关于</span>
+          <span>碎碎念</span>
+          <span>☀️/🌙</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>2. Homepage hero</h3>
+  <div class="mockup">
+    <div class="mockup-header">Hero</div>
+    <div class="mockup-body" style="text-align:center;padding:32px">
+      <div class="label" style="margin-bottom:12px">CHRISV</div>
+      <div style="font-size:36px;margin-bottom:12px">智能&艺术</div>
+      <div style="font-size:14px;color:#888;max-width:420px;margin:0 auto 20px">
+        A researcher who builds, designs, and writes about intelligent systems.
+      </div>
+      <div style="display:flex;justify-content:center;gap:12px">
+        <span style="font-size:12px">GitHub</span>
+        <span style="font-size:12px">X</span>
+        <span style="font-size:12px">Email</span>
+        <span style="font-size:12px">WeChat</span>
+        <span style="font-size:12px">小红书</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>3. Category cards</h3>
+  <div class="mockup">
+    <div class="mockup-header">Quick entry cards</div>
+    <div class="mockup-body" style="display:flex;gap:12px;justify-content:center">
+      <div class="card" style="width:120px;text-align:center;padding:12px">
+        <h4>研究</h4>
+        <p class="subtitle" style="font-size:11px">岩土 × AI</p>
+      </div>
+      <div class="card" style="width:120px;text-align:center;padding:12px">
+        <h4>项目</h4>
+        <p class="subtitle" style="font-size:11px">Agents & Code</p>
+      </div>
+      <div class="card" style="width:120px;text-align:center;padding:12px">
+        <h4>碎碎念</h4>
+        <p class="subtitle" style="font-size:11px">短想法</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>4. Filter + masonry card grid</h3>
+  <div class="mockup">
+    <div class="mockup-header">Latest from ChrisV</div>
+    <div class="mockup-body" style="text-align:center">
+      <div style="display:flex;justify-content:center;gap:6px;margin-bottom:16px">
+        <span class="mock-button" style="font-size:10px;padding:4px 10px">全部</span>
+        <span class="mock-button" style="font-size:10px;padding:4px 10px">🔥 推荐</span>
+        <span class="mock-button" style="font-size:10px;padding:4px 10px">AI</span>
+        <span class="mock-button" style="font-size:10px;padding:4px 10px">设计</span>
+        <span class="mock-button" style="font-size:10px;padding:4px 10px">艺术</span>
+        <span class="mock-button" style="font-size:10px;padding:4px 10px">碎碎念</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+        <div class="placeholder" style="height:80px">Article card</div>
+        <div class="placeholder" style="height:80px">Project card</div>
+        <div class="placeholder" style="height:80px">Random note</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>5. About page structure</h3>
+  <div class="mockup">
+    <div class="mockup-header">About ChrisV</div>
+    <div class="mockup-body">
+      <div style="display:flex;gap:16px;align-items:flex-start">
+        <div style="width:64px;height:64px;border-radius:50%;background:#323232;flex-shrink:0"></div>
+        <div>
+          <div style="font-size:16px;font-weight:600">ChrisV</div>
+          <div style="font-size:12px;color:#888;margin-top:4px">Current geotechnical engineering graduate student with a side passion for AI, agents, NLP, and design.</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+        <span class="mock-button" style="font-size:10px">🐙 GitHub</span>
+        <span class="mock-button" style="font-size:10px">🐦 X</span>
+        <span class="mock-button" style="font-size:10px">✉️ shiyaol492@gmail.com</span>
+        <span class="mock-button" style="font-size:10px">💬 a13623819167</span>
+        <span class="mock-button" style="font-size:10px">📕 超级 TT</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>6. Footer</h3>
+  <div class="mockup">
+    <div class="mockup-header">Footer</div>
+    <div class="mockup-body" style="text-align:center;font-size:12px;color:#888">
+      © 2026 ChrisV. All Rights Reserved.<br>
+      <span style="font-size:11px">Built with Astro + Tailwind CSS · Designed after Ricoui</span>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Column ideas inside each section</h3>
+  <ul>
+    <li><strong>文章 Articles:</strong> AI · 设计 · 艺术 · 岩土工程 · 碎碎念</li>
+    <li><strong>项目 Projects:</strong> AI Agents · NLP Pipelines · Creative Coding · Design Systems</li>
+    <li><strong>资源 Resources:</strong> 论文 · 工具 · 灵感 · 书架</li>
+    <li><strong>碎碎念 Random:</strong> 短想法 · 灵感碎片 · 阅读摘录</li>
+  </ul>
+</div>

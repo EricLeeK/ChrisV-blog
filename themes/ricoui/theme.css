@@ -1,0 +1,71 @@
+@theme {
+  /* Colors */
+  --color-ricoui-canvas: #19191b;
+  --color-ricoui-canvas-rgb: 25, 25, 27;
+  --color-ricoui-ink: #f7f5f3;
+  --color-ricoui-ink-muted: #d6d5d4;
+  --color-ricoui-ink-subtle: #909090;
+  --color-ricoui-ink-faint: #707070;
+  --color-ricoui-surface-1: #101010;
+  --color-ricoui-surface-2: #303030;
+  --color-ricoui-surface-3: #505050;
+  --color-ricoui-border: #323232;
+  --color-ricoui-divider: #272f3f;
+  --color-ricoui-blue: #499ad5;
+  --color-ricoui-blue-light: #73abf9;
+  --color-ricoui-blue-lighter: #e0ecfd;
+  --color-ricoui-yellow: #f7d252;
+  --color-ricoui-yellow-dark: #ecba0e;
+  --color-ricoui-green: #1bc47d;
+  --color-ricoui-purple: #6127ff;
+  --color-ricoui-pink: #ff419c;
+  --color-ricoui-cyan: #00d0ff;
+  --color-ricoui-orange: #ff5a19;
+  --color-ricoui-error: #ff2c60;
+  --color-ricoui-card: rgba(40, 80, 120, 0.15);
+  --color-ricoui-card-selected: rgba(60, 90, 125, 0.3);
+  --color-ricoui-overlay: hsla(0, 0%, 64%, 0.75);
+
+  /* Typography */
+  --font-ricoui-sans: "Inter", "Noto Sans SC", system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-ricoui-display: "Huiwen-mincho", "Noto Serif SC", "Songti SC", "SimSun", serif;
+  --font-ricoui-tag: "Special Elite", system-ui, monospace;
+  --font-ricoui-mono: "Inconsolata", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+
+  /* Type Scale */
+  --text-ricoui-xs: 0.75rem;
+  --text-ricoui-sm: 0.875rem;
+  --text-ricoui-base: 1rem;
+  --text-ricoui-md: 1.125rem;
+  --text-ricoui-lg: 1.5rem;
+  --text-ricoui-xl: 2rem;
+  --text-ricoui-2xl: 2.25rem;
+  --text-ricoui-3xl: 3rem;
+  --text-ricoui-4xl: 4rem;
+  --text-ricoui-5xl: 4.5rem;
+
+  /* Spacing */
+  --spacing-ricoui-1: 4px;
+  --spacing-ricoui-2: 8px;
+  --spacing-ricoui-3: 12px;
+  --spacing-ricoui-4: 16px;
+  --spacing-ricoui-5: 20px;
+  --spacing-ricoui-6: 24px;
+  --spacing-ricoui-8: 32px;
+  --spacing-ricoui-12: 48px;
+  --spacing-ricoui-16: 64px;
+
+  /* Border Radius */
+  --radius-ricoui-sm: 4px;
+  --radius-ricoui-md: 6px;
+  --radius-ricoui-lg: 12px;
+  --radius-ricoui-pill: 36px;
+  --radius-ricoui-full: 9999px;
+
+  /* Shadows */
+  --shadow-ricoui-sm: 0px 6px 3px rgba(9, 11, 17, 0.01), 0px 4px 2px rgba(9, 11, 17, 0.01), 0px 2px 2px rgba(9, 11, 17, 0.02), 0px 0px 1px rgba(9, 11, 17, 0.03);
+  --shadow-ricoui-md: 0px 28px 11px rgba(9, 11, 17, 0.01), 0px 16px 10px rgba(9, 11, 17, 0.03), 0px 7px 7px rgba(9, 11, 17, 0.05), 0px 2px 4px rgba(9, 11, 17, 0.06);
+  --shadow-ricoui-lg: 0px 62px 25px rgba(9, 11, 17, 0.01), 0px 35px 21px rgba(9, 11, 17, 0.05), 0px 16px 16px rgba(9, 11, 17, 0.1), 0px 4px 9px rgba(9, 11, 17, 0.12);
+  --shadow-ricoui-cta-glow: 0 0 24px 11px rgba(247, 210, 82, 0.75);
+  --shadow-ricoui-magic-glow: 0 0 12px 6px rgba(247, 210, 82, 0.3);
+}
