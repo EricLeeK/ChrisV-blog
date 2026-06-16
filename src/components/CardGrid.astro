@@ -1,0 +1,68 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { collections } from '../content.config';
+import ContentCard from './ContentCard.astro';
+
+type AnyCollectionEntry = CollectionEntry<keyof typeof collections>;
+
+type CardItem =
+  | AnyCollectionEntry
+  | {
+      slug: string;
+      collection: string;
+      data: {
+        title: string;
+        description: string;
+        date?: Date | string;
+        category: string;
+        tags?: string[];
+        featured?: boolean;
+        cover?: string;
+      };
+    };
+
+interface Props {
+  items: CardItem[];
+}
+
+const { items } = Astro.props;
+
+function hasCardData(item: CardItem): item is CardItem & {
+  data: {
+    title: string;
+    description: string;
+    category: string;
+  };
+} {
+  const data = item.data as Record<string, unknown>;
+  return typeof data.title === 'string' && typeof data.description === 'string' && typeof data.category === 'string';
+}
+---
+
+<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+  {
+    items.filter(hasCardData).map((item) => {
+      const data = item.data as {
+        title: string;
+        description: string;
+        date?: Date | string;
+        category: string;
+        tags?: string[];
+        featured?: boolean;
+        cover?: string;
+      };
+      return (
+        <ContentCard
+          title={data.title}
+          description={data.description}
+          date={data.date}
+          category={data.category}
+          tags={data.tags}
+          featured={data.featured}
+          href={`/${item.collection}/${item.slug}`}
+          cover={data.cover}
+        />
+      );
+    })
+  }
+</div>
