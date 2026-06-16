@@ -40,6 +40,12 @@ const states: MagicState[] = ['DESIGN', 'SKILL', 'NEED3D', 'OFF'];
     color: var(--color-999);
     box-shadow: none;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .magic-switch {
+      transition: none !important;
+    }
+  }
 </style>
 
 <script>

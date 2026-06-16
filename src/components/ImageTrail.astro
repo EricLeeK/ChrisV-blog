@@ -46,6 +46,8 @@
 
 <script>
   (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
     const trail = document.querySelector<HTMLElement>('.image-trail');
     if (!trail) return;
 

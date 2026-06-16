@@ -21,22 +21,24 @@ function isActive(href: string): boolean {
     class="flex items-center justify-between gap-4 container-inner py-4"
     aria-label="Main navigation"
   >
-    <a
-      href="/"
-      class="flex shrink-0 items-center gap-3 text-[var(--color-0)] transition-opacity hover:opacity-80"
-      aria-label={`${site.title} home`}
-    >
-      <img
-        src="/images/avatar.svg"
-        alt=""
-        width="36"
-        height="36"
-        class="rounded-full"
-        aria-hidden="true"
-      />
-      <span class="text-lg font-medium tracking-tight">{site.title}</span>
+    <div class="flex items-center gap-3">
+      <a
+        href="/"
+        class="flex shrink-0 items-center gap-3 text-[var(--color-0)] transition-opacity hover:opacity-80"
+        aria-label={`${site.title} home`}
+      >
+        <img
+          src="/images/avatar.svg"
+          alt=""
+          width="36"
+          height="36"
+          class="rounded-full"
+          aria-hidden="true"
+        />
+        <span class="text-lg font-medium tracking-tight">{site.title}</span>
+      </a>
       <MagicSwitch />
-    </a>
+    </div>
 
     <div class="flex items-center gap-2 sm:gap-4">
       <ul class="flex items-center gap-1 overflow-x-auto pr-2 scrollbar-hide">
