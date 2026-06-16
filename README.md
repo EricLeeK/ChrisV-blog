@@ -1,43 +1,42 @@
-# Astro Starter Kit: Minimal
+# ChrisV Blog
+
+Personal blog for ChrisV, a geotechnical engineering graduate student exploring AI, agents, NLP, design, and art.
+
+## Stack
+
+- [Astro](https://astro.build/)
+- [Tailwind CSS](https://tailwindcss.com/)
+
+## Getting Started
+
+Install dependencies, then start the development server:
 
 ```sh
-npm create astro@latest -- --template minimal
+npm install
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+The dev server runs at `http://localhost:4321` by default.
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
+## Commands
 
 | Command                   | Action                                           |
 | :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+| `npm install`             | Install dependencies                             |
+| `npm run dev`             | Start local dev server at `localhost:4321`       |
+| `npm run build`           | Build the production site to `./dist/`           |
+| `npm run preview`         | Preview the production build locally             |
+| `npm run astro ...`       | Run Astro CLI commands                           |
+| `npm run astro -- --help` | Show Astro CLI help                              |
 
-## 👀 Want to learn more?
+## Deployment
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+The static build output is written to `./dist/` and can be deployed to any static host such as Vercel, Netlify, or GitHub Pages.
+
+For Vercel, run:
+
+```sh
+vercel --prod
+```
+
+Or connect the repository in the Vercel dashboard for automatic deployments.

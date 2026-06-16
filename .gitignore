@@ -6,11 +6,16 @@ dist/
 .astro/
 
 # logs
-npm-debug.log*
+*.log
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # env
 .env
 .env.production
+.env.local
+.env.*.local
 
 # macOS
 .DS_Store
@@ -21,13 +26,6 @@ npm-debug.log*
 
 # worktrees
 .worktrees/
-worktrees/
 
-# additional logs / env
-*.log
-.env.local
-.env.*.local
-pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.vercel
+# vercel
+.vercel/

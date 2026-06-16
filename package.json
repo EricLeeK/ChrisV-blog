@@ -1,7 +1,10 @@
 {
-  "name": "virtual-velocity",
-  "type": "module",
+  "name": "chrisv-blog",
+  "description": "Personal blog for ChrisV, a geotechnical engineering graduate student interested in AI, agents, NLP, design, and art.",
   "version": "0.0.1",
+  "type": "module",
+  "author": "ChrisV",
+  "license": "MIT",
   "engines": {
     "node": ">=22.12.0"
   },
