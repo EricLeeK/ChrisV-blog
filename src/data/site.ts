@@ -35,7 +35,7 @@ export const filters = [
 ];
 
 export const categories = [
-  { id: 'research', title: '研究', subtitle: '岩土 × AI', href: '/articles?filter=岩土工程' },
+  { id: 'research', title: '研究', subtitle: '岩土 × AI', href: '/articles?filter=ai' },
   { id: 'projects', title: '项目', subtitle: 'Agents & Code', href: '/projects' },
   { id: 'random', title: '碎碎念', subtitle: '短想法', href: '/random' },
 ];

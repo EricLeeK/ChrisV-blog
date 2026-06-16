@@ -95,7 +95,8 @@ const { active = 'all' } = Astro.props;
         });
       });
 
-      var initialFilter = filterBar.getAttribute('data-active-filter') || 'all';
+      var urlFilter = new URLSearchParams(window.location.search).get('filter');
+      var initialFilter = urlFilter || filterBar.getAttribute('data-active-filter') || 'all';
       var initialButton = filterBar.querySelector('button[data-filter="' + initialFilter + '"]');
       if (initialButton && initialFilter !== 'all') {
         setActive(initialButton);

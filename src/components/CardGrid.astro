@@ -59,7 +59,7 @@ function hasCardData(item: CardItem): item is CardItem & {
           category={data.category}
           tags={data.tags}
           featured={data.featured}
-          href={`/${item.collection}/${item.id}`}
+          href={item.collection === 'random' ? '/random' : `/${item.collection}/${item.id}`}
           cover={data.cover}
         />
       );
