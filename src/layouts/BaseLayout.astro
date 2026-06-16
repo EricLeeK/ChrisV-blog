@@ -1,0 +1,47 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import ImageTrail from '../components/ImageTrail.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = 'ChrisV', description = 'A researcher who builds, designs, and writes about intelligent systems.' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script is:inline>
+      (function () {
+        const saved = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const dark = saved ? saved === 'dark' : prefersDark;
+        document.documentElement.classList.toggle('theme-dark', dark);
+      })();
+    </script>
+  </head>
+  <body class="flex min-h-screen flex-col bg-canvas text-ink">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:rounded focus:bg-[var(--color-0)] focus:px-4 focus:py-2 focus:text-[var(--color-999)]"
+    >
+      跳到主要内容
+    </a>
+    <Nav />
+    <main id="main-content" class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+    <ImageTrail />
+  </body>
+</html>

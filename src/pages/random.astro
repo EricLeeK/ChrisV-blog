@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import { getCollection, render } from 'astro:content';
+import { formatDate } from '../lib/utils';
+
+const notes = (await getCollection('random')).sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+const notesWithContent = await Promise.all(
+  notes.map(async (note) => {
+    const { Content } = await render(note);
+    return { note, Content };
+  })
+);
+---
+
+<BaseLayout title="碎碎念 — ChrisV">
+  <SectionHeader
+    tag="RANDOM"
+    title="碎碎念"
+    description="Short thoughts, sparks, and reading excerpts."
+  />
+
+  <section class="container-inner pb-16">
+    <div class="flex flex-col gap-8">
+      {
+        notesWithContent.map(({ note, Content }) => (
+          <article class="rounded-[6px] border border-[var(--border)] bg-[var(--card-color)] p-6">
+            <time
+              class="ricoui-tag text-[var(--color-500)]"
+              datetime={note.data.date.toISOString()}
+            >
+              {formatDate(note.data.date)}
+            </time>
+            <div class="prose mt-4 max-w-none text-[var(--color-300)]">
+              <Content />
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,107 @@
+---
+import { filters } from '../data/site';
+
+interface Props {
+  active?: string;
+}
+
+const { active = 'all' } = Astro.props;
+---
+
+<nav
+  class="flex w-full items-center justify-center overflow-x-auto py-4"
+  aria-label="内容筛选"
+  data-active-filter={active}
+>
+  <div class="flex items-center gap-2 px-4">
+    {
+      filters.map((filter) => {
+        const isActive = filter.id === active;
+        return (
+          <button
+            type="button"
+            data-filter={filter.id}
+            aria-pressed={isActive}
+            class:list={[
+              'rounded-[36px] px-4 py-1.5 text-sm whitespace-nowrap transition-all',
+              'hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-main)]',
+              isActive
+                ? 'bg-[#f4f3f0] text-[var(--color-100)]'
+                : 'border border-[var(--border)] bg-[var(--color-900)] text-[var(--color-500)]',
+            ]}
+            style="transition-duration: 0.35s; transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);"
+          >
+            {filter.label}
+          </button>
+        );
+      })
+    }
+  </div>
+</nav>
+
+<script is:inline>
+  (function () {
+    function ready(fn) {
+      if (document.readyState !== 'loading') fn();
+      else document.addEventListener('DOMContentLoaded', fn);
+    }
+
+    ready(function () {
+      var filterBar = document.querySelector('nav[aria-label="内容筛选"]');
+      var grid = document.querySelector('[data-card-grid]');
+      if (!filterBar || !grid) return;
+
+      var buttons = filterBar.querySelectorAll('button[data-filter]');
+      var cards = grid.querySelectorAll('[data-categories]');
+
+      var activeClasses = ['bg-[#f4f3f0]', 'text-[var(--color-100)]'];
+      var inactiveClasses = [
+        'border',
+        'border-[var(--border)]',
+        'bg-[var(--color-900)]',
+        'text-[var(--color-500)]',
+      ];
+
+      function setActive(button) {
+        buttons.forEach(function (btn) {
+          btn.setAttribute('aria-pressed', 'false');
+          btn.classList.remove.apply(btn.classList, activeClasses);
+          btn.classList.add.apply(btn.classList, inactiveClasses);
+        });
+        button.setAttribute('aria-pressed', 'true');
+        button.classList.remove.apply(button.classList, inactiveClasses);
+        button.classList.add.apply(button.classList, activeClasses);
+      }
+
+      function applyFilter(filterId) {
+        cards.forEach(function (card) {
+          var visible = false;
+          if (filterId === 'all') {
+            visible = true;
+          } else if (filterId === 'featured') {
+            visible = card.getAttribute('data-featured') === 'true';
+          } else {
+            var categories = (card.getAttribute('data-categories') || '').split(',');
+            visible = categories.indexOf(filterId) !== -1;
+          }
+          card.style.display = visible ? '' : 'none';
+        });
+      }
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          setActive(btn);
+          applyFilter(btn.getAttribute('data-filter'));
+        });
+      });
+
+      var urlFilter = new URLSearchParams(window.location.search).get('filter');
+      var initialFilter = urlFilter || filterBar.getAttribute('data-active-filter') || 'all';
+      var initialButton = filterBar.querySelector('button[data-filter="' + initialFilter + '"]');
+      if (initialButton && initialFilter !== 'all') {
+        setActive(initialButton);
+        applyFilter(initialFilter);
+      }
+    });
+  })();
+</script>
