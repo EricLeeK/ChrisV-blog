@@ -1,0 +1,17 @@
+---
+import { site } from '../data/site';
+
+const year = new Date().getFullYear();
+const displayYear = site.startYear && site.startYear < year ? `${site.startYear}–${year}` : String(year);
+---
+
+<footer class="w-full border-t border-[var(--border)] py-10 text-center">
+  <div class="container-inner flex flex-col items-center gap-2">
+    <p class="text-sm text-[var(--color-0)]">
+      © {displayYear} {site.title}. All Rights Reserved.
+    </p>
+    <p class="text-xs text-[var(--color-500)]">
+      Built with Astro + Tailwind CSS · Designed after Ricoui
+    </p>
+  </div>
+</footer>

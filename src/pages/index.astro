@@ -1,12 +1,19 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import { site } from '../data/site';
 ---
 
 <BaseLayout>
-  <main class="container-inner py-16">
-    <h1 class="text-display font-display text-balance">ChrisV</h1>
-    <p class="mt-6 text-lg text-ink-muted max-w-2xl">
-      A researcher who builds, designs, and writes about intelligent systems.
-    </p>
-  </main>
+  <SectionHeader
+    tag={site.tag}
+    title={site.heroTitle}
+    description={site.subtitle}
+    showSocial
+  />
+
+  <section class="container-inner py-16">
+    <h2 class="text-xl font-display">Latest</h2>
+    <p class="mt-4 text-ink-muted">Content coming soon.</p>
+  </section>
 </BaseLayout>

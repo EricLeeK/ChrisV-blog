@@ -1,0 +1,81 @@
+---
+import { site, nav } from '../data/site';
+import ThemeToggle from './ThemeToggle.astro';
+
+const pathname = Astro.url.pathname;
+
+function isActive(href: string): boolean {
+  if (href === '/') {
+    return pathname === '/';
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+---
+
+<header
+  class="sticky top-0 z-50 w-full border-b border-[var(--border)]"
+  style="backdrop-filter: saturate(300%) blur(5px); background: rgba(25, 25, 27, 0.65);"
+>
+  <nav
+    class="flex items-center justify-between gap-4 container-inner py-4"
+    aria-label="Main navigation"
+  >
+    <a
+      href="/"
+      class="flex shrink-0 items-center gap-3 text-[var(--color-0)] transition-opacity hover:opacity-80"
+      aria-label={`${site.title} home`}
+    >
+      <img
+        src="/images/avatar.svg"
+        alt=""
+        width="36"
+        height="36"
+        class="rounded-full"
+        aria-hidden="true"
+      />
+      <span class="text-lg font-medium tracking-tight">{site.title}</span>
+      <span
+        class="hidden sm:inline-flex items-center rounded-full border border-[var(--border)] px-2 py-0.5 text-[11px] font-medium text-[var(--color-yellow)]"
+      >
+        Magic Click!
+      </span>
+    </a>
+
+    <div class="flex items-center gap-2 sm:gap-4">
+      <ul class="flex items-center gap-1 overflow-x-auto pr-2 scrollbar-hide">
+        {
+          nav.map((item) => {
+            const active = isActive(item.href);
+            return (
+              <li class="shrink-0">
+                <a
+                  href={item.href}
+                  class:list={[
+                    'block whitespace-nowrap rounded-md px-2 py-1.5 text-sm transition-colors sm:px-3',
+                    active
+                      ? 'font-semibold text-[var(--color-0)]'
+                      : 'text-[var(--color-300)] hover:text-[var(--color-0)]',
+                  ]}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+      <ThemeToggle />
+    </div>
+  </nav>
+</header>
+
+<style>
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+</style>
