@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import { social } from '../data/site';
+
+const isExternal = (href: string) => href.startsWith('http');
+---
+
+<BaseLayout title="关于 — ChrisV">
+  <SectionHeader tag="ABOUT" title="关于我" />
+
+  <section class="container-inner pb-16">
+    <div class="flex flex-col items-center gap-6 text-center">
+      <div
+        class="flex h-24 w-24 items-center justify-center rounded-full bg-[var(--color-200)] text-2xl text-[var(--color-0)]"
+        aria-label="ChrisV avatar"
+      >
+        CV
+      </div>
+      <h2 class="text-2xl text-[var(--color-0)]">ChrisV</h2>
+      <p
+        class="max-w-[480px] text-base leading-relaxed text-[var(--color-300)] text-balance"
+      >
+        Current geotechnical engineering graduate student with a side passion for
+        AI, agents, NLP, and design.
+      </p>
+    </div>
+
+    <div class="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        social.map((item) => (
+          <a
+            href={item.href}
+            target={isExternal(item.href) ? '_blank' : undefined}
+            rel={isExternal(item.href) ? 'noopener noreferrer' : undefined}
+            class="group flex items-center gap-4 rounded-[6px] border border-[var(--border)] bg-[var(--card-color)] p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-main)]"
+          >
+            <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-200)] text-sm text-[var(--color-0)]">
+              {item.label[0]}
+            </span>
+            <span class="text-base text-[var(--color-0)] group-hover:text-[var(--color-primary-main)]">
+              {item.label}
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

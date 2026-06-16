@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import FilterBar from '../components/FilterBar.astro';
+import CardGrid from '../components/CardGrid.astro';
+import { getCollection } from 'astro:content';
+
+const articles = (await getCollection('articles')).sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+---
+
+<BaseLayout title="文章 — ChrisV">
+  <SectionHeader
+    tag="ARTICLES"
+    title="文章"
+    description="Writing about AI agents, NLP, design, art, and research."
+  />
+
+  <section class="container-inner pb-16">
+    <FilterBar active="ai" />
+    <CardGrid items={articles} />
+  </section>
+</BaseLayout>
