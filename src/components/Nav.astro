@@ -1,6 +1,7 @@
 ---
 import { site, nav } from '../data/site';
 import ThemeToggle from './ThemeToggle.astro';
+import MagicSwitch from './MagicSwitch.astro';
 
 const pathname = Astro.url.pathname;
 
@@ -34,11 +35,7 @@ function isActive(href: string): boolean {
         aria-hidden="true"
       />
       <span class="text-lg font-medium tracking-tight">{site.title}</span>
-      <span
-        class="hidden sm:inline-flex items-center rounded-full border border-[var(--border)] px-2 py-0.5 text-[11px] font-medium text-[var(--color-yellow)]"
-      >
-        Magic Click!
-      </span>
+      <MagicSwitch />
     </a>
 
     <div class="flex items-center gap-2 sm:gap-4">
