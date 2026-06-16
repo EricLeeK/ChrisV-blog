@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Inconsolata:wght@400;700&family=Noto+Sans+SC:wght@400;500;700&family=Special+Elite&display=swap');
 @import url('https://chinese-fonts-cdn.deno.dev/packages/hwmct/dist/汇文明朝体/result.css');
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
   /* Colors — dark mode default */

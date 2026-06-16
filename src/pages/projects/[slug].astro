@@ -23,7 +23,7 @@ const { Content } = await render(post);
     <header class="mb-12 text-center">
       <div class="mb-4 text-xs uppercase tracking-widest" style="font-family: var(--font-tag); color: var(--color-500);">{post.data.category}</div>
       <h1 class="mb-4 text-4xl font-semibold" style="color: var(--color-0);">{post.data.title}</h1>
-      <time class="text-sm" style="color: var(--color-500);">{post.data.date.toLocaleDateString('zh-CN')}</time>
+      <time class="text-sm" datetime={post.data.date.toISOString()} style="color: var(--color-500);">{post.data.date.toLocaleDateString('zh-CN')}</time>
       {post.data.description && (
         <p class="mx-auto mt-6 max-w-2xl text-base leading-relaxed" style="color: var(--color-300);">{post.data.description}</p>
       )}
@@ -33,10 +33,10 @@ const { Content } = await render(post);
           target="_blank"
           rel="noopener noreferrer"
           class="mt-6 inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-medium transition-colors"
-          style="background-color: var(--color-accent); color: var(--color-canvas);"
+          style="background-color: var(--color-yellow); color: var(--color-100);"
         >
           <span>访问项目</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
         </a>
       )}
     </header>
