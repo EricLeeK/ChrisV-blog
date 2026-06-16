@@ -8,7 +8,7 @@ type AnyCollectionEntry = CollectionEntry<keyof typeof collections>;
 type CardItem =
   | AnyCollectionEntry
   | {
-      slug: string;
+      id: string;
       collection: string;
       data: {
         title: string;
@@ -59,7 +59,7 @@ function hasCardData(item: CardItem): item is CardItem & {
           category={data.category}
           tags={data.tags}
           featured={data.featured}
-          href={`/${item.collection}/${item.slug}`}
+          href={`/${item.collection}/${item.id}`}
           cover={data.cover}
         />
       );

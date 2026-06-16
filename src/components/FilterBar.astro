@@ -11,6 +11,7 @@ const { active = 'all' } = Astro.props;
 <nav
   class="flex w-full items-center justify-center overflow-x-auto py-4"
   aria-label="内容筛选"
+  data-active-filter={active}
 >
   <div class="flex items-center gap-2 px-4">
     {
@@ -93,6 +94,13 @@ const { active = 'all' } = Astro.props;
           applyFilter(btn.getAttribute('data-filter'));
         });
       });
+
+      var initialFilter = filterBar.getAttribute('data-active-filter') || 'all';
+      var initialButton = filterBar.querySelector('button[data-filter="' + initialFilter + '"]');
+      if (initialButton && initialFilter !== 'all') {
+        setActive(initialButton);
+        applyFilter(initialFilter);
+      }
     });
   })();
 </script>

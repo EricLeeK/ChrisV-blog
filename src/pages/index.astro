@@ -13,7 +13,7 @@ const projects = await getCollection('projects');
 const randomNotes = await getCollection('random');
 
 type CardLike = {
-  slug: string;
+  id: string;
   collection: string;
   data: {
     title: string;
@@ -27,7 +27,7 @@ type CardLike = {
 };
 
 const randomCards: CardLike[] = randomNotes.map((entry) => ({
-  slug: entry.slug,
+  id: entry.id,
   collection: 'random',
   data: {
     title: '碎碎念',
