@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1200">
+  <title>AI特论 · 逆行之美学｜第2块：文化现状与亚类型兴起</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f7f5ef;
+      --paper-dark: #efeadd;
+      --ink: #2b2319;
+      --ink-light: #5c4f3d;
+      --accent: #b85c38;
+      --accent-soft: #d67c5a;
+      --highlight: #f4e4bc;
+      --margin-blue: #3d6a8e;
+      --margin-green: #5a7a5a;
+      --video-marker: #8b2635;
+      --grid: rgba(43, 35, 25, 0.04);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; background: #e8e4d9; }
+
+    body {
+      margin: 0;
+      font-family: "Noto Serif SC", "Noto Serif", "STSong", "SimSun", serif;
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1.85;
+      background: var(--paper);
+      background-image:
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+        linear-gradient(var(--grid) 1px, transparent 1px);
+      background-size: 32px 32px;
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 64px 72px 120px;
+      background: var(--paper);
+      box-shadow: 0 0 48px rgba(43, 35, 25, 0.08), 0 6px 16px rgba(43, 35, 25, 0.06);
+      min-height: 100vh;
+    }
+
+    .binding {
+      position: fixed;
+      left: 50%;
+      top: 0;
+      transform: translateX(-520px);
+      width: 3px;
+      height: 100vh;
+      background: linear-gradient(180deg, transparent 0%, rgba(184, 92, 56, 0.15) 8%, rgba(184, 92, 56, 0.15) 92%, transparent 100%);
+      pointer-events: none;
+    }
+
+    header {
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 32px;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .course-label {
+      display: inline-block;
+      font-family: "Caveat", cursive;
+      font-size: 1.3rem;
+      color: var(--accent);
+      transform: rotate(-2deg);
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      line-height: 1.2;
+      margin: 0 0 16px 0;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .meta {
+      font-size: 0.95rem;
+      color: var(--ink-light);
+      display: flex;
+      gap: 20px;
+    }
+
+    .meta span { border-bottom: 1px dotted var(--ink-light); padding-bottom: 2px; }
+
+    .timeline {
+      position: relative;
+      margin: 40px 0 48px;
+      padding: 24px 0 8px;
+    }
+
+    .timeline-track {
+      display: flex;
+      gap: 12px;
+      min-width: max-content;
+      padding-bottom: 12px;
+      position: relative;
+      padding-top: 24px;
+      overflow-x: auto;
+    }
+
+    .timeline-track::before {
+      content: "";
+      position: absolute;
+      top: 50px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, var(--ink-light) 0, var(--ink-light) 6px, transparent 6px, transparent 12px);
+      opacity: 0.25;
+    }
+
+    .timeline-half-label {
+      font-family: "Caveat", cursive;
+      font-size: 1.15rem;
+      color: var(--ink-light);
+      margin: 16px 0 4px 4px;
+    }
+
+    .block-node {
+      position: relative;
+      flex: 0 0 auto;
+      width: 140px;
+      padding: 12px;
+      border: 1.5px solid var(--ink-light);
+      border-radius: 2px;
+      background: var(--paper);
+      text-decoration: none;
+      color: var(--ink);
+      transition: all 0.25s ease;
+    }
+
+    .block-node.active {
+      border-color: var(--accent);
+      background: #fffbf5;
+      box-shadow: 3px 3px 0 var(--accent-soft);
+    }
+
+    .block-node:not(.active):not(.disabled):hover {
+      transform: translateY(-3px);
+      border-color: var(--accent-soft);
+    }
+
+    .block-node.disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      border-style: dashed;
+    }
+
+    .block-node::before {
+      content: "";
+      position: absolute;
+      top: -7px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--paper);
+      border: 2px solid var(--ink-light);
+    }
+
+    .block-node.active::before { border-color: var(--accent); background: var(--accent); }
+
+    .block-node .num {
+      font-family: "Caveat", cursive;
+      font-size: 1.1rem;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .block-node .title {
+      font-size: 0.82rem;
+      line-height: 1.4;
+      margin-top: 6px;
+      font-weight: 600;
+    }
+
+    h2 {
+      font-size: 1.55rem;
+      margin: 56px 0 20px;
+      padding-left: 16px;
+      border-left: 5px solid var(--accent);
+      line-height: 1.35;
+    }
+
+    h3 {
+      font-size: 1.22rem;
+      margin: 36px 0 14px;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    h4 {
+      font-size: 1.05rem;
+      margin: 28px 0 10px;
+      color: var(--margin-blue);
+      font-weight: 700;
+    }
+
+    p { margin: 0 0 18px; }
+
+    ul, ol { margin: 0 0 18px; padding-left: 28px; }
+    li { margin-bottom: 8px; }
+
+    details {
+      margin: 18px 0;
+      border: 1px solid rgba(43, 35, 25, 0.15);
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.35);
+      overflow: hidden;
+    }
+
+    summary {
+      padding: 18px 22px;
+      cursor: pointer;
+      font-weight: 600;
+      list-style: none;
+      position: relative;
+      transition: background 0.2s ease;
+    }
+
+    summary:hover { background: rgba(184, 92, 56, 0.06); }
+    summary::-webkit-details-marker { display: none; }
+
+    summary::after {
+      content: "+";
+      position: absolute;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: "Noto Serif", serif;
+      font-size: 1.4rem;
+      color: var(--accent);
+      transition: transform 0.25s ease;
+    }
+
+    details[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+
+    .detail-body { padding: 6px 22px 24px; }
+
+    .sidenote {
+      float: right;
+      clear: right;
+      width: 190px;
+      margin: 0 -220px 18px 28px;
+      padding: 12px 16px;
+      font-family: "Caveat", cursive;
+      font-size: 1.15rem;
+      line-height: 1.45;
+      color: var(--margin-blue);
+      border-top: 2px solid var(--margin-blue);
+      background: rgba(61, 106, 142, 0.05);
+      transform: rotate(1deg);
+    }
+
+    .figure {
+      margin: 32px 0;
+      padding: 24px;
+      background: #fffef9;
+      border: 1px solid rgba(43, 35, 25, 0.12);
+      border-radius: 3px;
+      text-align: center;
+    }
+
+    .figure-caption {
+      font-size: 0.9rem;
+      color: var(--ink-light);
+      margin-top: 14px;
+      font-style: italic;
+    }
+
+    svg { max-width: 100%; height: auto; }
+
+    .callout {
+      margin: 28px 0;
+      padding: 20px 24px;
+      background: var(--highlight);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 3px 3px 0;
+    }
+
+    .callout strong { color: var(--accent); }
+
+    .term {
+      display: inline-block;
+      padding: 1px 8px;
+      background: rgba(184, 92, 56, 0.12);
+      border-radius: 2px;
+      font-size: 0.92em;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 0 2px;
+    }
+
+    .video-marker {
+      display: inline-block;
+      padding: 3px 10px;
+      background: rgba(139, 38, 53, 0.08);
+      border-left: 3px solid var(--video-marker);
+      border-radius: 0 3px 3px 0;
+      color: var(--video-marker);
+      font-size: 0.92em;
+      font-weight: 600;
+      margin: 12px 0;
+    }
+
+    .video-marker::before {
+      content: "▶ ";
+      font-size: 0.85em;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin: 28px 0;
+    }
+
+    .compare-card {
+      padding: 20px;
+      background: #fffef9;
+      border: 1.5px solid rgba(43, 35, 25, 0.12);
+      border-radius: 3px;
+    }
+
+    .compare-card h4 {
+      margin: 0 0 12px;
+      font-size: 1.05rem;
+      color: var(--accent);
+    }
+
+    .nav-bottom {
+      margin-top: 72px;
+      padding-top: 36px;
+      border-top: 2px solid var(--ink);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-btn {
+      display: inline-block;
+      padding: 12px 24px;
+      border: 1.5px solid var(--ink);
+      color: var(--ink);
+      text-decoration: none;
+      border-radius: 2px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover { background: var(--ink); color: var(--paper); }
+    .nav-btn.disabled { opacity: 0.4; pointer-events: none; border-style: dashed; }
+
+    .progress {
+      font-family: "Caveat", cursive;
+      font-size: 1.3rem;
+      color: var(--accent);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      margin: 28px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="binding"></div>
+  <div class="page">
+    <header>
+      <div class="course-label">Lecture Guide · Block 2 / 10</div>
+      <h1>AI特论 第1回「逆行之美学」<br><small>久保田晃弘 · 前半</small></h1>
+      <div class="meta">
+        <span>来源：Tama Design University 讲座</span>
+        <span>当前块：第 2 块 · 文化现状与亚类型兴起</span>
+      </div>
+    </header>
+
+    <section class="intro">
+      <p>讲完技术现状后，久保田把话题转向<strong>文化现状</strong>。他的核心判断是：近一两年，随着生成式AI性能越来越高，一种反向的文化张力也在增强——人们开始质疑"数字完美性"，重新发现物质的、粗糙的、不完美的、非人类视角的东西。这一整块就是要理解这种张力从何而来、有哪些具体表现。</p>
+    </section>
+
+    <nav class="timeline" aria-label="讲座内容分块">
+      <div class="timeline-half-label">前半</div>
+      <div class="timeline-track">
+        <a href="lecture-guide-block1.html" class="block-node">
+          <div class="num">Block 1</div>
+          <div class="title">LLM现状与技术爆发</div>
+        </a>
+        <div class="block-node active">
+          <div class="num">Block 2</div>
+          <div class="title">文化现状与亚类型兴起</div>
+        </div>
+        <a href="lecture-guide-block3.html" class="block-node">
+          <div class="num">Block 3</div>
+          <div class="title">预测媒体与图像进化</div>
+        </a>
+        <a href="lecture-guide-block4.html" class="block-node">
+          <div class="num">Block 4</div>
+          <div class="title">软件化与数据库艺术</div>
+        </a>
+        <a href="lecture-guide-block5.html" class="block-node">
+          <div class="num">Block 5</div>
+          <div class="title">浪漫主义与作者性</div>
+        </a>
+        <a href="lecture-guide-block6.html" class="block-node">
+          <div class="num">Block 6</div>
+          <div class="title">Techne 与三种立场</div>
+        </a>
+      </div>
+      <div class="timeline-half-label">後半</div>
+      <div class="timeline-track">
+        <a href="lecture-guide-block7.html" class="block-node">
+          <div class="num">Block 7</div>
+          <div class="title">从概念艺术到广告文化</div>
+        </a>
+        <a href="lecture-guide-block8.html" class="block-node">
+          <div class="num">Block 8</div>
+          <div class="title">塑料树论争（上）</div>
+        </a>
+        <a href="lecture-guide-block9.html" class="block-node">
+          <div class="num">Block 9</div>
+          <div class="title">塑料树的美学反驳与 AI 类比</div>
+        </a>
+        <a href="lecture-guide-block10.html" class="block-node">
+          <div class="num">Block 10</div>
+          <div class="title">生成式AI的存在论与收尾</div>
+        </a>
+      </div>
+    </nav>
+
+    <h2>三、文化现状：数字完美主义的终结与触觉反叛</h2>
+
+    <p>久保田先从技术现状切换到一个更宏观的观察：<strong>近一两年，对"数字完美性"提出质疑的人越来越多。</strong>他把这股趋势概括为"数字完美主义的终结"。</p>
+
+    <details open>
+      <summary>为什么性能越好，反而越让人不安？</summary>
+      <div class="detail-body">
+        <p>生成式AI性能提升，确实让很多事情变得可能。但久保田指出一个副作用：<strong>性能越好，越容易只产出"极其漂亮"或"过于好懂"的东西。</strong>"好懂"在这里意味着光滑、没有摩擦感、没有阻力。这种"引っかからない"（毫不阻滞）的产物，在图像、音乐、文本等各种媒介中都越来越多。</p>
+        <p>这里有一个持久的冲突：<strong>技术人员认为这是好事，但从事文化思考与创作的人觉得并非如此。</strong>这种张力在任何时代都存在——技术追求的是效率、清晰、可重复；文化创作往往更珍视意外、粗糙、 handmade 的质感、以及让人停顿一下的东西。</p>
+        <div class="sidenote">光滑 = 没有阻力 = 没有思考的空间。</div>
+        <div class="callout">
+          <strong>核心论点：</strong>数字完美主义的终结，不是说技术退步了，而是说技术的"光滑"已经达到让人反感的程度，文化开始寻找新的质感来对抗它。
+        </div>
+      </div>
+    </details>
+
+    <details open>
+      <summary>Tactile Rebellion：触觉的反叛</summary>
+      <div class="detail-body">
+        <p>久保田提到一个正在兴起的动向，他把它译作 <span class="term">Tactile Rebellion（触觉反叛）</span>。这是一个有点反叛精神的运动：事物的<strong>质感、温度、触觉般的感受</strong>重新变得重要。不是把东西做得更光滑，而是重新拥抱粗糙、物质性、手工痕迹。</p>
+        <p>他举了几个视觉例子：</p>
+        <div class="video-marker">视频画面：墨的晕染效果</div>
+        <div class="video-marker">视频画面：纸张撕裂的质感</div>
+        <p>他说，正因为生成式AI的性能提高了，这些反而得以被"重新发现"。这也可以理解为一种"反面教材"——AI 越能生成完美的东西，人们越意识到不完美、有物质痕迹的东西有价值。这种动向在近两三年确实越来越显眼。</p>
+        <div class="video-marker">建议观看视频画面：此处展示了饮料品牌标志的视觉案例——该品牌在软木塞上培养细菌，记录其生长过程，并根据繁殖状态手工构建视觉语言</div>
+        <p>久保田还提到，看了一些相关网站后，他发现 <span class="term">"侘寂"（wabi-sabi）</span> 这样的词又开始在各地被重新使用。他说，如果有人说侘寂要成为主流，作为日本人可能觉得有点不可思议，但这确实是一种被重新提出的美学方向。与之并行的另一种动向是：把光滑感推向更光滑的极致。也就是说，不是所有人都反叛，也有人在把 AI 的光滑性做到极致。</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>具体的文化动向有哪些？</summary>
+      <div class="detail-body">
+        <p>久保田列举了多个代表性的文化动向，它们共同构成对数字完美主义的反弹：</p>
+
+        <h4>1. Tactile Rebellion（触觉反叛）</h4>
+        <p>前面已经讲过，核心是重新重视物质的质感、温度、手工痕迹。它不是单一风格，而是一种态度：反对过度光滑，反对没有身体的数字产物。</p>
+
+        <h4>2. Post-AI Expressionism（后 AI 表现主义）</h4>
+        <p>具体做法通常是：先用 AI 生成图像，再用手绘添加东西。人不是完全拒绝 AI，而是在 AI 生成的基础上重新引入手工操作。久保田提到，最近连日本画专业的学生也开始用 Illustrator 辅助创作日本画了——这可能与这类动向联动。</p>
+
+        <h4>3. Technical Mono 的复兴</h4>
+        <p>这是一种更往前追溯的复兴。Technical Mono 是 1990 年代到 21 世纪初备受关注的一种表达方式：极简、以点、直线、极细的线条、精密的物件为核心。它在当时是一种"数字时代的精密美学"，现在又重新被提起。</p>
+
+        <h4>4. Surveillance Aesthetic（监控美学）</h4>
+        <p>这是指监控摄像头那种低分辨率、比特粗糙、或高度压缩后的质感美学。时隔约 20 年，这种美学又在复兴。久保田强调，这种现象与刚才说的技术进步是同步发生的：技术越高清、越完美，低清的、压缩的、非人类视角的图像反而越有价值。</p>
+
+        <div class="callout">
+          <strong>一句话串起来：</strong>这些动向的共同点是——它们都在技术光滑性的反面寻找价值：物质的、粗糙的、手工的、非人类视角的、低清的。
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary>技术与文化的紧张关系</summary>
+      <div class="detail-body">
+        <p>久保田把这些现象归纳为<strong>技术与文化之间的紧张关系</strong>。他认为这种关系在近一两年以好的意义上增强了。什么意思呢？</p>
+        <p>不是技术开发者在说"这项技术会改变世界"然后大家就盲从；而是因为技术被开发出来了，才有人说"等一下，也许不是这样"。这种紧张关系正在逐渐增强。久保田个人认为这是好事——它让技术不至于单方面地定义一切，也让文化层面能够提出反题。</p>
+      </div>
+    </details>
+
+    <h2>四、詹姆斯·布里德尔的「美学」与亚类型的兴起</h2>
+
+    <p>接下来久保田把这些文化动向放到一个更长的思想脉络里。他引入了英国作家、艺术家 <span class="term">James Bridle</span> 在 2011 年提出的概念，通常被称为 <span class="term">New Aesthetic（新美学）</span>。</p>
+
+    <details open>
+      <summary>James Bridle 的"新美学"是什么？</summary>
+      <div class="detail-body">
+        <p>久保田解释说，这种美学关心的是这样一种视觉经验：<strong>说不清是人工的还是有机的，两者混杂在一起。</strong>或者是<strong>非人类视角</strong>的图像——不是人眼看到的样子，而是机器看到的样子。</p>
+
+        <div class="video-marker">视频画面：监控摄像头图像，特别是低分辨率红外摄像头拍摄的、高度压缩的画面质感</div>
+        <div class="video-marker">视频画面：人工卫星拍摄的地球照片，因 RGB 分别拍摄而合成时产生错位，快速移动物体出现 RGB 色彩偏移</div>
+
+        <p>久保田详细解释了卫星照片的例子：卫星用 RGB 三个分别的相机拍摄，即使同时拍摄也会稍有错位。后期合成时，飞得快的物体会出现 RGB 错位。也就是说，这是<strong>人工卫星看到的地球的样子</strong>，不是人类肉眼看到的样子。把这种非人类视角揭示出来、展示出来，就是 New Aesthetic 的关注点之一。</p>
+
+        <p>他认为，从这一时期开始，数字技术、网络等是如何影响我们看待世界的方式，这种批判性视角大大扩展了。刚才讲的文化层面的动向，也可以理解为这种视角在生成式AI时代的进一步加速和扩散。</p>
+      </div>
+    </details>
+
+    <details open>
+      <summary>两条反向运动：侘寂 vs. 极致光滑</summary>
+      <div class="detail-body">
+        <p>久保田指出一个有趣的张力：<strong>同时存在两条反向运动。</strong></p>
+        <p>一条是前面说的侘寂、自然物、手绘的错位——重新发现不完美和物质性。另一条则是：<strong>把 AI 的光滑感进一步推向极致</strong>，看它到底能滑到什么地步。这种反向运动不是矛盾，而是同一时期文化张力的两端。</p>
+        <p>他特别提到，这几年<strong>亚类型（subgenre）</strong>爆炸式涌现。音乐领域最明显：不再是笼统的爵士或摇滚，而是在 Vaporwave 之后出现了大量极小的类型。文化状况已经变成了这样。</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>亚类型案例：Frutiger Aero 与 Neo-Aero</summary>
+      <div class="detail-body">
+        <p>久保田举了一个叫 <span class="term">Frutiger Aero</span> 的亚类型来说明这种"把某种风格推到极致"的现象。</p>
+
+        <p>Frutiger Aero 与 <span class="term">Skeuomorphism（拟物化）</span> 有关。它怀念的是早期苹果界面那种图像风格——<strong>如何在显示器上照片级真实地表现现实世界</strong>：把水表现得像水，表现冷饮的露珠感，表现玻璃和金属的质感。这类视觉曾在某段时期非常流行。</p>
+
+        <div class="video-marker">建议观看视频画面：Frutiger Aero 风格的视觉案例（可能与早期苹果界面、拟物化设计、生态感图像有关）</div>
+
+        <p>如果把这种风格推到极致，就会诞生 Frutiger Aero 这种亚类型。它的特点是：<strong>人工的，却又生态的（ecological）</strong>，包含各种矛盾要素的表达形式。之后还出现了 <span class="term">Neo-Aero</span> 的复兴。</p>
+
+        <div class="video-marker">视频画面：用 Gemini 生成的 Neo-Aero 风格图像样本</div>
+
+        <p>久保田评论这些图像时用了"kitschy"这个词，说它有一种媚俗感。他联想到 Susan Sontag 所说的 <span class="term">Camp</span> 概念——那种恶趣味与美学的边界状态。这种边界状态也开始有人欣赏。</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>AI 生成中"质感"的再现性</summary>
+      <div class="detail-body">
+        <p>久保田指出，AI 生成图像中<strong>质感的再现性已经大大提高</strong>。早期 AI 图像全是 CG 感，但现在纸的质感、布的质感等，至少在图像层面已经可以表现。</p>
+        <p>这产生了两种方向：</p>
+        <ul>
+          <li><strong>直接活用生成式AI</strong>：既然 AI 能模拟真实质感，那就用它来做更逼真的东西。</li>
+          <li><strong>反弹：正因为是人工的，才更需要人文的、情感的东西</strong>：技术越能模拟物质，人们越强调真正的人类情感和手工价值。</li>
+        </ul>
+        <p>这两种方向同时存在，互相拉扯。</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>未来的想象：光明、矛盾与 ChatGPT Image 2.0</summary>
+      <div class="detail-body">
+        <p>久保田还谈到了关于"未来"的想象。他说，<strong>光明的未来、越来越丰饶的未来</strong>，以当今世界局势来看，恐怕越来越难相信。于是反过来思考：我们能想象的光明未来是什么样的？</p>
+        <p>他提到刚才说的那种"不自然却美丽"的、只有模拟才有的质感——这些恐怕是<strong>矛盾地（ambivalently）</strong>交织在一起的。在技术文化的紧张关系中，各种纠葛和思考实验正在诞生。他认为这在文化上是极其重要且有益的。</p>
+
+        <div class="video-marker">视频画面：ChatGPT 发布的 Image 2.0 样本（发布时间为讲座前一天或前两天）</div>
+
+        <p>久保田最后提到，ChatGPT 刚刚发布了 <span class="term">Image 2.0</span>。从样本来看，技术方也在强调：我们不仅能做 CG 感的东西，还能做出刚才说的物质性、污渍、错位等效果。所以技术和文化的紧张感正在进一步交错，彼此拉扯、相互影响。</p>
+        <div class="callout">
+          <strong>本块收尾：</strong>如果这就是 2025、2026 年左右的现状，那么今天的讲座就要从这里开始一点点回溯过去。
+        </div>
+      </div>
+    </details>
+
+    <div class="callout">
+      <strong>第二块总结：</strong>文化层面正在发生对"数字完美主义"的反弹。Tactile Rebellion、Post-AI Expressionism、监控美学、Frutiger Aero 等动向，共同构成技术与文化之间的紧张关系。James Bridle 的 New Aesthetic 把这种张力追溯到 2011 年：数字技术让我们开始关注"非人类视角"的图像。而当前生成式AI的"质感再现性"提升，让这种张力变得更加剧烈——既能直接活用 AI 模拟物质，也有人更强烈地反弹回手工和情感。
+    </div>
+
+    <nav class="nav-bottom">
+      <a href="lecture-guide-block1.html" class="nav-btn">← 上一块</a>
+      <span class="progress">Block 2 of 10</span>
+      <a href="lecture-guide-block3.html" class="nav-btn">下一块 →</a>
+    </nav>
+  </div>
+
+  <script>
+    document.querySelectorAll('details').forEach(detail => {
+      detail.addEventListener('toggle', () => {
+        detail.style.background = detail.open ? 'rgba(255, 255, 255, 0.55)' : 'rgba(255, 255, 255, 0.35)';
+      });
+    });
+  </script>
+</body>
+</html>

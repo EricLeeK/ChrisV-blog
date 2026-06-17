@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1200">
+  <title>AI特论 · 逆行之美学｜第6块：Techne 与三种立场</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f7f5ef;
+      --ink: #2b2319;
+      --ink-light: #5c4f3d;
+      --accent: #b85c38;
+      --accent-soft: #d67c5a;
+      --highlight: #f4e4bc;
+      --margin-blue: #3d6a8e;
+      --video-marker: #8b2635;
+      --grid: rgba(43, 35, 25, 0.04);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: #e8e4d9; }
+    body {
+      margin: 0;
+      font-family: "Noto Serif SC", "Noto Serif", "STSong", "SimSun", serif;
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1.85;
+      background: var(--paper);
+      background-image: linear-gradient(90deg, var(--grid) 1px, transparent 1px), linear-gradient(var(--grid) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .page {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 64px 72px 120px;
+      background: var(--paper);
+      box-shadow: 0 0 48px rgba(43, 35, 25, 0.08), 0 6px 16px rgba(43, 35, 25, 0.06);
+      min-height: 100vh;
+    }
+    .binding {
+      position: fixed;
+      left: 50%;
+      top: 0;
+      transform: translateX(-520px);
+      width: 3px;
+      height: 100vh;
+      background: linear-gradient(180deg, transparent 0%, rgba(184, 92, 56, 0.15) 8%, rgba(184, 92, 56, 0.15) 92%, transparent 100%);
+      pointer-events: none;
+    }
+    header {
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 32px;
+      margin-bottom: 40px;
+    }
+    .course-label {
+      display: inline-block;
+      font-family: "Caveat", cursive;
+      font-size: 1.3rem;
+      color: var(--accent);
+      transform: rotate(-2deg);
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 2.8rem;
+      line-height: 1.2;
+      margin: 0 0 16px 0;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .meta {
+      font-size: 0.95rem;
+      color: var(--ink-light);
+      display: flex;
+      gap: 20px;
+    }
+    .meta span { border-bottom: 1px dotted var(--ink-light); padding-bottom: 2px; }
+
+    .timeline {
+      position: relative;
+      margin: 40px 0 48px;
+      padding: 24px 0 8px;
+    }
+    .timeline-track {
+      display: flex;
+      gap: 12px;
+      min-width: max-content;
+      padding-bottom: 12px;
+      position: relative;
+      padding-top: 24px;
+      overflow-x: auto;
+    }
+    .timeline-track::before {
+      content: "";
+      position: absolute;
+      top: 50px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, var(--ink-light) 0, var(--ink-light) 6px, transparent 6px, transparent 12px);
+      opacity: 0.25;
+    }
+    .timeline-half-label {
+      font-family: "Caveat", cursive;
+      font-size: 1.15rem;
+      color: var(--ink-light);
+      margin: 16px 0 4px 4px;
+    }
+    .block-node {
+      position: relative;
+      flex: 0 0 auto;
+      width: 140px;
+      padding: 12px;
+      border: 1.5px solid var(--ink-light);
+      border-radius: 2px;
+      background: var(--paper);
+      text-decoration: none;
+      color: var(--ink);
+      transition: all 0.25s ease;
+    }
+    .block-node.active { border-color: var(--accent); background: #fffbf5; box-shadow: 3px 3px 0 var(--accent-soft); }
+    .block-node:not(.active):not(.disabled):hover { transform: translateY(-3px); border-color: var(--accent-soft); }
+    .block-node.disabled { opacity: 0.45; cursor: not-allowed; border-style: dashed; }
+    .block-node::before {
+      content: "";
+      position: absolute;
+      top: -7px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--paper);
+      border: 2px solid var(--ink-light);
+    }
+    .block-node.active::before { border-color: var(--accent); background: var(--accent); }
+    .block-node .num { font-family: "Caveat", cursive; font-size: 1.1rem; color: var(--accent); line-height: 1; }
+    .block-node .title { font-size: 0.82rem; line-height: 1.4; margin-top: 6px; font-weight: 600; }
+
+    h2 { font-size: 1.55rem; margin: 56px 0 20px; padding-left: 16px; border-left: 5px solid var(--accent); line-height: 1.35; }
+    h3 { font-size: 1.22rem; margin: 36px 0 14px; color: var(--ink); font-weight: 700; }
+    h4 { font-size: 1.05rem; margin: 28px 0 10px; color: var(--margin-blue); font-weight: 700; }
+    p { margin: 0 0 18px; }
+    ul, ol { margin: 0 0 18px; padding-left: 28px; }
+    li { margin-bottom: 8px; }
+
+    details {
+      margin: 18px 0;
+      border: 1px solid rgba(43, 35, 25, 0.15);
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.35);
+      overflow: hidden;
+    }
+    summary {
+      padding: 18px 22px;
+      cursor: pointer;
+      font-weight: 600;
+      list-style: none;
+      position: relative;
+      transition: background 0.2s ease;
+    }
+    summary:hover { background: rgba(184, 92, 56, 0.06); }
+    summary::-webkit-details-marker { display: none; }
+    summary::after {
+      content: "+";
+      position: absolute;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: "Noto Serif", serif;
+      font-size: 1.4rem;
+      color: var(--accent);
+      transition: transform 0.25s ease;
+    }
+    details[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+    .detail-body { padding: 6px 22px 24px; }
+
+    .sidenote {
+      float: right;
+      clear: right;
+      width: 190px;
+      margin: 0 -220px 18px 28px;
+      padding: 12px 16px;
+      font-family: "Caveat", cursive;
+      font-size: 1.15rem;
+      line-height: 1.45;
+      color: var(--margin-blue);
+      border-top: 2px solid var(--margin-blue);
+      background: rgba(61, 106, 142, 0.05);
+      transform: rotate(1deg);
+    }
+
+    .figure {
+      margin: 32px 0;
+      padding: 24px;
+      background: #fffef9;
+      border: 1px solid rgba(43, 35, 25, 0.12);
+      border-radius: 3px;
+      text-align: center;
+    }
+    .figure-caption { font-size: 0.9rem; color: var(--ink-light); margin-top: 14px; font-style: italic; }
+    svg { max-width: 100%; height: auto; }
+
+    .callout {
+      margin: 28px 0;
+      padding: 20px 24px;
+      background: var(--highlight);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 3px 3px 0;
+    }
+    .callout strong { color: var(--accent); }
+    .term {
+      display: inline-block;
+      padding: 1px 8px;
+      background: rgba(184, 92, 56, 0.12);
+      border-radius: 2px;
+      font-size: 0.92em;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 0 2px;
+    }
+    .video-marker {
+      display: inline-block;
+      padding: 3px 10px;
+      background: rgba(139, 38, 53, 0.08);
+      border-left: 3px solid var(--video-marker);
+      border-radius: 0 3px 3px 0;
+      color: var(--video-marker);
+      font-size: 0.92em;
+      font-weight: 600;
+      margin: 12px 0;
+    }
+    .video-marker::before { content: "▶ "; font-size: 0.85em; }
+
+    .three-positions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 28px 0;
+    }
+    .position-card {
+      padding: 20px;
+      background: #fffef9;
+      border: 1.5px solid rgba(43, 35, 25, 0.12);
+      border-radius: 3px;
+    }
+    .position-card h4 { margin: 0 0 12px; font-size: 1rem; color: var(--accent); }
+
+    .nav-bottom {
+      margin-top: 72px;
+      padding-top: 36px;
+      border-top: 2px solid var(--ink);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-btn {
+      display: inline-block;
+      padding: 12px 24px;
+      border: 1.5px solid var(--ink);
+      color: var(--ink);
+      text-decoration: none;
+      border-radius: 2px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .nav-btn:hover { background: var(--ink); color: var(--paper); }
+    .nav-btn.disabled { opacity: 0.4; pointer-events: none; border-style: dashed; }
+    .progress { font-family: "Caveat", cursive; font-size: 1.3rem; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="binding"></div>
+  <div class="page">
+    <header>
+      <div class="course-label">Lecture Guide · Block 6 / 10</div>
+      <h1>AI特论 第1回「逆行之美学」<br><small>久保田晃弘 · 前半</small></h1>
+      <div class="meta">
+        <span>来源：Tama Design University 讲座</span>
+        <span>当前块：第 6 块 · Techne 与三种立场</span>
+      </div>
+    </header>
+
+    <section class="intro">
+      <p>这是讲座前半的最后一块。久保田继续逆行至最深处——<strong>古希腊的 Techne/Ars</strong>。他发现，在那个时代，"创造""作者""作品"这些概念与今天完全不同。基于这个更长历史视野，他最后提出思考生成式AI美学的<strong>三种立场</strong>，并以休息结束。</p>
+    </section>
+
+    <nav class="timeline" aria-label="讲座内容分块">
+      <div class="timeline-half-label">前半</div>
+      <div class="timeline-track">
+        <a href="lecture-guide-block1.html" class="block-node"><div class="num">Block 1</div><div class="title">LLM现状与技术爆发</div></a>
+        <a href="lecture-guide-block2.html" class="block-node"><div class="num">Block 2</div><div class="title">文化现状与亚类型兴起</div></a>
+        <a href="lecture-guide-block3.html" class="block-node"><div class="num">Block 3</div><div class="title">预测媒体与图像进化</div></a>
+        <a href="lecture-guide-block4.html" class="block-node"><div class="num">Block 4</div><div class="title">软件化与数据库艺术</div></a>
+        <a href="lecture-guide-block5.html" class="block-node"><div class="num">Block 5</div><div class="title">浪漫主义与作者性</div></a>
+        <div class="block-node active"><div class="num">Block 6</div><div class="title">Techne 与三种立场</div></div>
+      </div>
+      <div class="timeline-half-label">後半</div>
+      <div class="timeline-track">
+        <a href="lecture-guide-block7.html" class="block-node"><div class="num">Block 7</div><div class="title">从概念艺术到广告文化</div></a>
+        <div class="block-node disabled"><div class="num">Block 8</div><div class="title">塑料树论争（上）</div></div>
+        <div class="block-node disabled"><div class="num">Block 9</div><div class="title">塑料树的美学反驳与 AI 类比</div></div>
+        <div class="block-node disabled"><div class="num">Block 10</div><div class="title">生成式AI的存在论与收尾</div></div>
+      </div>
+    </nav>
+
+    <h2>十六、古希腊的 Techne 与非创造传统</h2>
+
+    <p>久保田说，常说媒体艺术时，说 Art & Technology 也可以。很多人说 <span class="term">Techne</span> 与 <span class="term">Ars</span> 出发点相同。那 Techne、Ars 诞生的古希腊呢？</p>
+
+    <details open>
+      <summary>Techne = Ars：一切习得技能的统称</summary>
+      <div class="detail-body">
+        <p>当时的 Techne 被译成拉丁语就是 Ars，所以 <strong>Techne = Ars</strong>。Techne 这个词涵盖的范围非常广：医学、建筑、音乐、绘画、雕刻、辩论术、料理、政治等——<strong>一切习得技能与技术</strong>。</p>
+        <p>当时从事这些的人，<strong>并非表达自我内在</strong>，而是遵循规则正确模仿、产出熟练成果，这才是珍贵的。这样想的话，比如"创造性"这一个概念，或者"作品""作者"这些概念，其实随时代大幅变化。所以使用、思考这些概念时，必须思考：<strong>这是怎样的经纬、哪个时代的创造性？哪个时代的作者性？</strong></p>
+      </div>
+    </details>
+
+    <details open>
+      <summary>脱离浪漫主义价值观的古罗马器物</summary>
+      <div class="detail-body">
+        <p>久保田举了一个他喜欢的例子：<strong>古罗马那个作者不明的空心十二面体</strong>。这东西脱离了浪漫主义价值观，也让人觉得有趣、厉害。</p>
+
+        <div class="video-marker">视频画面：古罗马作者不明的空心十二面体（hollow dodecahedron）</div>
+
+        <p>他说，曾经 <span class="term">Creation（创造）</span>不是人类做的事，只有神才能创造。所以凡·艾克的根特祭坛画用了极其精湛的技术在做什么？<strong>在再现世界。</strong></p>
+
+        <div class="video-marker">视频画面：凡·艾克（Jan van Eyck）的《根特祭坛画》（Ghent Altarpiece）</div>
+
+        <p>基于这样的时代理解，生成式AI做的事，从那个时代价值观看，会显得很不一样。当时认为<strong>人类从虚无中无法创造任何东西</strong>。有世界存在，从中模仿；或者有神存在，试图再现那样的世界——如果这是使命，那么现在基于数据集生成各种图像的时代的产物，究竟是什么？这样思考，就能以另一种眼光看待。</p>
+      </div>
+    </details>
+
+    <h2>十七、总结：思考生成式AI的三个立场与历史的救赎</h2>
+
+    <p>久保田开始收束前面所有的历史线索。他说，常说没有约束就无法想象。被说"什么都可以做"，反而不如确定某种指南或框架后更能做出东西。所以<strong>框架是什么、指南是什么，必须不断批判性验证。</strong></p>
+
+    <details open>
+      <summary>"逆行美学"的完整历史地图</summary>
+      <div class="detail-body">
+        <p>今天我们看了这种"逆行美学"，再从头梳理：</p>
+        <ol>
+          <li><strong>古代的 Techne/Ars</strong>：技能、模仿、遵循规则。</li>
+          <li><strong>中世纪的非创造</strong>：创造是神的事，人类只能再现。</li>
+          <li><strong>巴洛克时代</strong>：作者是工房或组织的一部分，归属的工匠；创造性是习字式地精炼传统型与素材的技术，用现在的话说就是进行借用与戏仿；版权问题也是国家出版垄断许可与审查工具，是出版特权。</li>
+          <li><strong>浪漫主义以后</strong>：发明了艺术家的内在。</li>
+          <li><strong>20 世纪现代主义</strong>：推进了分解与再重构。</li>
+          <li><strong>概念艺术</strong>：思想机械化运动发生。</li>
+          <li><strong>计算机出现</strong>：软件与数据库的逻辑。</li>
+          <li><strong>生成式AI登场</strong>。</li>
+        </ol>
+        <p>回顾这个流程，他觉得很重要。</p>
+      </div>
+    </details>
+
+    <details open>
+      <summary>为什么生成式AI有趣？剥洋葱</summary>
+      <div class="detail-body">
+        <p>久保田说，他个人觉得生成式AI有趣，并非如常说的"AI 会破坏什么""夺走人类工作"——这完全偏离靶心——而是因为<strong>这种技术的出现，让我们可以一层层剥去美术与艺术积累下来的意义层，重新检讨。</strong></p>
+        <p>只看当下，多重地、像洋葱一样，历史上各种意义层不断堆积。一层层剥去后，究竟还剩什么？也许像洋葱一样什么都不剩，但<strong>剥去这件事本身很重要。</strong></p>
+      </div>
+    </details>
+
+    <details>
+      <summary>"作者之死"可能真正发生</summary>
+      <div class="detail-body">
+        <p>从这里开始，久保田引入了两个重要的理论资源：</p>
+
+        <h4>罗兰·巴特的"作者之死"</h4>
+        <p>他提到罗兰·巴特说的 <span class="term">"作者之死"</span>。这始终停留在哲学提示上，在现实社会中完全没能发挥作用，但<strong>生成式AI也许能让这个概念真正发挥作用</strong>。</p>
+        <p>什么意思？作者性被 <span class="term">remix（混音）</span>。不只是某个单独个人创作了某物，而是软件、数据库等多元的——用现在的话说 <span class="term">agency（能动性）</span>、分散的 agency——这类东西在现实中发生了。</p>
+
+        <h4>本雅明的拱廊计划（Arcades Project）</h4>
+        <p>还有本雅明想做的、未能完成的 <span class="term">拱廊计划（Arcades Project）</span>——大量按主题整理的引文卡片、目录、数据库，以此 <span class="term">montage（蒙太奇）</span>来建构意义。这也是本雅明未能完成的"柑橘计划"——也许现在能真正以功能形态实现。</p>
+
+        <div class="video-marker">视频画面：本雅明的拱廊计划相关图片或手稿（引文卡片、笔记）</div>
+
+        <p>在被呈现这样的过去的同时，柑橘般中断的东西也许能继续，作为媒体他非常感兴趣。</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>救赎历史：对抗遗忘的文化继承</summary>
+      <div class="detail-body">
+        <p>久保田说，从这个意义上讲，刚才讲了档案。近几年的事我们很快遗忘——是被促使遗忘。商业世界不断如此。20 世纪资本主义社会就是让人买不需要的东西，所以必须不断膨胀欲望。为了膨胀欲望，要把东西做旧，好东西用久了就麻烦了，希望大家不断换新。</p>
+        <p>在<strong>遗忘被极度推崇的文化</strong>蔓延之中，如何救赎历史、使其重新鲜活，他觉得很重要。换个说法，这恐怕是最宽容、最温柔的——这么说也可以吧——<strong>文化继承</strong>。思考这些，对思考生成式AI的美学很重要。</p>
+      </div>
+    </details>
+
+    <h2>十八、最后：三种路径与休息</h2>
+
+    <p>最后不是总结，但久保田提出，在思考生成式AI美学基础时，重要的是：<strong>把浪漫主义式的事实上个人创造之心先解体一下。</strong>另外，再往前回溯，刚才说的 Techne——即回归既有片段的高度 remix——能做什么？</p>
+
+    <details open>
+      <summary>思考生成式AI的三种立场</summary>
+      <div class="detail-body">
+        <p>这只是他觉得有趣的说法。更广泛地说，大概始终存在三种立场：</p>
+
+        <div class="three-positions">
+          <div class="position-card">
+            <h4>① 人类中心主义</h4>
+            <p>即便如此，有意图的自然人很重要，AI 只是工具，作者性归属于人类。想坚持这一点的人。</p>
+          </div>
+          <div class="position-card">
+            <h4>② 后结构主义立场</h4>
+            <p>作者性 remix、数据库 remix 意味着作者消失，作品成为文化片段的统计性再建构物。</p>
+          </div>
+          <div class="position-card">
+            <h4>③ 技术万物有灵论</h4>
+            <p>过度评价生成式AI，认为 AI 有意图、能建构人工主体性、成为自律 agency。</p>
+          </div>
+        </div>
+
+        <p>久保田说第三种大概就是常说的<strong>皮格马利翁效应（Pygmalion Effect）</strong>：希腊神话中雕刻家皮格马利翁爱上了自己雕刻的理想女性像。就是现在《阿凡达》里发生的事吧。对无魂机械，人类投射理想之魂与意图，深情移入——大概就是这种感觉。</p>
+
+        <div class="video-marker">视频画面：希腊神话皮格马利翁雕像或《阿凡达》相关画面，用来说明人类对无生命体投射灵魂的倾向</div>
+
+        <p>他说，虽然存在几种路径，但情况大概就是这样。然后讲座到这里告一段落，休息一下。</p>
+      </div>
+    </details>
+
+    <div class="callout">
+      <strong>第六块总结（讲座前半总收束）：</strong>久保田最后把历史线索推到古希腊的 Techne/Ars。在那个时代，Techne 是一切习得技能，人类不"创造"而只"模仿/再现"，创造是神的事。这个概念史让我们意识到：我们今天争论的"作者性""创造性"并非永恒概念，而是 18 世纪浪漫主义的发明。生成式AI有趣之处，在于它能让我们一层层剥去艺术史上积累的意义层，像剥洋葱一样重新检讨。罗兰·巴特的"作者之死"、本雅明的"拱廊计划"，或许都能在生成式AI时代真正发挥作用。最后，他提出三种立场：人类中心主义、后结构主义、技术万物有灵论——没有简单答案，但思考问题的基础已经被重新打开了。
+    </div>
+
+    <nav class="nav-bottom">
+      <a href="lecture-guide-block5.html" class="nav-btn">← 上一块</a>
+      <span class="progress">Block 6 of 10</span>
+      <a href="lecture-guide-block7.html" class="nav-btn">下一块 →</a>
+    </nav>
+  </div>
+
+  <script>
+    document.querySelectorAll('details').forEach(detail => {
+      detail.addEventListener('toggle', () => {
+        detail.style.background = detail.open ? 'rgba(255, 255, 255, 0.55)' : 'rgba(255, 255, 255, 0.35)';
+      });
+    });
+  </script>
+</body>
+</html>

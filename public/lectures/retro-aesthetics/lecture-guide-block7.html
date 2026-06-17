@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1200">
+  <title>AI特论 · 逆行之美学｜第7块：从概念艺术到广告文化</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f7f5ef;
+      --ink: #2b2319;
+      --ink-light: #5c4f3d;
+      --accent: #b85c38;
+      --accent-soft: #d67c5a;
+      --highlight: #f4e4bc;
+      --margin-blue: #3d6a8e;
+      --video-marker: #8b2635;
+      --grid: rgba(43, 35, 25, 0.04);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: #e8e4d9; }
+    body {
+      margin: 0;
+      font-family: "Noto Serif SC", "Noto Serif", "STSong", "SimSun", serif;
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1.85;
+      background: var(--paper);
+      background-image: linear-gradient(90deg, var(--grid) 1px, transparent 1px), linear-gradient(var(--grid) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .page {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 64px 72px 120px;
+      background: var(--paper);
+      box-shadow: 0 0 48px rgba(43, 35, 25, 0.08), 0 6px 16px rgba(43, 35, 25, 0.06);
+      min-height: 100vh;
+    }
+    .binding {
+      position: fixed;
+      left: 50%;
+      top: 0;
+      transform: translateX(-520px);
+      width: 3px;
+      height: 100vh;
+      background: linear-gradient(180deg, transparent 0%, rgba(184, 92, 56, 0.15) 8%, rgba(184, 92, 56, 0.15) 92%, transparent 100%);
+      pointer-events: none;
+    }
+    header {
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 32px;
+      margin-bottom: 40px;
+    }
+    .course-label {
+      display: inline-block;
+      font-family: "Caveat", cursive;
+      font-size: 1.3rem;
+      color: var(--accent);
+      transform: rotate(-2deg);
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 2.8rem;
+      line-height: 1.2;
+      margin: 0 0 16px 0;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .meta {
+      font-size: 0.95rem;
+      color: var(--ink-light);
+      display: flex;
+      gap: 20px;
+    }
+    .meta span { border-bottom: 1px dotted var(--ink-light); padding-bottom: 2px; }
+
+    .timeline {
+      position: relative;
+      margin: 40px 0 48px;
+      padding: 24px 0 8px;
+    }
+    .timeline-track {
+      display: flex;
+      gap: 12px;
+      min-width: max-content;
+      padding-bottom: 12px;
+      position: relative;
+      padding-top: 24px;
+      overflow-x: auto;
+    }
+    .timeline-track::before {
+      content: "";
+      position: absolute;
+      top: 50px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, var(--ink-light) 0, var(--ink-light) 6px, transparent 6px, transparent 12px);
+      opacity: 0.25;
+    }
+    .timeline-half-label {
+      font-family: "Caveat", cursive;
+      font-size: 1.15rem;
+      color: var(--ink-light);
+      margin: 16px 0 4px 4px;
+    }
+    .block-node {
+      position: relative;
+      flex: 0 0 auto;
+      width: 140px;
+      padding: 12px;
+      border: 1.5px solid var(--ink-light);
+      border-radius: 2px;
+      background: var(--paper);
+      text-decoration: none;
+      color: var(--ink);
+      transition: all 0.25s ease;
+    }
+    .block-node.active { border-color: var(--accent); background: #fffbf5; box-shadow: 3px 3px 0 var(--accent-soft); }
+    .block-node:not(.active):not(.disabled):hover { transform: translateY(-3px); border-color: var(--accent-soft); }
+    .block-node.disabled { opacity: 0.45; cursor: not-allowed; border-style: dashed; }
+    .block-node::before {
+      content: "";
+      position: absolute;
+      top: -7px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--paper);
+      border: 2px solid var(--ink-light);
+    }
+    .block-node.active::before { border-color: var(--accent); background: var(--accent); }
+    .block-node .num { font-family: "Caveat", cursive; font-size: 1.1rem; color: var(--accent); line-height: 1; }
+    .block-node .title { font-size: 0.82rem; line-height: 1.4; margin-top: 6px; font-weight: 600; }
+
+    h2 { font-size: 1.55rem; margin: 56px 0 20px; padding-left: 16px; border-left: 5px solid var(--accent); line-height: 1.35; }
+    h3 { font-size: 1.22rem; margin: 36px 0 14px; color: var(--ink); font-weight: 700; }
+    h4 { font-size: 1.05rem; margin: 28px 0 10px; color: var(--margin-blue); font-weight: 700; }
+    p { margin: 0 0 18px; }
+    ul, ol { margin: 0 0 18px; padding-left: 28px; }
+    li { margin-bottom: 8px; }
+
+    details {
+      margin: 18px 0;
+      border: 1px solid rgba(43, 35, 25, 0.15);
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.35);
+      overflow: hidden;
+    }
+    summary {
+      padding: 18px 22px;
+      cursor: pointer;
+      font-weight: 600;
+      list-style: none;
+      position: relative;
+      transition: background 0.2s ease;
+    }
+    summary:hover { background: rgba(184, 92, 56, 0.06); }
+    summary::-webkit-details-marker { display: none; }
+    summary::after {
+      content: "+";
+      position: absolute;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: "Noto Serif", serif;
+      font-size: 1.4rem;
+      color: var(--accent);
+      transition: transform 0.25s ease;
+    }
+    details[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+    .detail-body { padding: 6px 22px 24px; }
+
+    .sidenote {
+      float: right;
+      clear: right;
+      width: 190px;
+      margin: 0 -220px 18px 28px;
+      padding: 12px 16px;
+      font-family: "Caveat", cursive;
+      font-size: 1.15rem;
+      line-height: 1.45;
+      color: var(--margin-blue);
+      border-top: 2px solid var(--margin-blue);
+      background: rgba(61, 106, 142, 0.05);
+      transform: rotate(1deg);
+    }
+
+    .figure {
+      margin: 32px 0;
+      padding: 24px;
+      background: #fffef9;
+      border: 1px solid rgba(43, 35, 25, 0.12);
+      border-radius: 3px;
+      text-align: center;
+    }
+    .figure-caption { font-size: 0.9rem; color: var(--ink-light); margin-top: 14px; font-style: italic; }
+    svg { max-width: 100%; height: auto; }
+
+    .callout {
+      margin: 28px 0;
+      padding: 20px 24px;
+      background: var(--highlight);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 3px 3px 0;
+    }
+    .callout strong { color: var(--accent); }
+    .term {
+      display: inline-block;
+      padding: 1px 8px;
+      background: rgba(184, 92, 56, 0.12);
+      border-radius: 2px;
+      font-size: 0.92em;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 0 2px;
+    }
+    .video-marker {
+      display: inline-block;
+      padding: 3px 10px;
+      background: rgba(139, 38, 53, 0.08);
+      border-left: 3px solid var(--video-marker);
+      border-radius: 0 3px 3px 0;
+      color: var(--video-marker);
+      font-size: 0.92em;
+      font-weight: 600;
+      margin: 12px 0;
+    }
+    .video-marker::before { content: "▶ "; font-size: 0.85em; }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin: 28px 0;
+    }
+    .compare-card { padding: 20px; background: #fffef9; border: 1.5px solid rgba(43, 35, 25, 0.12); border-radius: 3px; }
+    .compare-card h4 { margin: 0 0 12px; font-size: 1.05rem; color: var(--accent); }
+
+    .nav-bottom {
+      margin-top: 72px;
+      padding-top: 36px;
+      border-top: 2px solid var(--ink);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-btn {
+      display: inline-block;
+      padding: 12px 24px;
+      border: 1.5px solid var(--ink);
+      color: var(--ink);
+      text-decoration: none;
+      border-radius: 2px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .nav-btn:hover { background: var(--ink); color: var(--paper); }
+    .nav-btn.disabled { opacity: 0.4; pointer-events: none; border-style: dashed; }
+    .progress { font-family: "Caveat", cursive; font-size: 1.3rem; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="binding"></div>
+  <div class="page">
+    <header>
+      <div class="course-label">Lecture Guide · Block 7 / 10</div>
+      <h1>AI特论 第1回「逆行之美学」<br><small>久保田晃弘 · 後半</small></h1>
+      <div class="meta">
+        <span>来源：Tama Design University 讲座</span>
+        <span>当前块：第 7 块 · 从概念艺术到广告文化</span>
+      </div>
+    </header>
+
+    <section class="intro">
+      <p>后半场以对话形式展开。久保田先回应了前半场的线索，把话题引向更具体的问题：<strong>在美术/设计的语境中，20 世纪是"解体与建构"的时代</strong>。他从索尔·勒维特的概念艺术出发，谈到数字化浪潮（Negroponte《Being Digital》），然后追问近代教育体系中的"自我"观念，最后揭示<strong>广告文化</strong>如何与浪漫主义合谋，塑造了我们今天对生成式AI的焦虑。</p>
+    </section>
+
+    <nav class="timeline" aria-label="讲座内容分块">
+      <div class="timeline-half-label">前半</div>
+      <div class="timeline-track">
+        <a href="lecture-guide-block1.html" class="block-node"><div class="num">Block 1</div><div class="title">LLM现状与技术爆发</div></a>
+        <a href="lecture-guide-block2.html" class="block-node"><div class="num">Block 2</div><div class="title">文化现状与亚类型兴起</div></a>
+        <a href="lecture-guide-block3.html" class="block-node"><div class="num">Block 3</div><div class="title">预测媒体与图像进化</div></a>
+        <a href="lecture-guide-block4.html" class="block-node"><div class="num">Block 4</div><div class="title">软件化与数据库艺术</div></a>
+        <a href="lecture-guide-block5.html" class="block-node"><div class="num">Block 5</div><div class="title">浪漫主义与作者性</div></a>
+        <a href="lecture-guide-block6.html" class="block-node"><div class="num">Block 6</div><div class="title">Techne 与三种立场</div></a>
+      </div>
+      <div class="timeline-half-label">後半</div>
+      <div class="timeline-track">
+        <div class="block-node active"><div class="num">Block 7</div><div class="title">从概念艺术到广告文化</div></div>
+        <a href="lecture-guide-block8.html" class="block-node"><div class="num">Block 8</div><div class="title">塑料树论争（上）</div></a>
+        <div class="block-node disabled"><div class="num">Block 9</div><div class="title">塑料树的美学反驳与 AI 类比</div></div>
+        <div class="block-node disabled"><div class="num">Block 10</div><div class="title">生成式AI的存在论与收尾</div></div>
+      </div>
+    </nav>
+
+    <h2>十九、概念艺术再论：如果 1967 年有数字艺术</h2>
+
+    <p>后半场一开始，一位对话者（可能是主持人或另一位教师）回应了前半场关于 20 世纪"解体与建构"的论述。他提到：<strong>20 世纪确实经历了达达、杜尚、包豪斯、索尔·勒维特等重要运动。</strong>索尔·勒维特不仅留下了大量绘画（drawing），其实践还包括实物、甚至用植物创作——比如在花坛里种花，让四季开花这件事本身成为作品。</p>
+
+    <details open>
+      <summary>设计图即作品</summary>
+      <div class="detail-body">
+        <p>这位对话者强调，对勒维特而言，<strong>重要的不是花儿在绽放，而是设计图</strong>。所以当作品进入美术馆时，设计图本身就可以作为作品展出。也就是说，勒维特的艺术核心在于"思想/指令"，而不在于手工执行出来的物质结果。</p>
+
+        <div class="video-marker">视频画面：索尔·勒维特（Sol LeWitt）的概念艺术作品示例，包括墙面绘画（Wall Drawing）指令、以及用植物/花坛实现的作品图片</div>
+
+        <p>由此他做了一个假想：<strong>如果 1967 年勒维特写《概念艺术断章》时已经有数字艺术，那他毫无疑问也会创作媒体艺术作品。</strong>但现实中，数字化是后来才推进的。其中最具象征性的书之一，就是 Negroponte 的 <em>Being Digital</em>。</p>
+      </div>
+    </details>
+
+    <details open>
+      <summary>Negroponte《Being Digital》：从原子到比特</summary>
+      <div class="detail-body">
+        <p>这本书 1995 年在美国 MIT 出版，1996 年由 ASCII 的西和彦先生翻译成日文，迅速在日本传播。它的口号是<strong>"从原子到比特"</strong>，以非常 catchy（ catchy ）的方式把"数字"这个概念带入了大众视野。</p>
+
+        <div class="video-marker">视频画面：Nicholas Negroponte《Being Digital》（日本版标题可能为《デジタル化する》）的封面</div>
+
+        <p>对话者说，这本书也深深影响了他自己。随着这本书的传播，<strong>实际接触数字媒体的人数开始压倒性地增加</strong>，时代状况由此改变。但与此同时，我们的教育方式、我们接受的"自我"观念，是否还跟得上这种变化？</p>
+      </div>
+    </details>
+
+    <h2>二十、近代教育与"自我"：我们被什么观念塑造？</h2>
+
+    <p>对话者接着问久保田：在这个"作者性已经 remix 化"的时代，美术大学应该如何教授"概念"？久保田回答说，今天这场讲座之所以做大而化之的历史梳理，正是因为<strong>生成式AI牵连出太多问题，值得重新思考</strong>。但他认为，这些问题并不只是生成式AI的问题，而是与近代诸多系统有关，其中他认为最关键的原因之一是<strong>广告文化</strong>。</p>
+
+    <details open>
+      <summary>笛卡尔与近代自我</summary>
+      <div class="detail-body">
+        <p>久保田先回到更基础的问题：我们接受的教育结构。他提到<strong>笛卡尔</strong>在 17 世纪提出"我思故我在"，把"自我"变成核心问题。日本近代化过程中也诞生了<strong>夏目漱石</strong>等作家，以及"近代自我"这样的说法。</p>
+        <p>明治维新以后，日本人都接受了非常近代化的教育，但这种教育的深层结构是否真的改变了？我们可能仍然被某种价值观念所塑造，而面对生成式AI时，这些被内化的观念会自动跳出来影响我们的判断。</p>
+      </div>
+    </details>
+
+    <details open>
+      <summary>广告文化：内面欲望的市场化</summary>
+      <div class="detail-body">
+        <p>久保田说，刚才提到浪漫主义在艺术中重新发现"内面"，但另一个更大的力量是<strong>宣传/广告</strong>。他引入了 <span class="term">Edward Bernays（爱德华·伯奈斯）</span>——被称为"广告之父"，也是弗洛伊德的侄子。Bernays 把宣传（propaganda）的概念运用到商业中，开创了现代广告。</p>
+
+        <div class="video-marker">视频画面：Edward Bernays 的肖像或《Propaganda》一书封面</div>
+
+        <p>Bernays 的核心洞察是：</p>
+        <ol>
+          <li>机械化使物品可以大量生产。</li>
+          <li>但人类并不需要无限多的物品，所以如果生产量超过需求，企业就会陷入困境。</li>
+          <li>因此，必须让人产生"想要"的欲望。</li>
+          <li>市场不在物理环境中，而在<strong>人类的内面</strong>。</li>
+        </ol>
+        <p>久保田引用洛克的说法：人类对物品的需求本来有自然节制，不会无限索取。但大规模生产打破了这个平衡。<strong>为了消化过剩产能，广告必须不断扩大人的欲望。</strong>他说："即使冰箱还能用，只要让你觉得新款更好，你就会扔掉旧的买新的。"这就是广告作为 propaganda 的功能。</p>
+        <div class="sidenote">广告把市场从外部世界搬进你的内心。</div>
+        <p>久保田认为，这种"重视内面"的倾向，<strong>也助长了浪漫主义</strong>。我们被训练去相信：真正的价值来自个人内心的欲望、情感和独特性。而当生成式AI出现时，我们会本能地问"它有灵魂吗？""它有内在吗？"——这些问题本身就是广告文化和浪漫主义共同塑造出来的。</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>设计教育的困境：我们培养的是加担者吗？</summary>
+      <div class="detail-body">
+        <p>对话者尖锐地指出：多摩美术大学的平面设计学科、统合设计学科，实际上很多学生毕业后会进入正是助长这种消费主义/广告文化的企业。他问久保田如何看待大学教育在这种结构中的位置。</p>
+        <p>久保田回答说，今天的讲座只是"入口"，他并不是说自己的说法就是正确的。<strong>最重要的是让大家意识到存在多种问题系。</strong>他说，最危险的是对新技术不加怀疑、囫囵吞枣地觉得"好厉害"就全盘接受。他希望学生能学会"从背面看、从侧面看、怀疑"。</p>
+        <div class="callout">
+          <strong>久保田的教育观：</strong>怀疑是大学教育的核心。我们讲课时也可能在"大撒谎"，但正是这些值得怀疑的谎言，能激发学生去自己思考、自己质疑、自己创造。多摩美术大学 1998 年成立时，他就在思考：如何建立不是"跟师父学"而是"自己思考、自己质疑、自己制作"的教育课程。
+        </div>
+      </div>
+    </details>
+
+    <h2>二十一、人的脆弱性：没有固定版本的"人"</h2>
+
+    <p>久保田进一步说，<strong>所谓"人性"其实是脆弱的。</strong>并不存在一个永恒、坚固、完整的"个人"。这种东西很危险——现在也有人想利用这一点，把人推向全体主义。</p>
+
+    <details open>
+      <summary>价值观的时代性</summary>
+      <div class="detail-body">
+        <p>他说，所有事情都取决于使用方法，可以走向很多方向：</p>
+        <ul>
+          <li>可以主张"个人不重要，服从体制"。</li>
+          <li>也可以主张"个人更加分化、更加自由"。</li>
+        </ul>
+        <p>但这些方向都是脆弱的，因为<strong>价值观会随着时代变化</strong>，没有什么"最终版"或"决定版"。所以我们要始终保持意识，思考"怎样比较好"，如果觉得有意义就提出异议，如果觉得正确就行动。他希望大家把今天的内容当作一种"目录"（catalog）来看待。</p>
+      </div>
+    </details>
+
+    <details open>
+      <summary>面对技术的"黑箱"：保持谦逊</summary>
+      <div class="detail-body">
+      <p>对话者接着问：像智能手机广告里展示的那样，相机其实早已变成软件，但这个过程对普通人来说是"黑箱"。如果要教学生面对这种黑箱，应该怎么做？</p>
+        <p>久保田回答说，<strong>最大的黑箱其实是自然和人本身。</strong>一个人不可能完全理解自然。我们看富士山觉得美，但这不等于我们理解了自然。因此，面对技术时最重要的是<strong>谦逊</strong>。</p>
+        <p>他批评那种轻率的说法："生成式AI不过是预测下一个词罢了。"这忽视了一个事实——为了把技术做好，无数人进行了几十年试错。AI 从 1950 年代提出，经过 60、70 年代，到今天才有这样的成果，不是突然冒出来的。现在只是<strong>某个设计阈值被跨越，设计空间爆发式扩大</strong>，整个行业还在混沌中，远未收敛。</p>
+        <div class="sidenote">不懂，才是正常的。</div>
+        <p>他说，承认"不懂"很重要。最危险的是让事情显得"容易懂"、让人产生"我懂了"的错觉。大学应该教会学生如何与"不懂"的世界对峙。技术背后的试错历史、它的可变性、它还不是决定版——这些才是需要了解的关键。</p>
+      </div>
+    </details>
+
+    <div class="callout">
+      <strong>第七块总结：</strong>后半场从概念艺术的延伸开始：勒维特的核心是"设计图/指令"而非物质执行，如果 1967 年有数字技术，他肯定会做媒体艺术。Negroponte《Being Digital》推动了数字文化的普及，但我们接受的近代教育——从笛卡尔的"自我"到浪漫主义——让我们面对 AI 时本能地追问"灵魂""内在"。久保田指出，这种"内面转向"与广告文化共谋：Bernays 为了消化过剩产能，把市场搬进人的内心，不断扩大欲望。因此，今天对生成式AI的许多焦虑，其实根植于一套近代发明出来的"自我"观念。面对技术黑箱，我们需要的是谦逊和怀疑，而不是简单接受或简单否定。
+    </div>
+
+    <nav class="nav-bottom">
+      <a href="lecture-guide-block6.html" class="nav-btn">← 上一块</a>
+      <span class="progress">Block 7 of 10</span>
+      <a href="lecture-guide-block8.html" class="nav-btn">下一块 →</a>
+    </nav>
+  </div>
+
+  <script>
+    document.querySelectorAll('details').forEach(detail => {
+      detail.addEventListener('toggle', () => {
+        detail.style.background = detail.open ? 'rgba(255, 255, 255, 0.55)' : 'rgba(255, 255, 255, 0.35)';
+      });
+    });
+  </script>
+</body>
+</html>

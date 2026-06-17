@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1200">
+  <title>AI特论 · 逆行之美学｜第4块：软件化与数据库艺术</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f7f5ef;
+      --ink: #2b2319;
+      --ink-light: #5c4f3d;
+      --accent: #b85c38;
+      --accent-soft: #d67c5a;
+      --highlight: #f4e4bc;
+      --margin-blue: #3d6a8e;
+      --video-marker: #8b2635;
+      --grid: rgba(43, 35, 25, 0.04);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: #e8e4d9; }
+    body {
+      margin: 0;
+      font-family: "Noto Serif SC", "Noto Serif", "STSong", "SimSun", serif;
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1.85;
+      background: var(--paper);
+      background-image: linear-gradient(90deg, var(--grid) 1px, transparent 1px), linear-gradient(var(--grid) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .page {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 64px 72px 120px;
+      background: var(--paper);
+      box-shadow: 0 0 48px rgba(43, 35, 25, 0.08), 0 6px 16px rgba(43, 35, 25, 0.06);
+      min-height: 100vh;
+    }
+    .binding {
+      position: fixed;
+      left: 50%;
+      top: 0;
+      transform: translateX(-520px);
+      width: 3px;
+      height: 100vh;
+      background: linear-gradient(180deg, transparent 0%, rgba(184, 92, 56, 0.15) 8%, rgba(184, 92, 56, 0.15) 92%, transparent 100%);
+      pointer-events: none;
+    }
+    header {
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 32px;
+      margin-bottom: 40px;
+    }
+    .course-label {
+      display: inline-block;
+      font-family: "Caveat", cursive;
+      font-size: 1.3rem;
+      color: var(--accent);
+      transform: rotate(-2deg);
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 2.8rem;
+      line-height: 1.2;
+      margin: 0 0 16px 0;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .meta {
+      font-size: 0.95rem;
+      color: var(--ink-light);
+      display: flex;
+      gap: 20px;
+    }
+    .meta span { border-bottom: 1px dotted var(--ink-light); padding-bottom: 2px; }
+
+    .timeline {
+      position: relative;
+      margin: 40px 0 48px;
+      padding: 24px 0 8px;
+    }
+    .timeline-track {
+      display: flex;
+      gap: 12px;
+      min-width: max-content;
+      padding-bottom: 12px;
+      position: relative;
+      padding-top: 24px;
+      overflow-x: auto;
+    }
+    .timeline-track::before {
+      content: "";
+      position: absolute;
+      top: 50px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, var(--ink-light) 0, var(--ink-light) 6px, transparent 6px, transparent 12px);
+      opacity: 0.25;
+    }
+    .timeline-half-label {
+      font-family: "Caveat", cursive;
+      font-size: 1.15rem;
+      color: var(--ink-light);
+      margin: 16px 0 4px 4px;
+    }
+    .block-node {
+      position: relative;
+      flex: 0 0 auto;
+      width: 140px;
+      padding: 12px;
+      border: 1.5px solid var(--ink-light);
+      border-radius: 2px;
+      background: var(--paper);
+      text-decoration: none;
+      color: var(--ink);
+      transition: all 0.25s ease;
+    }
+    .block-node.active { border-color: var(--accent); background: #fffbf5; box-shadow: 3px 3px 0 var(--accent-soft); }
+    .block-node:not(.active):not(.disabled):hover { transform: translateY(-3px); border-color: var(--accent-soft); }
+    .block-node.disabled { opacity: 0.45; cursor: not-allowed; border-style: dashed; }
+    .block-node::before {
+      content: "";
+      position: absolute;
+      top: -7px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--paper);
+      border: 2px solid var(--ink-light);
+    }
+    .block-node.active::before { border-color: var(--accent); background: var(--accent); }
+    .block-node .num { font-family: "Caveat", cursive; font-size: 1.1rem; color: var(--accent); line-height: 1; }
+    .block-node .title { font-size: 0.82rem; line-height: 1.4; margin-top: 6px; font-weight: 600; }
+
+    h2 { font-size: 1.55rem; margin: 56px 0 20px; padding-left: 16px; border-left: 5px solid var(--accent); line-height: 1.35; }
+    h3 { font-size: 1.22rem; margin: 36px 0 14px; color: var(--ink); font-weight: 700; }
+    h4 { font-size: 1.05rem; margin: 28px 0 10px; color: var(--margin-blue); font-weight: 700; }
+    p { margin: 0 0 18px; }
+    ul, ol { margin: 0 0 18px; padding-left: 28px; }
+    li { margin-bottom: 8px; }
+
+    details {
+      margin: 18px 0;
+      border: 1px solid rgba(43, 35, 25, 0.15);
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.35);
+      overflow: hidden;
+    }
+    summary {
+      padding: 18px 22px;
+      cursor: pointer;
+      font-weight: 600;
+      list-style: none;
+      position: relative;
+      transition: background 0.2s ease;
+    }
+    summary:hover { background: rgba(184, 92, 56, 0.06); }
+    summary::-webkit-details-marker { display: none; }
+    summary::after {
+      content: "+";
+      position: absolute;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: "Noto Serif", serif;
+      font-size: 1.4rem;
+      color: var(--accent);
+      transition: transform 0.25s ease;
+    }
+    details[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+    .detail-body { padding: 6px 22px 24px; }
+
+    .sidenote {
+      float: right;
+      clear: right;
+      width: 190px;
+      margin: 0 -220px 18px 28px;
+      padding: 12px 16px;
+      font-family: "Caveat", cursive;
+      font-size: 1.15rem;
+      line-height: 1.45;
+      color: var(--margin-blue);
+      border-top: 2px solid var(--margin-blue);
+      background: rgba(61, 106, 142, 0.05);
+      transform: rotate(1deg);
+    }
+
+    .figure {
+      margin: 32px 0;
+      padding: 24px;
+      background: #fffef9;
+      border: 1px solid rgba(43, 35, 25, 0.12);
+      border-radius: 3px;
+      text-align: center;
+    }
+    .figure-caption { font-size: 0.9rem; color: var(--ink-light); margin-top: 14px; font-style: italic; }
+    svg { max-width: 100%; height: auto; }
+
+    .callout {
+      margin: 28px 0;
+      padding: 20px 24px;
+      background: var(--highlight);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 3px 3px 0;
+    }
+    .callout strong { color: var(--accent); }
+    .term {
+      display: inline-block;
+      padding: 1px 8px;
+      background: rgba(184, 92, 56, 0.12);
+      border-radius: 2px;
+      font-size: 0.92em;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 0 2px;
+    }
+    .video-marker {
+      display: inline-block;
+      padding: 3px 10px;
+      background: rgba(139, 38, 53, 0.08);
+      border-left: 3px solid var(--video-marker);
+      border-radius: 0 3px 3px 0;
+      color: var(--video-marker);
+      font-size: 0.92em;
+      font-weight: 600;
+      margin: 12px 0;
+    }
+    .video-marker::before { content: "▶ "; font-size: 0.85em; }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin: 28px 0;
+    }
+    .compare-card { padding: 20px; background: #fffef9; border: 1.5px solid rgba(43, 35, 25, 0.12); border-radius: 3px; }
+    .compare-card h4 { margin: 0 0 12px; font-size: 1.05rem; color: var(--accent); }
+
+    .nav-bottom {
+      margin-top: 72px;
+      padding-top: 36px;
+      border-top: 2px solid var(--ink);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-btn {
+      display: inline-block;
+      padding: 12px 24px;
+      border: 1.5px solid var(--ink);
+      color: var(--ink);
+      text-decoration: none;
+      border-radius: 2px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .nav-btn:hover { background: var(--ink); color: var(--paper); }
+    .nav-btn.disabled { opacity: 0.4; pointer-events: none; border-style: dashed; }
+    .progress { font-family: "Caveat", cursive; font-size: 1.3rem; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="binding"></div>
+  <div class="page">
+    <header>
+      <div class="course-label">Lecture Guide · Block 4 / 10</div>
+      <h1>AI特论 第1回「逆行之美学」<br><small>久保田晃弘 · 前半</small></h1>
+      <div class="meta">
+        <span>来源：Tama Design University 讲座</span>
+        <span>当前块：第 4 块 · 软件化与数据库艺术</span>
+      </div>
+    </header>
+
+    <section class="intro">
+      <p>前面已经把生成式AI放到"预测媒体"的框架里理解了。从这一块开始，久保田继续往历史深处逆行：他先讨论生成式AI和<strong>"数据集作为档案"</strong>的关系，然后追溯到<strong>1990年代的软件化与数据库艺术</strong>。他的核心论点是：生成式AI不是突然变异出现的，而是软件文化长期发展的延伸形态。</p>
+    </section>
+
+    <nav class="timeline" aria-label="讲座内容分块">
+      <div class="timeline-half-label">前半</div>
+      <div class="timeline-track">
+        <a href="lecture-guide-block1.html" class="block-node"><div class="num">Block 1</div><div class="title">LLM现状与技术爆发</div></a>
+        <a href="lecture-guide-block2.html" class="block-node"><div class="num">Block 2</div><div class="title">文化现状与亚类型兴起</div></a>
+        <a href="lecture-guide-block3.html" class="block-node"><div class="num">Block 3</div><div class="title">预测媒体与图像进化</div></a>
+        <div class="block-node active"><div class="num">Block 4</div><div class="title">软件化与数据库艺术</div></div>
+        <a href="lecture-guide-block5.html" class="block-node"><div class="num">Block 5</div><div class="title">浪漫主义与作者性</div></a>
+        <a href="lecture-guide-block6.html" class="block-node"><div class="num">Block 6</div><div class="title">Techne 与三种立场</div></a>
+      </div>
+      <div class="timeline-half-label">後半</div>
+      <div class="timeline-track">
+        <a href="lecture-guide-block7.html" class="block-node"><div class="num">Block 7</div><div class="title">从概念艺术到广告文化</div></a>
+        <a href="lecture-guide-block8.html" class="block-node"><div class="num">Block 8</div><div class="title">塑料树论争（上）</div></a>
+        <a href="lecture-guide-block9.html" class="block-node"><div class="num">Block 9</div><div class="title">塑料树的美学反驳与 AI 类比</div></a>
+        <a href="lecture-guide-block10.html" class="block-node"><div class="num">Block 10</div><div class="title">生成式AI的存在论与收尾</div></a>
+      </div>
+    </nav>
+
+    <h2>九、作为数据集档案与信息的压缩·扩张</h2>
+
+    <p>久保田从图像媒体的预测阶段继续推进：如果生成媒体不限于照片，也向绘画等领域发展，会怎样？他提到一位叫 <span class="term">Emanuele Arielli</span> 的学者，把这种现象称为 <span class="term">Artificial Platonism（人工柏拉图主义）</span>。</p>
+
+    <details open>
+      <summary>人工柏拉图主义与"下一个伦勃朗"</summary>
+      <div class="detail-body">
+        <p>人工柏拉图主义的大意是：学习大量某位大师的作品，从中找出所谓"本质"（essence），然后基于这个本质生成新作。久保田举了一个著名项目作为例子：</p>
+
+        <div class="video-marker">视频画面："下一个伦勃朗"（The Next Rembrandt）项目生成的画作</div>
+
+        <p><span class="term">"下一个伦勃朗"</span>项目学习了大量伦勃朗的画作，试图找出"伦勃朗的精髓"，然后基于它生成一幅"新作"。当时这类说法被煞有介事地传播：只要数据够多，就能让大师"复活"并创作新作品。</p>
+        <p>久保田说，对此有各种看法。其中一种看法是：这其实是<strong>档案（archive）</strong>。</p>
+      </div>
+    </details>
+
+    <details open>
+      <summary>两种档案观：传统档案 vs. 数据集档案</summary>
+      <div class="detail-body">
+        <p>久保田区分了两种理解"档案"的方式：</p>
+
+        <div class="compare">
+          <div class="compare-card">
+            <h4>传统档案</h4>
+            <p>尽可能收集某位作家的全部作品。收集即结束，档案的价值在于保存和拥有原作。</p>
+          </div>
+          <div class="compare-card">
+            <h4>数据集档案</h4>
+            <p>把收集的作品经过机器学习，将其特征量数据化。这个数据集就是档案。它不仅能保存，还能生成——从这个档案中可以产出各种作品。</p>
+          </div>
+        </div>
+
+        <p>传统档案收集的东西，每一件都带有某种<strong>"光晕"（aura）</strong>，有本真之物，所以值得收集。但数据集档案更看重的是<strong>概率多数性</strong>，而非光晕。这是一种价值判断的转变。</p>
+
+        <div class="callout">
+          <strong>关键问题：</strong>把艺术品变成数据集，我们究竟在保存什么？是保存原作的光晕，还是保存可以无限再生的统计特征？这从 2020、2022、2023 年左右开始，至今仍是持续讨论的议题。
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary>学习的本质：压缩与扩张</summary>
+      <div class="detail-body">
+        <p>久保田进一步解释：所谓"学习"，实际上是输入的图像被送入一次 <span class="term">Latent Space（潜在空间）</span>，在那里被压缩，然后再扩张出来。</p>
+        <p>他提醒听众回想 Transformer Explorer 里那个时窄时宽的部分——那其实就是信息压缩与扩张的可视化。这种<strong>信息的压缩与扩张</strong>，正是这项技术极其重要的核心。如何压缩、如何扩张，其算法和架构至关重要。</p>
+        <div class="sidenote">Latent Space：信息先被压扁，再被重新展开。</div>
+        <p>他认为可以归纳出这样一条重要的技术脉络：生成式AI的底层逻辑，是把大量信息压缩进一个潜在空间，然后再根据需求扩张成具体输出。理解这一点，是理解后面历史脉络的关键。</p>
+      </div>
+    </details>
+
+    <h2>十、1990年代：软件化与数据库艺术</h2>
+
+    <p>再往前追溯，久保田强调一个非常重要的事实：<strong>生成式AI能做的，只是计算机能做的。</strong>因此，生成式AI技术不是突然变异出现的，而是我们使用软件做各种事情这一文化脉络的延伸。他认为这大概始于 1990 年代。</p>
+
+    <details open>
+      <summary>1980年代：计算机进入美术教育</summary>
+      <div class="detail-body">
+        <p>在此之前，久保田提到一个历史节点：1980 年代，多摩美术大学曾高调宣布自己是首个引入 CG、计算机的美术大学。这意味着什么？</p>
+        <p>在媒体史中，从物质性、记录媒体、照片时代，开始尝试用软件进行美术教育。比如 Photoshop 等图像处理软件出现，或者各种声音也能用 MIDI 数据来创作音乐。久保田说，这些问题其实正是如今生成式AI所承担的全部问题。<strong>我们无法逃避这个土壤。</strong>换言之，不可能脱离这个土壤来思考问题，我们只能在这些软件的能力范围内思考能做什么。</p>
+      </div>
+    </details>
+
+    <details open>
+      <summary>Lev Manovich 的《Software Takes Command》</summary>
+      <div class="detail-body">
+        <p>久保田再次提到马诺维奇，他为此写了一本书叫 <em>Software Takes Command</em>。重要的是这个书名——它致敬了 Giedion 的名著 <em>Mechanization Takes Command</em>（《机械化支配一切》），那是 20 世纪非常重要的文化史著作。</p>
+        <p>20 世纪是机械化时代，机器进入生产现场时如何改变了人类文化？马诺维奇的问题则是：现在我用笔记本电脑、计算机、互联网、智能手机，文化会如何改变？应将此作为一环来思考。</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>1990年代：创作的语言变成了软件语言</summary>
+      <div class="detail-body">
+        <p>实际上，90 年代发生的是创作的<strong>软件化</strong>。久保田举了一个很具体的例子：</p>
+        <p>以前画画时，人们用颜料、素材来讨论创作。但软件化之后，创作的语言变成了："把饱和度提高 5% 会怎样？""给 3 像素高斯模糊会怎样？"——用这样的对话来讨论创作。这是巨大的变化。</p>
+        <p>所以，现在生成式AI做的事，当时叫 <span class="term">数据库艺术（Database Art）</span>。互联网本来就是一个巨大的数据库、档案，基于此进行创作是计算机时代极具象征性的媒体形式，而现在其发展形态就是生成式AI。</p>
+        <div class="callout">
+          <strong>核心观点：</strong>思考生成式AI时，重要的是：我们究竟从何时开始用计算机创作图像？从相机角度来说，何时开始使用数码相机？从这些连续问题的一部分来理解，至关重要。
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary>数据库艺术的实践：Shredder 与 Net Art</summary>
+      <div class="detail-body">
+        <p>当时所做的，其实是<strong>意义的解体</strong>。久保田说，20 世纪的意义解体是艺术的一大运动。在 20 世纪现代主义的影响下，数字时代到来时，发生的是意义的表彰与解体。</p>
+
+        <div class="video-marker">视频画面：Mike Napear 的著名网站 "Shredder"，展示它如何解构多摩美术大学网页的原始数据</div>
+
+        <p>他举了一个具体例子：多摩美术大学的网页有一个叫 <span class="term">Shredder</span> 的著名网站，作者是 <span class="term">Mike Napear</span>。这个网站以各种方式解构浏览器中的原始数据——浏览器通常正确显示数据，但它能做的不止这些。Shredder 把元数据解体、拆散、再重构。久保田说，这个网站至今仍在运行，输入 URL 后就会这样分解。多摩美的 URL 就被这样当作数据库艺术来展示。</p>
+
+        <div class="video-marker">建议观看视频画面：Net Art、Soft Cinema、Database Cinema 的相关案例图片或网页截图</div>
+
+        <p>当时还有所谓的 <span class="term">Net Art（网络艺术）</span>——在网页上写小说、故事，或者 <span class="term">Soft Cinema</span>、<span class="term">Database Cinema</span> 等说法。这些都发生了。</p>
+
+        <p>当然当时正如刚才所说，还没有迎合人类喜好、读取语境解决问题的技术，所以首先就是把东西拆散再重构。但其基本原理其实并未改变太多。技术 refined（精炼）后，能做出美丽的东西，数据库对象变广，量的扩张是有的，但本质未变——这是 1998 年的事。</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>数字媒体的特征：分解与再重构</summary>
+      <div class="detail-body">
+        <p>当时 MIT 建筑系的 <span class="term">William J. Mitchell</span> 说，数字媒体的特征是<strong>分解与再重构</strong>。马诺维奇在《新媒体的语言》开头也提出了新媒体的原理：</p>
+        <ul>
+          <li><strong>数值化表达（Numerical Representation）</strong></li>
+          <li><strong>模块化（Modularity）</strong></li>
+          <li><strong>自动化（Automation）</strong></li>
+          <li><strong>可变性（Variability）</strong></li>
+          <li><strong>转码（Transcoding）</strong></li>
+        </ul>
+        <p>久保田说，这些正是当今生成式AI的一个源流。</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>"生成"是一个陷阱：换成"预测"或"选择与操作"</summary>
+      <div class="detail-body">
+        <p>久保田最后提出了一个方法论提示：<strong>生成式AI的"生成"其实是个陷阱。</strong>被"生成"迷惑，就会变成"是不是创作了什么东西"的问题。但如果不叫生成式AI而叫<strong>预测式AI</strong>，看起来会怎样？</p>
+        <p>或者更原始地说，就是<strong>"选择与操作"</strong>。用"选择与操作"来看，也许能不落俗套地思考问题。这对任何问题都很重要。</p>
+        <div class="sidenote">换个名字，问题就变了。</div>
+        <p>他的意思是：当我们把生成式AI理解为"选择数据、操作数据"时，关于作者性、创造性、艺术价值的讨论就会呈现出不同的面貌。这不是在贬低技术，而是在避免被"生成"这个词隐含的人类中心主义假设绑架。</p>
+      </div>
+    </details>
+
+    <div class="callout">
+      <strong>第四块总结：</strong>生成式AI可以被理解为"数据集档案"——它不是保存原作的光晕，而是把作品特征压缩成可再生的数据。学习的本质是信息的压缩与扩张。再往前追溯到 1990 年代，生成式AI是"软件化"和"数据库艺术"的延伸：创作语言变成了软件参数语言，互联网成为创作的数据库，Shredder、Net Art 等实践已经把"分解与再重构"作为核心方法。马诺维奇提出的新媒体五原理（数值化、模块化、自动化、可变性、转码）至今仍是理解生成式AI的钥匙。最后，久保田提醒我们："生成"是个陷阱，换成"预测"或"选择与操作"，问题会变得更清晰。
+    </div>
+
+    <nav class="nav-bottom">
+      <a href="lecture-guide-block3.html" class="nav-btn">← 上一块</a>
+      <span class="progress">Block 4 of 10</span>
+      <a href="lecture-guide-block5.html" class="nav-btn">下一块 →</a>
+    </nav>
+  </div>
+
+  <script>
+    document.querySelectorAll('details').forEach(detail => {
+      detail.addEventListener('toggle', () => {
+        detail.style.background = detail.open ? 'rgba(255, 255, 255, 0.55)' : 'rgba(255, 255, 255, 0.35)';
+      });
+    });
+  </script>
+</body>
+</html>

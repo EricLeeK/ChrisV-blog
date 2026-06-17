@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1200">
+  <title>AI特论 · 逆行之美学｜第8块：塑料树论争（上）</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f7f5ef;
+      --ink: #2b2319;
+      --ink-light: #5c4f3d;
+      --accent: #b85c38;
+      --accent-soft: #d67c5a;
+      --highlight: #f4e4bc;
+      --margin-blue: #3d6a8e;
+      --video-marker: #8b2635;
+      --grid: rgba(43, 35, 25, 0.04);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: #e8e4d9; }
+    body {
+      margin: 0;
+      font-family: "Noto Serif SC", "Noto Serif", "STSong", "SimSun", serif;
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1.85;
+      background: var(--paper);
+      background-image: linear-gradient(90deg, var(--grid) 1px, transparent 1px), linear-gradient(var(--grid) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .page {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 64px 72px 120px;
+      background: var(--paper);
+      box-shadow: 0 0 48px rgba(43, 35, 25, 0.08), 0 6px 16px rgba(43, 35, 25, 0.06);
+      min-height: 100vh;
+    }
+    .binding {
+      position: fixed;
+      left: 50%;
+      top: 0;
+      transform: translateX(-520px);
+      width: 3px;
+      height: 100vh;
+      background: linear-gradient(180deg, transparent 0%, rgba(184, 92, 56, 0.15) 8%, rgba(184, 92, 56, 0.15) 92%, transparent 100%);
+      pointer-events: none;
+    }
+    header {
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 32px;
+      margin-bottom: 40px;
+    }
+    .course-label {
+      display: inline-block;
+      font-family: "Caveat", cursive;
+      font-size: 1.3rem;
+      color: var(--accent);
+      transform: rotate(-2deg);
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 2.8rem;
+      line-height: 1.2;
+      margin: 0 0 16px 0;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .meta {
+      font-size: 0.95rem;
+      color: var(--ink-light);
+      display: flex;
+      gap: 20px;
+    }
+    .meta span { border-bottom: 1px dotted var(--ink-light); padding-bottom: 2px; }
+
+    .timeline {
+      position: relative;
+      margin: 40px 0 48px;
+      padding: 24px 0 8px;
+    }
+    .timeline-track {
+      display: flex;
+      gap: 12px;
+      min-width: max-content;
+      padding-bottom: 12px;
+      position: relative;
+      padding-top: 24px;
+      overflow-x: auto;
+    }
+    .timeline-track::before {
+      content: "";
+      position: absolute;
+      top: 50px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, var(--ink-light) 0, var(--ink-light) 6px, transparent 6px, transparent 12px);
+      opacity: 0.25;
+    }
+    .timeline-half-label {
+      font-family: "Caveat", cursive;
+      font-size: 1.15rem;
+      color: var(--ink-light);
+      margin: 16px 0 4px 4px;
+    }
+    .block-node {
+      position: relative;
+      flex: 0 0 auto;
+      width: 140px;
+      padding: 12px;
+      border: 1.5px solid var(--ink-light);
+      border-radius: 2px;
+      background: var(--paper);
+      text-decoration: none;
+      color: var(--ink);
+      transition: all 0.25s ease;
+    }
+    .block-node.active { border-color: var(--accent); background: #fffbf5; box-shadow: 3px 3px 0 var(--accent-soft); }
+    .block-node:not(.active):not(.disabled):hover { transform: translateY(-3px); border-color: var(--accent-soft); }
+    .block-node.disabled { opacity: 0.45; cursor: not-allowed; border-style: dashed; }
+    .block-node::before {
+      content: "";
+      position: absolute;
+      top: -7px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--paper);
+      border: 2px solid var(--ink-light);
+    }
+    .block-node.active::before { border-color: var(--accent); background: var(--accent); }
+    .block-node .num { font-family: "Caveat", cursive; font-size: 1.1rem; color: var(--accent); line-height: 1; }
+    .block-node .title { font-size: 0.82rem; line-height: 1.4; margin-top: 6px; font-weight: 600; }
+
+    h2 { font-size: 1.55rem; margin: 56px 0 20px; padding-left: 16px; border-left: 5px solid var(--accent); line-height: 1.35; }
+    h3 { font-size: 1.22rem; margin: 36px 0 14px; color: var(--ink); font-weight: 700; }
+    h4 { font-size: 1.05rem; margin: 28px 0 10px; color: var(--margin-blue); font-weight: 700; }
+    p { margin: 0 0 18px; }
+    ul, ol { margin: 0 0 18px; padding-left: 28px; }
+    li { margin-bottom: 8px; }
+
+    details {
+      margin: 18px 0;
+      border: 1px solid rgba(43, 35, 25, 0.15);
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.35);
+      overflow: hidden;
+    }
+    summary {
+      padding: 18px 22px;
+      cursor: pointer;
+      font-weight: 600;
+      list-style: none;
+      position: relative;
+      transition: background 0.2s ease;
+    }
+    summary:hover { background: rgba(184, 92, 56, 0.06); }
+    summary::-webkit-details-marker { display: none; }
+    summary::after {
+      content: "+";
+      position: absolute;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: "Noto Serif", serif;
+      font-size: 1.4rem;
+      color: var(--accent);
+      transition: transform 0.25s ease;
+    }
+    details[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+    .detail-body { padding: 6px 22px 24px; }
+
+    .sidenote {
+      float: right;
+      clear: right;
+      width: 190px;
+      margin: 0 -220px 18px 28px;
+      padding: 12px 16px;
+      font-family: "Caveat", cursive;
+      font-size: 1.15rem;
+      line-height: 1.45;
+      color: var(--margin-blue);
+      border-top: 2px solid var(--margin-blue);
+      background: rgba(61, 106, 142, 0.05);
+      transform: rotate(1deg);
+    }
+
+    .figure {
+      margin: 32px 0;
+      padding: 24px;
+      background: #fffef9;
+      border: 1px solid rgba(43, 35, 25, 0.12);
+      border-radius: 3px;
+      text-align: center;
+    }
+    .figure-caption { font-size: 0.9rem; color: var(--ink-light); margin-top: 14px; font-style: italic; }
+    svg { max-width: 100%; height: auto; }
+
+    .callout {
+      margin: 28px 0;
+      padding: 20px 24px;
+      background: var(--highlight);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 3px 3px 0;
+    }
+    .callout strong { color: var(--accent); }
+    .term {
+      display: inline-block;
+      padding: 1px 8px;
+      background: rgba(184, 92, 56, 0.12);
+      border-radius: 2px;
+      font-size: 0.92em;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 0 2px;
+    }
+    .video-marker {
+      display: inline-block;
+      padding: 3px 10px;
+      background: rgba(139, 38, 53, 0.08);
+      border-left: 3px solid var(--video-marker);
+      border-radius: 0 3px 3px 0;
+      color: var(--video-marker);
+      font-size: 0.92em;
+      font-weight: 600;
+      margin: 12px 0;
+    }
+    .video-marker::before { content: "▶ "; font-size: 0.85em; }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin: 28px 0;
+    }
+    .compare-card { padding: 20px; background: #fffef9; border: 1.5px solid rgba(43, 35, 25, 0.12); border-radius: 3px; }
+    .compare-card h4 { margin: 0 0 12px; font-size: 1.05rem; color: var(--accent); }
+
+    .nav-bottom {
+      margin-top: 72px;
+      padding-top: 36px;
+      border-top: 2px solid var(--ink);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-btn {
+      display: inline-block;
+      padding: 12px 24px;
+      border: 1.5px solid var(--ink);
+      color: var(--ink);
+      text-decoration: none;
+      border-radius: 2px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .nav-btn:hover { background: var(--ink); color: var(--paper); }
+    .nav-btn.disabled { opacity: 0.4; pointer-events: none; border-style: dashed; }
+    .progress { font-family: "Caveat", cursive; font-size: 1.3rem; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="binding"></div>
+  <div class="page">
+    <header>
+      <div class="course-label">Lecture Guide · Block 8 / 10</div>
+      <h1>AI特论 第1回「逆行之美学」<br><small>久保田晃弘 · 後半</small></h1>
+      <div class="meta">
+        <span>来源：Tama Design University 讲座</span>
+        <span>当前块：第 8 块 · 塑料树论争（上）</span>
+      </div>
+    </header>
+
+    <section class="intro">
+      <p>从这一块开始，久保田引入一个具体的思想实验：<strong>「塑料树」论争</strong>。这是环境设计学者 <span class="term">Martin Krieger</span> 1973 年发表的一篇著名论文。通过这个看似离题的案例，他把刚才关于自然/人工、本物/复制品、效率/伦理的讨论，锚定到一个真实发生过的学术争论中。</p>
+    </section>
+
+    <nav class="timeline" aria-label="讲座内容分块">
+      <div class="timeline-half-label">前半</div>
+      <div class="timeline-track">
+        <a href="lecture-guide-block1.html" class="block-node"><div class="num">Block 1</div><div class="title">LLM现状与技术爆发</div></a>
+        <a href="lecture-guide-block2.html" class="block-node"><div class="num">Block 2</div><div class="title">文化现状与亚类型兴起</div></a>
+        <a href="lecture-guide-block3.html" class="block-node"><div class="num">Block 3</div><div class="title">预测媒体与图像进化</div></a>
+        <a href="lecture-guide-block4.html" class="block-node"><div class="num">Block 4</div><div class="title">软件化与数据库艺术</div></a>
+        <a href="lecture-guide-block5.html" class="block-node"><div class="num">Block 5</div><div class="title">浪漫主义与作者性</div></a>
+        <a href="lecture-guide-block6.html" class="block-node"><div class="num">Block 6</div><div class="title">Techne 与三种立场</div></a>
+      </div>
+      <div class="timeline-half-label">後半</div>
+      <div class="timeline-track">
+        <a href="lecture-guide-block7.html" class="block-node"><div class="num">Block 7</div><div class="title">从概念艺术到广告文化</div></a>
+        <div class="block-node active"><div class="num">Block 8</div><div class="title">塑料树论争（上）</div></div>
+        <a href="lecture-guide-block9.html" class="block-node"><div class="num">Block 9</div><div class="title">塑料树的美学反驳与 AI 类比</div></a>
+        <div class="block-node disabled"><div class="num">Block 10</div><div class="title">生成式AI的存在论与收尾</div></div>
+      </div>
+    </nav>
+
+    <h2>二十二、塑料树：一个思想实验</h2>
+
+    <p>久保田说，他接下来想介绍一个更具体的事例，并希望大家边听边思考自己会如何判断。他问：</p>
+    <p><strong>假设在某个看起来非常普通的拱廊街上种着一棵树。旁边的说明牌上写着："这是常青人工树木。"你会对这棵树怎么想？</strong></p>
+
+    <details open>
+      <summary>Martin Krieger 与《塑料树有什么不好？》</summary>
+      <div class="detail-body">
+        <p>1973 年，一位从事环境设计的人——<span class="term">Martin Krieger</span>——写了一篇论文，标题就叫 <em>What's Wrong with Plastic Trees?</em>（《塑料树有什么不好？》）。</p>
+
+        <div class="video-marker">视频画面：Martin Krieger 的论文页面或相关肖像/书籍封面</div>
+
+        <p>当时发生了什么事？随着城市化、工业化推进，洛杉矶的 Jefferson 街中央隔离带曾计划种植<strong>塑料制的树</strong>。现在道路隔离带也常见绿植，但仔细想想：在尾气严重的地方种活树，对树来说其实很残酷。如果换作是我们自己，也不会想待在那里。既然如此，与其让真树受苦，不如种塑料树——这是当时的论点之一。</p>
+
+        <div class="video-marker">视频画面：洛杉矶 Jefferson 街中央隔离带示意图或塑料树/人工绿化相关图片</div>
+
+        <p>同样的逻辑也出现在体育领域。以前运动场地铺的是天然草皮，但为了减少维护成本、让比赛更公平（不会因为草皮状态影响球员发挥），逐渐改用<strong>人工草皮</strong>。这件事当时也引发了激烈争论。</p>
+      </div>
+    </details>
+
+    <details open>
+      <summary>支持塑料树的两个理由</summary>
+      <div class="detail-body">
+        <p>Krieger 指出，当时支持塑料树的声音主要有两个依据：</p>
+        <ol>
+          <li><strong>经济效率</strong>：成本更低、维护更省事。</li>
+          <li><strong>自然保护</strong>：为了保护自然，在某些不适合真树生存的地方使用人工替代品，这难道不是好事吗？</li>
+        </ol>
+        <p>基于这两点，Krieger 展开了他的论证。</p>
+      </div>
+    </details>
+
+    <h2>二十三、Krieger 的核心论证</h2>
+
+    <details open>
+      <summary>论点一：自然也是社会建构物</summary>
+      <div class="detail-body">
+        <p>Krieger 的第一个论点是：<strong>"自然"本身也是一种社会建构。</strong></p>
+        <p>我们常常说"自然真好""向往荒野"，但仔细想想：</p>
+        <ul>
+          <li><strong>公园</strong>其实是人工建造的自然环境。</li>
+          <li><strong>荒野</strong>如果真的去原始荒野，生命安全都成问题。我们向往的所谓"荒野"，其实是安全保障过的荒野——是特定文化、社会运动、知识实践的产物。</li>
+        </ul>
+        <p>所以，我们对"自然"的想象并非纯粹给定，而是被文化和社会塑造出来的。</p>
+      </div>
+    </details>
+
+    <details open>
+      <summary>论点二：保护自然本身也是人类介入</summary>
+      <div class="detail-body">
+        <p>第二个论点：人类为了"保护自然"而进行的各种介入，本身不就是技术性的吗？</p>
+        <p>当时美国尼亚加拉大瀑布因为侵蚀问题，曾讨论要不要<strong>把瀑布停下来</strong>做保护工程。Krieger 说，这种"保护"其实已经是人类对自然的技术干预。保全作业本身，就是人类技术介入自然的一种形式。</p>
+        <div class="sidenote">保护自然，也是改造自然。</div>
+      </div>
+    </details>
+
+    <details>
+      <summary>论点三：复制品与原作提供同等经验</summary>
+      <div class="detail-body">
+        <p>Krieger 还把环境问题与艺术经验做对比。他提出：</p>
+        <p>看樱花觉得美，与看马蒂斯的画觉得美，有什么相同、有什么不同？如果一件复制品（replica）能够提供与原作同等类型的经验，而差别只是"知道它是假的"，那么追求原作是不是只是一种 <span class="term">snobbism（势利/附庸风雅）</span>？</p>
+        <p>这是他把自然问题与艺术问题打通的关键一步。</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>论点四：技术复制可以实现社会正义</summary>
+      <div class="detail-body">
+        <p>Krieger 进一步把问题推向社会正义：</p>
+        <p>欣赏珍贵自然环境往往是社会、经济上较为优越的少数人的特权。如果能够通过技术复制出"几乎无法分辨真假"的替代品，那么更多人就能不受经济地位限制，获得类似经验。这难道不是社会正义吗？</p>
+        <p>因此，他认为<strong>"塑料树几乎没有坏处"</strong>。这篇结论当然受到了很多批评，但也开启了一个重要论争。</p>
+        <div class="callout">
+          <strong>Krieger 1973 结论：</strong>塑料树的问题不应只从"真假""自然 vs 人工"的简单二元来看，而应放在社会建构、技术介入、社会正义的框架中理解。既然"自然"本身已被人类深度介入，塑料树作为一种技术替代方案，并没有什么本质性的恶。
+        </div>
+      </div>
+    </details>
+
+    <h2>二十四、27 年后的修正：从塑料树到"第二自然"</h2>
+
+    <details open>
+      <summary>Krieger 2000 年的书</summary>
+      <div class="detail-body">
+        <p>因为 1973 年的论文受到大量批评，Krieger 在 2000 年又写了一本书，主题仍然是塑料树。书名是 <em>Hotz Long Wheel Plastic Tree</em>（久保田的日文音译，实际书名可能是 <em>What's Wrong with Plastic Trees?</em> 的扩展或类似标题）。</p>
+
+        <div class="video-marker">视频画面：Martin Krieger 2000 年著作封面或相关图片</div>
+
+        <p>经过 27 年，他意识到塑料树的问题已经与建筑、软件、VR、甚至像信学（信息科学）这样的领域广泛关联。于是他试图提出一种<strong>设计哲学</strong>。但他基本维持 1973 年的结论：塑料树几乎没有坏处。</p>
+      </div>
+    </details>
+
+    <details open>
+      <summary>"第二自然"：人工与自然的对立应该被解体</summary>
+      <div class="detail-body">
+        <p>Krieger 在 2000 年提出一个更强的论点：<strong>人工与自然的对立框架本身就应该被解体。</strong></p>
+        <p>他说，我们本来就生活在<strong>被设计过的自然</strong>之中——人类管理的自然。因此，问题不是"塑料树是不是假自然"，而是<strong>我们早已生活在"第二自然"里</strong>。理解这一点，比争论"真假"更重要。</p>
+        <div class="callout">
+          <strong>核心转向：</strong>从"自然 vs 人工"的二元对立，转向"我们生活在被设计的自然中"这一事实。
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary>与生成式AI的连续性问题</summary>
+      <div class="detail-body">
+        <p>久保田强调，这个看似关于环境设计的论争，其实与生成式AI高度连续：</p>
+        <ul>
+          <li>我们已经在计算机环境中生活：用智能手机、电脑、网络。</li>
+          <li>数字媒体最大的特征就是<strong>可无损耗复制</strong>。</li>
+          <li>把可复制性当作最大特征的媒体，硬要把它做成不可复制的东西，本质上是错误的。</li>
+        </ul>
+        <p>所以，当我们讨论生成式AI时，其实是在讨论一个更大的问题：<strong>在"第二自然"、在技术复制无处不在的世界里，个人、作品、作者、版权应该如何被重新理解？</strong></p>
+      </div>
+    </details>
+
+    <div class="callout">
+      <strong>第八块总结：</strong>久保田引入 Martin Krieger 1973 年的"塑料树"论争，作为理解生成式AI的类比入口。Krieger 论证：自然也是社会建构、保护自然本身就是技术介入、复制品可以提供与原作同等的经验、技术复制可以促进社会正义。因此，塑料树几乎没有本质性的恶。27 年后，Krieger 进一步提出"第二自然"概念：人工与自然的二元对立应该被解体，因为我们本来就生活在被设计的自然中。这个论争与生成式AI的核心问题高度连续：当技术复制成为常态，我们关于"真/假""自然/人工""原作/复制品"的价值判断也需要重新检讨。
+    </div>
+
+    <nav class="nav-bottom">
+      <a href="lecture-guide-block7.html" class="nav-btn">← 上一块</a>
+      <span class="progress">Block 8 of 10</span>
+      <a href="lecture-guide-block9.html" class="nav-btn">下一块 →</a>
+    </nav>
+  </div>
+
+  <script>
+    document.querySelectorAll('details').forEach(detail => {
+      detail.addEventListener('toggle', () => {
+        detail.style.background = detail.open ? 'rgba(255, 255, 255, 0.55)' : 'rgba(255, 255, 255, 0.35)';
+      });
+    });
+  </script>
+</body>
+</html>

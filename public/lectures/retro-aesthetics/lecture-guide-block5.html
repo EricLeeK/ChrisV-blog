@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1200">
+  <title>AI特论 · 逆行之美学｜第5块：浪漫主义与作者性</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f7f5ef;
+      --ink: #2b2319;
+      --ink-light: #5c4f3d;
+      --accent: #b85c38;
+      --accent-soft: #d67c5a;
+      --highlight: #f4e4bc;
+      --margin-blue: #3d6a8e;
+      --video-marker: #8b2635;
+      --grid: rgba(43, 35, 25, 0.04);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: #e8e4d9; }
+    body {
+      margin: 0;
+      font-family: "Noto Serif SC", "Noto Serif", "STSong", "SimSun", serif;
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1.85;
+      background: var(--paper);
+      background-image: linear-gradient(90deg, var(--grid) 1px, transparent 1px), linear-gradient(var(--grid) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .page {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 64px 72px 120px;
+      background: var(--paper);
+      box-shadow: 0 0 48px rgba(43, 35, 25, 0.08), 0 6px 16px rgba(43, 35, 25, 0.06);
+      min-height: 100vh;
+    }
+    .binding {
+      position: fixed;
+      left: 50%;
+      top: 0;
+      transform: translateX(-520px);
+      width: 3px;
+      height: 100vh;
+      background: linear-gradient(180deg, transparent 0%, rgba(184, 92, 56, 0.15) 8%, rgba(184, 92, 56, 0.15) 92%, transparent 100%);
+      pointer-events: none;
+    }
+    header {
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 32px;
+      margin-bottom: 40px;
+    }
+    .course-label {
+      display: inline-block;
+      font-family: "Caveat", cursive;
+      font-size: 1.3rem;
+      color: var(--accent);
+      transform: rotate(-2deg);
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 2.8rem;
+      line-height: 1.2;
+      margin: 0 0 16px 0;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .meta {
+      font-size: 0.95rem;
+      color: var(--ink-light);
+      display: flex;
+      gap: 20px;
+    }
+    .meta span { border-bottom: 1px dotted var(--ink-light); padding-bottom: 2px; }
+
+    .timeline {
+      position: relative;
+      margin: 40px 0 48px;
+      padding: 24px 0 8px;
+    }
+    .timeline-track {
+      display: flex;
+      gap: 12px;
+      min-width: max-content;
+      padding-bottom: 12px;
+      position: relative;
+      padding-top: 24px;
+      overflow-x: auto;
+    }
+    .timeline-track::before {
+      content: "";
+      position: absolute;
+      top: 50px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, var(--ink-light) 0, var(--ink-light) 6px, transparent 6px, transparent 12px);
+      opacity: 0.25;
+    }
+    .timeline-half-label {
+      font-family: "Caveat", cursive;
+      font-size: 1.15rem;
+      color: var(--ink-light);
+      margin: 16px 0 4px 4px;
+    }
+    .block-node {
+      position: relative;
+      flex: 0 0 auto;
+      width: 140px;
+      padding: 12px;
+      border: 1.5px solid var(--ink-light);
+      border-radius: 2px;
+      background: var(--paper);
+      text-decoration: none;
+      color: var(--ink);
+      transition: all 0.25s ease;
+    }
+    .block-node.active { border-color: var(--accent); background: #fffbf5; box-shadow: 3px 3px 0 var(--accent-soft); }
+    .block-node:not(.active):not(.disabled):hover { transform: translateY(-3px); border-color: var(--accent-soft); }
+    .block-node.disabled { opacity: 0.45; cursor: not-allowed; border-style: dashed; }
+    .block-node::before {
+      content: "";
+      position: absolute;
+      top: -7px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--paper);
+      border: 2px solid var(--ink-light);
+    }
+    .block-node.active::before { border-color: var(--accent); background: var(--accent); }
+    .block-node .num { font-family: "Caveat", cursive; font-size: 1.1rem; color: var(--accent); line-height: 1; }
+    .block-node .title { font-size: 0.82rem; line-height: 1.4; margin-top: 6px; font-weight: 600; }
+
+    h2 { font-size: 1.55rem; margin: 56px 0 20px; padding-left: 16px; border-left: 5px solid var(--accent); line-height: 1.35; }
+    h3 { font-size: 1.22rem; margin: 36px 0 14px; color: var(--ink); font-weight: 700; }
+    h4 { font-size: 1.05rem; margin: 28px 0 10px; color: var(--margin-blue); font-weight: 700; }
+    p { margin: 0 0 18px; }
+    ul, ol { margin: 0 0 18px; padding-left: 28px; }
+    li { margin-bottom: 8px; }
+
+    details {
+      margin: 18px 0;
+      border: 1px solid rgba(43, 35, 25, 0.15);
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.35);
+      overflow: hidden;
+    }
+    summary {
+      padding: 18px 22px;
+      cursor: pointer;
+      font-weight: 600;
+      list-style: none;
+      position: relative;
+      transition: background 0.2s ease;
+    }
+    summary:hover { background: rgba(184, 92, 56, 0.06); }
+    summary::-webkit-details-marker { display: none; }
+    summary::after {
+      content: "+";
+      position: absolute;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: "Noto Serif", serif;
+      font-size: 1.4rem;
+      color: var(--accent);
+      transition: transform 0.25s ease;
+    }
+    details[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+    .detail-body { padding: 6px 22px 24px; }
+
+    .sidenote {
+      float: right;
+      clear: right;
+      width: 190px;
+      margin: 0 -220px 18px 28px;
+      padding: 12px 16px;
+      font-family: "Caveat", cursive;
+      font-size: 1.15rem;
+      line-height: 1.45;
+      color: var(--margin-blue);
+      border-top: 2px solid var(--margin-blue);
+      background: rgba(61, 106, 142, 0.05);
+      transform: rotate(1deg);
+    }
+
+    .figure {
+      margin: 32px 0;
+      padding: 24px;
+      background: #fffef9;
+      border: 1px solid rgba(43, 35, 25, 0.12);
+      border-radius: 3px;
+      text-align: center;
+    }
+    .figure-caption { font-size: 0.9rem; color: var(--ink-light); margin-top: 14px; font-style: italic; }
+    svg { max-width: 100%; height: auto; }
+
+    .callout {
+      margin: 28px 0;
+      padding: 20px 24px;
+      background: var(--highlight);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 3px 3px 0;
+    }
+    .callout strong { color: var(--accent); }
+    .term {
+      display: inline-block;
+      padding: 1px 8px;
+      background: rgba(184, 92, 56, 0.12);
+      border-radius: 2px;
+      font-size: 0.92em;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 0 2px;
+    }
+    .video-marker {
+      display: inline-block;
+      padding: 3px 10px;
+      background: rgba(139, 38, 53, 0.08);
+      border-left: 3px solid var(--video-marker);
+      border-radius: 0 3px 3px 0;
+      color: var(--video-marker);
+      font-size: 0.92em;
+      font-weight: 600;
+      margin: 12px 0;
+    }
+    .video-marker::before { content: "▶ "; font-size: 0.85em; }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin: 28px 0;
+    }
+    .compare-card { padding: 20px; background: #fffef9; border: 1.5px solid rgba(43, 35, 25, 0.12); border-radius: 3px; }
+    .compare-card h4 { margin: 0 0 12px; font-size: 1.05rem; color: var(--accent); }
+
+    .nav-bottom {
+      margin-top: 72px;
+      padding-top: 36px;
+      border-top: 2px solid var(--ink);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-btn {
+      display: inline-block;
+      padding: 12px 24px;
+      border: 1.5px solid var(--ink);
+      color: var(--ink);
+      text-decoration: none;
+      border-radius: 2px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .nav-btn:hover { background: var(--ink); color: var(--paper); }
+    .nav-btn.disabled { opacity: 0.4; pointer-events: none; border-style: dashed; }
+    .progress { font-family: "Caveat", cursive; font-size: 1.3rem; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="binding"></div>
+  <div class="page">
+    <header>
+      <div class="course-label">Lecture Guide · Block 5 / 10</div>
+      <h1>AI特论 第1回「逆行之美学」<br><small>久保田晃弘 · 前半</small></h1>
+      <div class="meta">
+        <span>来源：Tama Design University 讲座</span>
+        <span>当前块：第 5 块 · 浪漫主义与作者性</span>
+      </div>
+    </header>
+
+    <section class="intro">
+      <p>前面已经把生成式AI追溯到 1990 年代的软件化和数据库艺术。从这一块开始，久保田进一步逆行进20世纪的精神史：1960 年代的<strong>概念艺术</strong>、20 世纪初的<strong>包豪斯/呼捷玛斯</strong>、<strong>达达与碎片化美学</strong>，最后抵达<strong>浪漫主义</strong>——他发现，我们今天对生成式AI的诸多焦虑（"没有灵魂""缺乏想象力"），很大程度上源于浪漫主义时代发明的"作者"和"创造性"观念。</p>
+    </section>
+
+    <nav class="timeline" aria-label="讲座内容分块">
+      <div class="timeline-half-label">前半</div>
+      <div class="timeline-track">
+        <a href="lecture-guide-block1.html" class="block-node"><div class="num">Block 1</div><div class="title">LLM现状与技术爆发</div></a>
+        <a href="lecture-guide-block2.html" class="block-node"><div class="num">Block 2</div><div class="title">文化现状与亚类型兴起</div></a>
+        <a href="lecture-guide-block3.html" class="block-node"><div class="num">Block 3</div><div class="title">预测媒体与图像进化</div></a>
+        <a href="lecture-guide-block4.html" class="block-node"><div class="num">Block 4</div><div class="title">软件化与数据库艺术</div></a>
+        <div class="block-node active"><div class="num">Block 5</div><div class="title">浪漫主义与作者性</div></div>
+        <a href="lecture-guide-block6.html" class="block-node"><div class="num">Block 6</div><div class="title">Techne 与三种立场</div></a>
+      </div>
+      <div class="timeline-half-label">後半</div>
+      <div class="timeline-track">
+        <a href="lecture-guide-block7.html" class="block-node"><div class="num">Block 7</div><div class="title">从概念艺术到广告文化</div></a>
+        <a href="lecture-guide-block8.html" class="block-node"><div class="num">Block 8</div><div class="title">塑料树论争（上）</div></a>
+        <a href="lecture-guide-block9.html" class="block-node"><div class="num">Block 9</div><div class="title">塑料树的美学反驳与 AI 类比</div></a>
+        <a href="lecture-guide-block10.html" class="block-node"><div class="num">Block 10</div><div class="title">生成式AI的存在论与收尾</div></a>
+      </div>
+    </nav>
+
+    <h2>十一、逆行精神史：1960年代的概念艺术</h2>
+
+    <p>久保田说，时间有限，从这里开始加快速度。他觉得现在最好试着<strong>逆行生成式AI的精神史</strong>——他称之为"逆行精神史"——去思考那里织入了怎样的人类思想与思维方式。</p>
+
+    <details open>
+      <summary>概念艺术：思想的机械化</summary>
+      <div class="detail-body">
+        <p>在计算机出现之前，类似的事情也在发生，那就是 1960 年代的 <span class="term">概念艺术（Conceptual Art）</span>与"思想的机械化"这一美术运动。</p>
+        <p>现在很多人看生成式AI生成的图像，会觉得问题在于它不回归人类手工的物理性描绘。但久保田指出：<strong>其实 20 世纪，大家都在尝试不做手工物理性描绘的美术。</strong></p>
+
+        <div class="video-marker">视频画面：东京都现代美术馆举办的索尔·勒维特（Sol LeWitt）展览相关图片</div>
+
+        <p>他举了 <span class="term">索尔·勒维特（Sol LeWitt）</span>作为绝佳例子。就在讲座前不久，东京都现代美术馆举办了索尔·勒维特展。1967 年他写了《概念艺术断章》，提出一句著名的话：</p>
+        <div class="callout">
+          <strong>"思想成为创作艺术的机器"</strong>——所有计划与决定事先做好，执行只是形式性手续。
+        </div>
+        <p>由此他开始了 <span class="term">Wall Drawing（墙画）</span>和 <span class="term">Instruction Art（指令艺术）</span>。</p>
+
+        <div class="video-marker">视频画面：东京近郊的 Wall Drawing #769，通过组合 16 种图案在墙面上创作的装置</div>
+
+        <p>久保田强调，这种事被宣称为美术运动、今后的艺术政策。也就是说，早在 1960 年代，"让思想/指令代替手工创作"就已经是一种被认真提出的艺术方向。生成式AI并非凭空出现，而是这条线索在技术条件下的放大。</p>
+      </div>
+    </details>
+
+    <h2>十二、包豪斯与呼捷玛斯：分解与重构的源流</h2>
+
+    <p>再往前，20 世纪初著名的设计学校 <span class="term">包豪斯（Bauhaus）</span>与苏联的 <span class="term">呼捷玛斯（Vkhutemas）</span>——分解与再重构正是其课程核心。</p>
+
+    <details open>
+      <summary>包豪斯与呼捷玛斯的比较</summary>
+      <div class="detail-body">
+        <p>包豪斯很有名，但苏联的呼捷玛斯学生数大概是其 10 倍，规模要大得多。久保田说他最近看了呼捷玛斯的厚书，觉得很有意思。在这些学校里，<strong>视觉语言如何分解为元素、再重构</strong>，就是课程的内容。</p>
+
+        <div class="video-marker">视频画面：包豪斯与呼捷玛斯的课程对比图（左为包豪斯，右为呼捷玛斯，中心都是点、线、面等元素）</div>
+
+        <p>那里有康定斯基写的《点·线·面》——点、线、平面、色彩、空间、质感等，我们创作时将事物要素分解。所以<strong>分解思想是现代主义的核心之一</strong>，追溯上去就会明白"今天也一样"。课程也分为空间、体量等模块来制作。</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>为什么指令艺术可能？因为视觉已经被分解了</summary>
+      <div class="detail-body">
+        <p>久保田强调：刚才说的机械化所需的东西、指令艺术之所以可能，正是因为进行了这种视觉表现的要素分解。组合模块、指示操作就能产生结果。这之所以可能，正是因为有包豪斯、呼捷玛斯。</p>
+        <div class="sidenote">没有包豪斯，就没有后来的指令艺术。</div>
+        <p>所以生成式AI可以有多种理解方式。一种是：包豪斯所做的视觉表现分割与再重构，现在由大规模数据集和高速计算处理来完成，就会变成那样。同样，这在美术界也在发生。20 世纪是个有趣、重要的时代，各种价值观被解体，被前卫、先锋派们怀疑、批判性地再重构。</p>
+      </div>
+    </details>
+
+    <h2>十三、达达、碎片化美学与现代连接</h2>
+
+    <p>久保田继续推进：分解之后会怎样？会变成<strong>碎片</strong>。对象被碎片化，这就是<strong>碎片化美学</strong>。</p>
+
+    <details open>
+      <summary>达达、偶然性与现成品</summary>
+      <div class="detail-body">
+        <p>他提到 <span class="term">达达（Dada）</span>、<span class="term">偶然性</span>、<span class="term">现成品（Readymade）</span>——他说自己说得太粗怕招人骂——但核心问题是：分割后会怎样？会变成碎片。</p>
+
+        <div class="video-marker">视频画面：让·阿尔普（Jean Arp）把撕碎的纸撒在地上、以偶然配置为作品的创作</div>
+        <div class="video-marker">视频画面：施威特斯（Kurt Schwitters）的 Merz 碎片拼贴画</div>
+
+        <p>久保田做了一个跨越时代的类比：从巨大数据集通过概率计算将图像具体化，极其简化后，就像 Arp 把撕碎的纸撒在地上、以配置为作品那样，spirit（精神）是相通的。至少不是突然冒出来的怪东西，而是自古就有的运动之一，被计算机扩大了规模。</p>
+      </div>
+    </details>
+
+    <details open>
+      <summary>Inpainting / Outpainting：当代的碎片化操作</summary>
+      <div class="detail-body">
+        <p>生成式AI出现后，很多人玩得很开心：<span class="term">Inpainting（内绘）</span>、<span class="term">Outpainting（外绘）</span>——让 AI 预测图像外侧。</p>
+
+        <div class="video-marker">视频画面：Outpainting 示例——从维米尔或梵高的画作边缘往外扩展生成的画面</div>
+        <div class="video-marker">视频画面：Windows 95 的启动画面被 Outpainting 扩展后的效果</div>
+
+        <p>久保田说，从边缘往外画会怎样？维米尔也好、梵高也好，都在不断扩展。这种事和刚才说的 Arp、Schwitters 非常相通。什么图像都能做，Windows 95 的图像也能扩展。</p>
+        <p>实际上，这类东西现在很容易实验，写一点代码就能实现：最左边画随机点，横向流动，抽象的东西就会生成出这样的画面；说"画花"，从最左边随机色彩列就会生成右边的花。以像素为单位碎片化后加以操作，就能做出刚才那种碎片画，程序上非常相似。</p>
+        <div class="callout">
+          <strong>结论：</strong>生成式AI是现代主义艺术脱神格化进程——机械化、分解等——的延长线上，这在历史上毫无疑问。
+        </div>
+      </div>
+    </details>
+
+    <h2>十四、浪漫主义的神话与作者性问题</h2>
+
+    <p>再深入一点。久保田认为，生成式AI常被讨论的作者性问题，其实与<strong>浪漫主义的神话</strong>有关。</p>
+
+    <details open>
+      <summary>星新一奖：AI 作品参赛引发争议</summary>
+      <div class="detail-body">
+        <p>他举了一个最近的例子：不久前报纸上报道了 <span class="term">星新一奖</span>——一个小说征文比赛。如图所示，应征作品越来越 AI 化。这个比赛允许 AI 生成作品参赛，所以完全不违规。但在规则范围内，这种趋势越来越明显，人类与 AI 难以区分，评委辞职等，各种议论都有。</p>
+
+        <div class="video-marker">视频画面：关于星新一奖（AI 作品参赛、评委辞职）的报纸报道截图</div>
+
+        <p>久保田问：但为什么这会成为问题？</p>
+      </div>
+    </details>
+
+    <details open>
+      <summary>浪漫主义发明了"艺术家的内在"</summary>
+      <div class="detail-body">
+        <p>久保田的答案是：<strong>因为我们经历了浪漫主义时代。浪漫主义发明了"艺术家的内在"。</strong></p>
+        <p>什么意思？他说，正因如此，我们被引导去感觉 AI 生成物"没有灵魂""缺乏想象力"——我们被引导至此。</p>
+
+        <div class="video-marker">视频画面：弗里德里希（Caspar David Friedrich）的画作，用来说明"画家不仅描绘眼前之物，更描绘心中之物"</div>
+
+        <p>实际上"艺术家"这个概念的进化是在浪漫主义时期，18 世纪，文化史上可谓极近的时期。在此之前，艺术家是遵循规则与技术的工匠。但弗里德里希是个很好的例子。刚才索尔·勒维特说"思想是创作艺术的机器"，同样弗里德里希说的是：</p>
+        <div class="callout">
+          <strong>"画家不仅应描绘眼前之物，更应描绘心中之物。"</strong>
+        </div>
+        <p>于是从此艺术家突然必须做感情、自我表达之类的事，不得不做、应该做的感觉形成了。这大概与刚才对 AI 的疑问相连。</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>一个思想实验：知道是 AI 写的，感动变不变？</summary>
+      <div class="detail-body">
+        <p>久保田做了一个很直接的思想实验：</p>
+        <p>比如读小说，非常好的小说，感动人心。读完后若被告知"其实这是生成式AI写的"，那种感动变不变？这很重要。如果变了，那是因为有<strong>浪漫主义式的思维在作祟</strong>——必须有人类。但如果更 dry（冷静）地想，谁画什么无所谓，不是人类、是外星人画的也无所谓，只要自己觉得有趣就是珍贵的。即使出自生成式AI，也不应有问题的。</p>
+        <p>他说，这种感受，有人有、有人没有。但如果有，思考这种感受源于何处，是个好机会。</p>
+        <div class="sidenote">感动变了吗？这个问题本身比答案更重要。</div>
+      </div>
+    </details>
+
+    <details>
+      <summary>浪漫主义的价值观清单</summary>
+      <div class="detail-body">
+        <p>久保田进一步拆解了浪漫主义价值观：</p>
+        <ul>
+          <li>将某种自恋升华为艺术哲学价值</li>
+          <li>神圣化自我、英雄——孤独英雄</li>
+          <li>精英意识，或者 snobbism（势利）</li>
+          <li>美化自我，或以主观重构世界</li>
+          <li>脆弱、自怜——神圣化这些</li>
+        </ul>
+        <p>他说，这些都是 18 世纪浪漫主义的发明。现在评价生成式AI作品时，<strong>在多大程度上浸染于浪漫主义、受其影响</strong>，恐怕会成为重要的分水岭。</p>
+      </div>
+    </details>
+
+    <h2>十五、创造性的历史与艺术崇拜的起源</h2>
+
+    <p>久保田继续追问：创造性也一样。我们说的"创造性"是什么时候变成现在这个意思的？</p>
+
+    <details open>
+      <summary>创造性曾是什么？模仿自然</summary>
+      <div class="detail-body">
+        <p><strong>创造性曾是什么？是模仿。模仿自然。</strong>但从浪漫主义时代开始，创造性被神圣化为从个人内在溢出的创造性能量。所以天才无垢创造的传说，或者创造力优先——这些也是这个时代诞生的。</p>
+        <p>久保田提醒：要知道这只是 18 世纪才出现的东西，而艺术史要长得多。</p>
+      </div>
+    </details>
+
+    <details open>
+      <summary>艺术何时成为崇拜对象？</summary>
+      <div class="detail-body">
+        <p>他提到一本有趣的书叫《艺术崇拜的思想》，说的是艺术何时成为崇拜对象。经历了浪漫主义后，刚才说的照片——计算机照片暂且不论——就连银盐照片出现时也是大问题。<strong>"绘画已死"</strong>当时很有名。同样，手写被消除还是解放？意见不一。</p>
+        <p>但此前明暗法与模仿一直被认为是技术与艺术价值观的核心，机器代为执行后，人们就说"那只剩人类内在了啊"，反而加速了这种倾向。</p>
+        <p>久保田说，这里不宜简单说各种价值观此消彼长，时代在变。其中显现的技术之一就是生成式AI。</p>
+      </div>
+    </details>
+
+    <div class="callout">
+      <strong>第五块总结：</strong>生成式AI的精神史可以追溯到 1960 年代的概念艺术（Sol LeWitt 的"思想成为机器"）、20 世纪初的包豪斯/呼捷玛斯（视觉语言的分解与重构）、达达与碎片化美学。这些线索共同说明：用"指令""操作""碎片化"代替手工创作，在艺术史上早有先例。但为什么今天我们仍会对 AI 作品感到不适？久保田认为答案在浪漫主义：18 世纪浪漫主义发明了"艺术家的内在""创造性""天才"等观念，正是这些观念让我们觉得 AI 作品"没有灵魂"。评价生成式AI时，我们有多深地受浪漫主义浸染，将是一个重要分水岭。
+    </div>
+
+    <nav class="nav-bottom">
+      <a href="lecture-guide-block4.html" class="nav-btn">← 上一块</a>
+      <span class="progress">Block 5 of 10</span>
+      <a href="lecture-guide-block6.html" class="nav-btn">下一块 →</a>
+    </nav>
+  </div>
+
+  <script>
+    document.querySelectorAll('details').forEach(detail => {
+      detail.addEventListener('toggle', () => {
+        detail.style.background = detail.open ? 'rgba(255, 255, 255, 0.55)' : 'rgba(255, 255, 255, 0.35)';
+      });
+    });
+  </script>
+</body>
+</html>

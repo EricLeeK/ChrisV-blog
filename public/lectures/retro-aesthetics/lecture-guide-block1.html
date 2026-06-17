@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1200">
+  <title>AI特论 · 逆行之美学｜第1块：LLM现状与技术爆发</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f7f5ef;
+      --paper-dark: #efeadd;
+      --ink: #2b2319;
+      --ink-light: #5c4f3d;
+      --accent: #b85c38;
+      --accent-soft: #d67c5a;
+      --highlight: #f4e4bc;
+      --margin-blue: #3d6a8e;
+      --margin-green: #5a7a5a;
+      --grid: rgba(43, 35, 25, 0.04);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: #e8e4d9;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Noto Serif SC", "Noto Serif", "STSong", "SimSun", serif;
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1.85;
+      background: var(--paper);
+      background-image:
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+        linear-gradient(var(--grid) 1px, transparent 1px);
+      background-size: 32px 32px;
+      min-height: 100vh;
+    }
+
+    /* 纸张边缘阴影 */
+    .page {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 64px 72px 120px;
+      background: var(--paper);
+      box-shadow: 0 0 48px rgba(43, 35, 25, 0.08), 0 6px 16px rgba(43, 35, 25, 0.06);
+      min-height: 100vh;
+    }
+
+    /* 顶部装订线装饰 */
+    .binding {
+      position: fixed;
+      left: 50%;
+      top: 0;
+      transform: translateX(-520px);
+      width: 3px;
+      height: 100vh;
+      background: linear-gradient(180deg, transparent 0%, rgba(184, 92, 56, 0.15) 8%, rgba(184, 92, 56, 0.15) 92%, transparent 100%);
+      pointer-events: none;
+    }
+
+    /* 标题区 */
+    header {
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 32px;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .course-label {
+      display: inline-block;
+      font-family: "Caveat", cursive;
+      font-size: 1.3rem;
+      color: var(--accent);
+      transform: rotate(-2deg);
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      line-height: 1.2;
+      margin: 0 0 16px 0;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .meta {
+      font-size: 0.95rem;
+      color: var(--ink-light);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .meta span { border-bottom: 1px dotted var(--ink-light); padding-bottom: 2px; }
+
+    /* 课程目录 */
+    .contents-section {
+      margin: 48px 0 56px;
+      padding: 32px;
+      background: rgba(255, 255, 255, 0.45);
+      border: 1.5px solid rgba(43, 35, 25, 0.12);
+      border-radius: 3px;
+    }
+
+    .contents-header {
+      text-align: center;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1.5px dashed rgba(43, 35, 25, 0.2);
+    }
+
+    .contents-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0 0 10px 0;
+      color: var(--ink);
+    }
+
+    .contents-subtitle {
+      font-size: 1rem;
+      color: var(--ink-light);
+      margin: 0;
+    }
+
+    .contents-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    @media (max-width: 700px) {
+      .contents-grid { grid-template-columns: 1fr; }
+    }
+
+    .contents-card {
+      display: block;
+      padding: 20px 22px;
+      border: 1.5px solid rgba(43, 35, 25, 0.12);
+      border-radius: 3px;
+      background: #fffef9;
+      text-decoration: none;
+      color: var(--ink);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contents-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background: var(--accent-soft);
+      opacity: 0.6;
+    }
+
+    .contents-card.second-half::before { background: var(--margin-blue); }
+
+    .contents-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent-soft);
+      box-shadow: 4px 4px 0 rgba(184, 92, 56, 0.12);
+    }
+
+    .contents-card.active {
+      border-color: var(--accent);
+      background: #fffbf5;
+      box-shadow: 4px 4px 0 var(--accent-soft);
+    }
+
+    .contents-card.active::before { background: var(--accent); }
+
+    .contents-card-num {
+      font-family: "Caveat", cursive;
+      font-size: 1.2rem;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .contents-card.second-half .contents-card-num { color: var(--margin-blue); }
+
+    .contents-card.active .contents-card-num { color: var(--accent); }
+
+    .contents-card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      line-height: 1.35;
+    }
+
+    .contents-card-desc {
+      font-size: 0.92rem;
+      color: var(--ink-light);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .contents-half-label {
+      grid-column: 1 / -1;
+      font-family: "Caveat", cursive;
+      font-size: 1.3rem;
+      color: var(--ink-light);
+      margin: 8px 0 0 4px;
+      padding-bottom: 4px;
+      border-bottom: 1px dotted rgba(43, 35, 25, 0.15);
+    }
+
+    /* 章节标题 */
+    h2 {
+      font-size: 1.45rem;
+      margin: 48px 0 20px;
+      padding-left: 16px;
+      border-left: 5px solid var(--accent);
+      line-height: 1.35;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      margin: 32px 0 12px;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    p { margin: 0 0 16px; }
+
+    /* 可折叠区块 */
+    details {
+      margin: 16px 0;
+      border: 1px solid rgba(43, 35, 25, 0.15);
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.35);
+      overflow: hidden;
+    }
+
+    summary {
+      padding: 16px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      list-style: none;
+      position: relative;
+      transition: background 0.2s ease;
+    }
+
+    summary:hover { background: rgba(184, 92, 56, 0.06); }
+
+    summary::-webkit-details-marker { display: none; }
+
+    summary::after {
+      content: "+";
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: "Noto Serif", serif;
+      font-size: 1.4rem;
+      color: var(--accent);
+      transition: transform 0.25s ease;
+    }
+
+    details[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+
+    .detail-body {
+      padding: 4px 20px 20px;
+    }
+
+    /* 边注 */
+    .sidenote {
+      float: right;
+      clear: right;
+      width: 180px;
+      margin: 0 -200px 16px 24px;
+      padding: 10px 14px;
+      font-family: "Caveat", cursive;
+      font-size: 1.1rem;
+      line-height: 1.4;
+      color: var(--margin-blue);
+      border-top: 2px solid var(--margin-blue);
+      background: rgba(61, 106, 142, 0.05);
+      transform: rotate(1deg);
+    }
+
+    /* 图解容器 */
+    .figure {
+      margin: 28px 0;
+      padding: 20px;
+      background: #fffef9;
+      border: 1px solid rgba(43, 35, 25, 0.12);
+      border-radius: 3px;
+      text-align: center;
+    }
+
+    .figure-caption {
+      font-size: 0.85rem;
+      color: var(--ink-light);
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    svg { max-width: 100%; height: auto; }
+
+    /* 高亮框 */
+    .callout {
+      margin: 24px 0;
+      padding: 18px 22px;
+      background: var(--highlight);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 3px 3px 0;
+    }
+
+    .callout strong { color: var(--accent); }
+
+    /* 关键词标签 */
+    .term {
+      display: inline-block;
+      padding: 1px 8px;
+      background: rgba(184, 92, 56, 0.12);
+      border-radius: 2px;
+      font-size: 0.92em;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 0 2px;
+    }
+
+    /* 对比卡片 */
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .compare-card {
+      padding: 18px;
+      background: #fffef9;
+      border: 1.5px solid rgba(43, 35, 25, 0.12);
+      border-radius: 3px;
+    }
+
+    .compare-card h4 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      color: var(--accent);
+    }
+
+    /* 底部导航 */
+    .nav-bottom {
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 2px solid var(--ink);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-btn {
+      display: inline-block;
+      padding: 10px 20px;
+      border: 1.5px solid var(--ink);
+      color: var(--ink);
+      text-decoration: none;
+      border-radius: 2px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover { background: var(--ink); color: var(--paper); }
+    .nav-btn.disabled { opacity: 0.4; pointer-events: none; border-style: dashed; }
+
+    .progress {
+      font-family: "Caveat", cursive;
+      font-size: 1.2rem;
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <div class="binding"></div>
+  <div class="page">
+    <header>
+      <div class="course-label">Lecture Guide · Block 1 / 10</div>
+      <h1>AI特论 第1回「逆行之美学」<br><small>久保田晃弘 · 前半</small></h1>
+      <div class="meta">
+        <span>来源：Tama Design University 讲座</span>
+        <span>主题：生成式AI的技术与文化现状</span>
+        <span>当前块：第 1 块 · LLM 现状 & 技术爆发</span>
+      </div>
+    </header>
+
+    <section class="intro">
+      <p>久保田的讲座策略是「逆行」——从现在的生成式AI出发，一路往回追问：这种技术为什么长这样？它的思想根源来自哪里？这一整块先把<strong>起点</strong>讲清楚：今天的大语言模型究竟是什么状态，以及当前技术发展的两条主线。</p>
+    </section>
+
+    <!-- 课程目录 -->
+    <section class="contents-section" aria-label="课程内容目录">
+      <div class="contents-header">
+        <h2 class="contents-title">课程内容概览</h2>
+        <p class="contents-subtitle">久保田晃弘「逆行之美学」讲座 · 前半 + 後半 · 共 10 块</p>
+      </div>
+      <div class="contents-grid">
+        <div class="contents-half-label">前半 · 生成式AI的技术与文化起点</div>
+
+        <div class="contents-card active">
+          <div class="contents-card-num">Block 1</div>
+          <h3 class="contents-card-title">LLM 现状与技术爆发</h3>
+          <p class="contents-card-desc">从 Transformer Explorer 出发，理解大语言模型不是"简单预测"，以及当前架构寒武纪爆发与效率化范式转移。</p>
+        </div>
+
+        <a href="lecture-guide-block2.html" class="contents-card">
+          <div class="contents-card-num">Block 2</div>
+          <h3 class="contents-card-title">文化现状与亚类型兴起</h3>
+          <p class="contents-card-desc">数字完美主义的终结、Tactile Rebellion、James Bridle 的新美学、Frutiger Aero / Neo-Aero 等亚类型。</p>
+        </a>
+
+        <a href="lecture-guide-block3.html" class="contents-card">
+          <div class="contents-card-num">Block 3</div>
+          <h3 class="contents-card-title">预测媒体与图像进化</h3>
+          <p class="contents-card-desc">美学对齐与数据饱和、互联网的局限、Lev Manovich 的"预测媒体"、图像媒体五阶段与智能手机相机。</p>
+        </a>
+
+        <a href="lecture-guide-block4.html" class="contents-card">
+          <div class="contents-card-num">Block 4</div>
+          <h3 class="contents-card-title">软件化与数据库艺术</h3>
+          <p class="contents-card-desc">数据集作为档案、信息压缩与扩张、1990 年代软件化、数据库艺术、Shredder、新媒体五原理。</p>
+        </a>
+
+        <a href="lecture-guide-block5.html" class="contents-card">
+          <div class="contents-card-num">Block 5</div>
+          <h3 class="contents-card-title">浪漫主义与作者性</h3>
+          <p class="contents-card-desc">1960 年代概念艺术、包豪斯/呼捷玛斯、达达与碎片化美学、浪漫主义如何发明"作者"与"创造性"。</p>
+        </a>
+
+        <a href="lecture-guide-block6.html" class="contents-card">
+          <div class="contents-card-num">Block 6</div>
+          <h3 class="contents-card-title">Techne 与三种立场</h3>
+          <p class="contents-card-desc">古希腊 Techne/Ars、非创造传统、作者之死、本雅明拱廊计划、思考生成式AI的三种立场。</p>
+        </a>
+
+        <div class="contents-half-label">後半 · 塑料树论争与生成式AI美学</div>
+
+        <a href="lecture-guide-block7.html" class="contents-card second-half">
+          <div class="contents-card-num">Block 7</div>
+          <h3 class="contents-card-title">从概念艺术到广告文化</h3>
+          <p class="contents-card-desc">Sol LeWitt 与数字艺术、Negroponte《Being Digital》、近代自我、Edward Bernays 与广告文化、技术黑箱。</p>
+        </a>
+
+        <a href="lecture-guide-block8.html" class="contents-card second-half">
+          <div class="contents-card-num">Block 8</div>
+          <h3 class="contents-card-title">塑料树论争（上）</h3>
+          <p class="contents-card-desc">Martin Krieger 1973 年论文、自然是社会建构、复制品经验等价、社会正义、2000 年"第二自然"。</p>
+        </a>
+
+        <a href="lecture-guide-block9.html" class="contents-card second-half">
+          <div class="contents-card-num">Block 9</div>
+          <h3 class="contents-card-title">塑料树的美学反驳与 AI 类比</h3>
+          <p class="contents-card-desc">西村清一的美学反驳、环境美学、AI 作品的违和感来源、美学与伦理的纠缠。</p>
+        </a>
+
+        <a href="lecture-guide-block10.html" class="contents-card second-half">
+          <div class="contents-card-num">Block 10</div>
+          <h3 class="contents-card-title">生成式AI的存在论与收尾</h3>
+          <p class="contents-card-desc">模仿/生成/存在三种位置、作者之死、图像存在论、人工物美学、相关新书与课程展望。</p>
+        </a>
+      </div>
+    </section>
+
+    <h2>一、讲座的出发点：大语言模型的现在</h2>
+
+    <p>久保田说，这次讲座要"逆着历史回溯"生成式AI，但出发点必须是"现在"。他首先想介绍的是：<strong>目前被广泛使用的大语言模型（LLM）处于何种状态。</strong></p>
+
+    <details open>
+      <summary>Transformer Explorer：把"下一个词预测"可视化</summary>
+      <div class="detail-body">
+        <p>他从一个叫 <span class="term">Transformer Explorer</span> 的网站开始。这是一个以交互方式呈现的网站：给定一句开头，模型会逐个 token 预测下一个词，把概率分布可视化出来。</p>
+
+        <div class="video-marker">视频画面：Transformer Explorer 网站的交互演示，示例文本为 "Artificial Intelligence is Transforming the..."</div>
+
+        <p>久保田演示了这个过程：输入 "Artificial Intelligence is Transforming the..."，网站会显示接下来可能出现的一系列候选词。如果继续点击 Generate，当 "World" 作为候选出现时，再点 Generate 就会继续预测下一个字符，比如接下来会出现 "OVE" 等等。看上面的小字，可以看到接下来会出现"商业"之类的词。</p>
+        <p>这个网站的功能就是介绍<strong>生成式AI内部实际上在做什么</strong>。如大家所见，它在做相当复杂的事情。</p>
+      </div>
+    </details>
+
+    <details open>
+      <summary>"说到底只是预测"——对，但太轻率了</summary>
+      <div class="detail-body">
+        <p>久保田说，我们常说生成式AI"说到底只是在做预测"，这话对也算对，但之所以现在这么多人投身于这项技术，正是因为其中凝聚了大量以往的研究与实践成果，才得以诞生出性能如此强大的软件。至少从技术角度来看，这是巨大的成果与进步，我们必须承认这一点。这是他要说的第一个出发点。</p>
+
+        <div class="sidenote">轻视预测，就是轻视几十年的工程积累。</div>
+
+        <p>具体来说，Transformer Explorer 里展示的还只是极小一部分。每个 Transformer 模块中的 <span class="term">Key / Value / Query</span>，就是数据库中用于检索数据、返回结果、携带数值的组合，它们层层堆叠。作为关键技术，<span class="term">Attention（注意力）</span>机制模拟的是我们人类思考事物时至关重要的语境。</p>
+        <p>对话时，我们不会只根据当下听到的单词做判断，还会考虑"刚才在聊什么话题""之前说了什么词"，在把握语境的过程中进行交流。因此，即使信息不完整也能做出预测。<strong>如何将这些能力通过数据库和算法实现，正是这项技术的一个出发点。</strong></p>
+        <p>而且这些结构中有大量的——所谓 <span class="term">Multi-head（多头）</span>机制——如何有效发现语境，这是技术中极为重要的一环，而且这些结构层层叠叠。这是 <span class="term">GPT-2</span>，一项有些年代的技术了。如今的大语言模型技术正是在此基础上进步、发展的。至少以几年前的技术为例，就有这么多层，而且每一层都可以附加各种参数。</p>
+
+        <div class="callout">
+          <strong>一句话记住：</strong>今天的 LLM 是"海量参数 + 工程调优"的产物，它的预测能力建立在复杂结构之上，不是简单的查表或接龙。
+        </div>
+      </div>
+    </details>
+
+    <!-- Transformer 架构简图 -->
+    <div class="figure">
+      <svg viewBox="0 0 620 260" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L0,6 L9,3 z" fill="#5c4f3d"/>
+          </marker>
+        </defs>
+        <rect x="20" y="110" width="80" height="40" rx="3" fill="#f4e4bc" stroke="#b85c38" stroke-width="1.5"/>
+        <text x="60" y="135" text-anchor="middle" font-size="13" fill="#2b2319">输入文本</text>
+        <line x1="100" y1="130" x2="150" y2="130" stroke="#5c4f3d" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <g transform="translate(160, 40)">
+          <rect x="0" y="0" width="140" height="180" rx="4" fill="#fffef9" stroke="#2b2319" stroke-width="2"/>
+          <text x="70" y="24" text-anchor="middle" font-size="14" font-weight="700" fill="#2b2319">Transformer Block</text>
+          <rect x="25" y="42" width="90" height="28" rx="2" fill="#e8e4d9" stroke="#5c4f3d" stroke-width="1"/>
+          <text x="70" y="61" text-anchor="middle" font-size="12" fill="#2b2319">Multi-Head Attention</text>
+          <rect x="25" y="86" width="90" height="28" rx="2" fill="#e8e4d9" stroke="#5c4f3d" stroke-width="1"/>
+          <text x="70" y="105" text-anchor="middle" font-size="12" fill="#2b2319">Feed Forward</text>
+          <rect x="25" y="130" width="90" height="28" rx="2" fill="#e8e4d9" stroke="#5c4f3d" stroke-width="1"/>
+          <text x="70" y="149" text-anchor="middle" font-size="12" fill="#2b2319">Layer Norm</text>
+        </g>
+        <line x1="300" y1="130" x2="350" y2="130" stroke="#5c4f3d" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <g transform="translate(360, 80)">
+          <rect x="0" y="0" width="100" height="100" rx="4" fill="#fffef9" stroke="#b85c38" stroke-width="2"/>
+          <rect x="8" y="8" width="84" height="84" rx="3" fill="none" stroke="#d67c5a" stroke-width="1" stroke-dasharray="4 2"/>
+          <rect x="16" y="16" width="68" height="68" rx="2" fill="none" stroke="#d67c5a" stroke-width="1" stroke-dasharray="4 2"/>
+          <text x="50" y="55" text-anchor="middle" font-size="13" fill="#b85c38">× N 层</text>
+        </g>
+        <line x1="460" y1="130" x2="510" y2="130" stroke="#5c4f3d" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <rect x="520" y="90" width="80" height="80" rx="3" fill="#f4e4bc" stroke="#b85c38" stroke-width="1.5"/>
+        <text x="560" y="120" text-anchor="middle" font-size="12" fill="#2b2319">下一个词</text>
+        <text x="560" y="140" text-anchor="middle" font-size="12" fill="#2b2319">概率分布</text>
+        <text x="560" y="160" text-anchor="middle" font-size="11" fill="#5c4f3d">P(商业)=0.32</text>
+      </svg>
+      <div class="figure-caption">图 1：简化版 Transformer 流程。文本先进入多层 Transformer Block，每层通过 Attention 把握上下文，最后输出下一个词的概率分布。</div>
+    </div>
+
+    <details open>
+      <summary>Temperature 与采样：控制"随机性"的参数</summary>
+      <div class="detail-body">
+        <p>久保田用 <span class="term">Temperature（温度）</span>来说明参数如何影响输出。这个 Temperature 值控制分布的宽窄：</p>
+        <ul>
+          <li><strong>温度低</strong>：将概率分布的峰值拉高，模型倾向于选概率最高的词，输出更固定、更"格式化"、更保守。</li>
+          <li><strong>温度高</strong>：将概率分布的山峰变得平缓，候选范围变广，输出更有意外性。但过头了就会产生 <span class="term">Hallucination（幻觉）</span>，也就是幻听或错误答案。</li>
+        </ul>
+        <p>另外还有 Top-p / Top-k 采样：从 Top 采样中选多少个，是 probabilistic（概率式）选择还是固定数量选择，这些方式都会影响结果。</p>
+        <div class="callout">
+          <strong>关键点：</strong>LLM 的输出不是单一确定的，而是一组可被调节的概率行为。调参本身就是"让工具更易用、更有帮助"的过程。这不是简单地说"这样就能预测"，而是有海量参数，通过调整它们来让工具更易用、更有帮助——这才是当今技术的背景。
+        </div>
+      </div>
+    </details>
+
+    <!-- Temperature 可视化 -->
+    <div class="figure">
+      <svg viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg">
+        <text x="120" y="30" text-anchor="middle" font-size="14" font-weight="700" fill="#2b2319">低温 → 输出集中</text>
+        <text x="460" y="30" text-anchor="middle" font-size="14" font-weight="700" fill="#2b2319">高温 → 输出分散</text>
+        <path d="M40,160 Q120,40 200,160" fill="none" stroke="#b85c38" stroke-width="3"/>
+        <line x1="40" y1="170" x2="200" y2="170" stroke="#5c4f3d" stroke-width="1"/>
+        <text x="120" y="188" text-anchor="middle" font-size="12" fill="#5c4f3d">候选词概率</text>
+        <circle cx="120" cy="70" r="4" fill="#b85c38"/>
+        <text x="120" y="60" text-anchor="middle" font-size="11" fill="#b85c38">“商业” 概率最高</text>
+        <path d="M380,160 Q460,100 540,160" fill="none" stroke="#3d6a8e" stroke-width="3"/>
+        <line x1="380" y1="170" x2="540" y2="170" stroke="#5c4f3d" stroke-width="1"/>
+        <text x="460" y="188" text-anchor="middle" font-size="12" fill="#5c4f3d">候选词概率</text>
+        <circle cx="420" cy="126" r="3" fill="#3d6a8e"/>
+        <circle cx="460" cy="116" r="3" fill="#3d6a8e"/>
+        <circle cx="500" cy="126" r="3" fill="#3d6a8e"/>
+        <text x="460" y="95" text-anchor="middle" font-size="11" fill="#3d6a8e">多个词概率接近</text>
+      </svg>
+      <div class="figure-caption">图 2：Temperature 如何改变概率分布。低温让输出稳定但可能呆板；高温让输出多样但容易"hallucinate"。</div>
+    </div>
+
+    <details>
+      <summary>架构的多样性：不是单一技术</summary>
+      <div class="detail-body">
+        <p>久保田提到，最近有人在做所谓 <span class="term">Architecture Gallery（架构画廊）</span>，调查有多少种架构。那个网站上每一个都是一个模型的架构结构，真可谓百货琳琅、数不胜数。</p>
+
+        <div class="video-marker">视频画面：Architecture Gallery 网站截图，展示各种模型架构结构图</div>
+
+        <p>他的结论是：生成式AI不是某一种已经确立的技术，而是众多研究者、甚至包括一些初创企业，都在相互切磋中进行着各种开发。毋庸置疑，这是一个极其活跃的领域。</p>
+        <p>仔细看这些的话，细节上是没完没了的。层数极多、处理复杂。从信息设计的角度来看，这也是一股非常优美的信息流。而且这些架构因模型而异，各种尝试都有，有的成功，有的失败。探索下去真的是永无止境，但首先我们要认清这就是这项技术的本质。</p>
+      </div>
+    </details>
+
+    <h2>二、生成式AI的技术现状：寒武纪爆发与效率化</h2>
+
+    <p>讲完 LLM 内部机制后，久保田把视角拉远，看当前生成式AI整体技术格局。他提出两条并行主线：<strong>架构多样化</strong>和<strong>效率化</strong>。</p>
+
+    <details open>
+      <summary>主线 A："寒武纪爆发"式的架构多样化</summary>
+      <div class="detail-body">
+        <p>久保田把当前生成式AI的多样化比作 <span class="term">寒武纪爆发</span>。寒武纪爆发说的是生物进化史上，大约 5 亿年前，在伯吉斯页岩发现化石而闻名的时期。生物花了 40 亿、50 亿年进化而来，但绝非平坦匀速，而是时有爆发性变化。对地球现有生物而言，寒武纪爆发时诞生了各种身体结构——也就是架构——脚的结构、身体的结构都是在那时成形的。</p>
+        <p>正如有人所说，生成式AI元年、GPT 架构确立之后，真的是日新月异地在进化，现在可能正属于这样一个时期。普遍而言，在设计、创造事物时，设计空间一旦超过临界点，算法就会突然多样化，这在很多领域都会发生，现在恐怕正处于这样的时期。</p>
+        <div class="callout">
+          <strong>核心判断：</strong>Transformer 这种有效的预测机制已经诞生，并且如今已被打磨到极高水平，处于不断微调、精炼的状态。
+        </div>
+      </div>
+    </details>
+
+    <details open>
+      <summary>主线 B：从"大力出奇迹"到"效率优先"</summary>
+      <div class="detail-body">
+        <p>复杂的 Transformer 计算成本极高。有研究说，现在在线查询生成式AI消耗多少电力，相比过去的搜索，现在生成式AI的能耗是 10 倍或更多。日积月累，这就引发了数据中心问题、电力供应问题、资源问题、散热问题，各方面都在讨论。</p>
+        <p>因此，不能只是提升性能，还必须提高能源效率。这带来一场<strong>范式转移</strong>：</p>
+        <div class="compare">
+          <div class="compare-card">
+            <h4>过去：Scaling Law</h4>
+            <p>为了提升精度，大家拼命计算、增加基础学习的数据量、或者增加可调参数。这种"大力出奇迹"的 Scaling Law 思路，基本上是"快者得天下"。</p>
+          </div>
+          <div class="compare-card">
+            <h4>现在：效率优化</h4>
+            <p>越来越多的人开始致力于优化计算和内存效率、减少计算量——也就是让生成变得更轻松、更节能。</p>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary>效率化的三个具体方向</summary>
+      <div class="detail-body">
+        <p><strong>1. Local LLM（本地大语言模型）</strong></p>
+        <p>现在生成式AI基本依赖联网和中央服务器。但比如智能手机就是个很好的例子：断网时能不能用？能不能不依赖中央大型服务器，而是在终端设备上运行？所以为了提高效率、减少负载，与其做一个大家伙让大家访问，不如分布式各跑各的。这虽然不限于生成式AI，但这类趋势确实正在发生。</p>
+
+        <p><strong>2. Bonsai（盆栽）LLM 与量化</strong></p>
+        <p>不久前有一个叫 <span class="term">Bonsai（盆栽）</span>的 LLM 引起关注。刚才说增加参数，那增加参数的同时，能不能减少每个参数所用的信息量？要提高精度就要提高位数，这就需要大量比特来表示。但逐渐削减后，发现性能其实下降不多。把它推到极致会怎样？</p>
+        <p><span class="term">1-bit LLM</span> 就是只用 1 或 -1，仅用 1 比特信息的参数来学习，结果性能相当不错——当然其中包含大量巧思和改进。</p>
+
+        <div class="video-marker">视频画面：Bonsai（盆栽）LLM 或 1-bit LLM 相关的论文/架构示意图</div>
+
+        <p><strong>3. 1.58-bit LLM 与智能密度</strong></p>
+        <p><span class="term">1.58-bit LLM</span> 是因为信息量用对数表示，log₂1 = 1，再加一个值变成 1、0、-1 三种值，就是 1.58-bit LLM，性能还会进一步提升。这是最近的热门话题。</p>
+        <p>这里讨论的是一个叫 <span class="term">"智能密度"</span>的参数。正如刚才所说，提高效率不能只看能不能做厉害的事，而是如何在紧凑的体积中塞入更多智能能力。有了 1-bit LLM 这样的技术，智能密度就会大幅提升，而且计算量也少。这样一来，比如没有网络连接的智能手机也能运行。</p>
+
+        <div class="callout">
+          <strong>核心判断：</strong>1-bit / 1.58-bit 这样的技术能大幅提升"智能密度"，同时计算量更少。未来可能让离线智能手机也能跑生成式AI——这是技术范式正在转移的证据。
+        </div>
+      </div>
+    </details>
+
+    <!-- 效率化趋势图 -->
+    <div class="figure">
+      <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L0,6 L9,3 z" fill="#5c4f3d"/>
+          </marker>
+        </defs>
+        <line x1="60" y1="200" x2="580" y2="200" stroke="#2b2319" stroke-width="2" marker-end="url(#arrow2)"/>
+        <line x1="60" y1="200" x2="60" y2="30" stroke="#2b2319" stroke-width="2" marker-end="url(#arrow2)"/>
+        <text x="320" y="230" text-anchor="middle" font-size="13" fill="#5c4f3d">时间 →</text>
+        <text x="30" y="120" text-anchor="middle" font-size="13" fill="#5c4f3d" transform="rotate(-90 30 120)">性能</text>
+        <path d="M80,170 Q200,120 300,80" fill="none" stroke="#3d6a8e" stroke-width="3" stroke-dasharray="6 3"/>
+        <text x="200" y="105" font-size="12" fill="#3d6a8e">Scaling Law：堆算力</text>
+        <path d="M300,80 Q420,60 560,50" fill="none" stroke="#b85c38" stroke-width="3"/>
+        <text x="430" y="45" font-size="12" fill="#b85c38">效率优化：更少能耗</text>
+        <circle cx="300" cy="80" r="6" fill="#b85c38" stroke="#fff" stroke-width="2"/>
+        <text x="300" y="65" text-anchor="middle" font-size="11" fill="#b85c38">范式转移</text>
+        <rect x="380" y="110" width="180" height="70" rx="3" fill="#fffef9" stroke="#b85c38" stroke-width="1.5"/>
+        <text x="470" y="135" text-anchor="middle" font-size="12" fill="#2b2319">Local LLM</text>
+        <text x="470" y="155" text-anchor="middle" font-size="12" fill="#2b2319">1-bit / 1.58-bit</text>
+        <text x="470" y="175" text-anchor="middle" font-size="12" fill="#2b2319">智能密度 ↑</text>
+      </svg>
+      <div class="figure-caption">图 3：生成式AI技术路线的范式转移。从单纯堆规模（Scaling Law）转向在保持性能的同时压缩计算成本。</div>
+    </div>
+
+    <div class="callout">
+      <strong>本块总结：</strong>久保田先立住了"现在"这个起点。LLM 的内部是复杂的多层预测机器；而从外部看，整个行业正同时经历"架构寒武纪爆发"和"效率化范式转移"。不理解这两点，后面关于文化、历史、美学的讨论都缺少技术锚点。
+    </div>
+
+    <nav class="nav-bottom">
+      <a href="#" class="nav-btn disabled">← 上一块</a>
+      <span class="progress">Block 1 of 10</span>
+      <a href="lecture-guide-block2.html" class="nav-btn">下一块 →</a>
+    </nav>
+  </div>
+
+  <script>
+    document.querySelectorAll('details').forEach(detail => {
+      detail.addEventListener('toggle', () => {
+        detail.style.background = detail.open ? 'rgba(255, 255, 255, 0.55)' : 'rgba(255, 255, 255, 0.35)';
+      });
+    });
+  </script>
+</body>
+</html>
