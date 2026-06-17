@@ -1,11 +1,12 @@
-<div class="lecture-nav-bar">
+<nav class="lecture-nav-bar">
   <a href="/" class="lecture-nav-back">← 回博客</a>
   <span class="lecture-nav-title">逆行之美学</span>
   <span class="lecture-nav-spacer"></span>
-</div>
+</nav>
 
 <style>
   .lecture-nav-bar {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -35,7 +36,15 @@
     border-color: #d0c8b8;
   }
 
+  .lecture-nav-back:focus-visible {
+    outline: 2px solid #b85c38;
+    outline-offset: 2px;
+  }
+
   .lecture-nav-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     font-size: 14px;
     color: #5c4f3d;
     font-family: "Noto Serif SC", "Noto Serif", serif;
