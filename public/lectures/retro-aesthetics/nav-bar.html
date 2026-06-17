@@ -1,4 +1,4 @@
-<nav class="lecture-nav-bar">
+<nav class="lecture-nav-bar" aria-label="讲座导航">
   <a href="/" class="lecture-nav-back">← 回博客</a>
   <span class="lecture-nav-title">逆行之美学</span>
   <span class="lecture-nav-spacer"></span>
@@ -6,10 +6,9 @@
 
 <style>
   .lecture-nav-bar {
-    position: relative;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    justify-content: space-between;
     gap: 16px;
     padding: 14px 24px;
     background: #efeadd;
@@ -42,16 +41,14 @@
   }
 
   .lecture-nav-title {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
     font-size: 14px;
     color: #5c4f3d;
     font-family: "Noto Serif SC", "Noto Serif", serif;
+    text-align: center;
   }
 
   .lecture-nav-spacer {
-    width: 80px;
+    width: auto;
   }
 
   @media (max-width: 640px) {
