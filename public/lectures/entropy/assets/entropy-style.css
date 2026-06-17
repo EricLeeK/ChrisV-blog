@@ -1,0 +1,423 @@
+/* entropy-style.css — shared 3Blue1Brown dark theme for entropy lecture guides */
+
+:root {
+  --paper: #000000;
+  --paper-dark: #000000;
+  --ink: #f0f0f5;
+  --ink-light: #a0a0b8;
+  --accent: #58c4dd;
+  --accent-soft: #7fd4e8;
+  --accent-warm: #fc6255;
+  --accent-yellow: #f5d742;
+  --accent-green: #83c167;
+  --accent-purple: #9d70d1;
+  --highlight: rgba(88, 196, 221, 0.12);
+  --grid: rgba(240, 240, 245, 0.035);
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  background: var(--paper-dark);
+}
+
+body {
+  margin: 0;
+  font-family: "Noto Serif SC", "Noto Serif", "STSong", "SimSun", serif;
+  color: var(--ink);
+  font-size: 18px;
+  line-height: 1.85;
+  background: var(--paper);
+  background-image:
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+    linear-gradient(var(--grid) 1px, transparent 1px);
+  background-size: 32px 32px;
+  min-height: 100vh;
+}
+
+.page {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 64px 72px 120px;
+  background: var(--paper);
+  border-left: 1px solid rgba(240, 240, 245, 0.06);
+  border-right: 1px solid rgba(240, 240, 245, 0.06);
+  box-shadow: 0 0 80px rgba(88, 196, 221, 0.04), 0 0 40px rgba(0, 0, 0, 0.5);
+  min-height: 100vh;
+  position: relative;
+}
+
+.binding {
+  position: fixed;
+  left: 50%;
+  top: 0;
+  transform: translateX(-520px);
+  width: 3px;
+  height: 100vh;
+  background: linear-gradient(180deg, transparent 0%, rgba(88, 196, 221, 0.2) 8%, rgba(88, 196, 221, 0.2) 92%, transparent 100%);
+  pointer-events: none;
+}
+
+header {
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 32px;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.course-label {
+  display: inline-block;
+  font-family: "Caveat", cursive;
+  font-size: 1.3rem;
+  color: var(--accent);
+  transform: rotate(-2deg);
+  margin-bottom: 8px;
+}
+
+h1 {
+  font-size: 2.8rem;
+  line-height: 1.2;
+  margin: 0 0 16px 0;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.meta {
+  font-size: 0.95rem;
+  color: var(--ink-light);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.meta span { border-bottom: 1px dotted var(--ink-light); padding-bottom: 2px; }
+
+h2 {
+  font-size: 1.45rem;
+  margin: 48px 0 20px;
+  padding-left: 16px;
+  border-left: 5px solid var(--accent);
+  line-height: 1.35;
+}
+
+h3 {
+  font-size: 1.15rem;
+  margin: 32px 0 12px;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+p { margin: 0 0 16px; }
+
+details {
+  margin: 16px 0;
+  border: 1px solid rgba(240, 240, 245, 0.12);
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.03);
+  overflow: hidden;
+}
+
+summary {
+  padding: 16px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+  position: relative;
+  transition: background 0.2s ease;
+}
+
+summary:hover { background: rgba(88, 196, 221, 0.08); }
+
+summary::-webkit-details-marker { display: none; }
+
+summary::after {
+  content: "+";
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: "Noto Serif", serif;
+  font-size: 1.4rem;
+  color: var(--accent);
+  transition: transform 0.25s ease;
+}
+
+details[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+
+.detail-body { padding: 4px 20px 20px; }
+
+.sidenote {
+  float: right;
+  clear: right;
+  width: 180px;
+  margin: 0 -200px 16px 24px;
+  padding: 10px 14px;
+  font-family: "Caveat", cursive;
+  font-size: 1.1rem;
+  line-height: 1.4;
+  color: var(--accent-green);
+  border-top: 2px solid var(--accent-green);
+  background: rgba(131, 193, 103, 0.07);
+  transform: rotate(1deg);
+}
+
+.figure {
+  margin: 28px 0;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(240, 240, 245, 0.1);
+  border-radius: 3px;
+  text-align: center;
+}
+
+.figure canvas {
+  width: 100%;
+  max-width: 880px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.figure-caption {
+  font-size: 0.85rem;
+  color: var(--ink-light);
+  margin-top: 12px;
+  font-style: italic;
+}
+
+.callout {
+  margin: 24px 0;
+  padding: 18px 22px;
+  background: var(--highlight);
+  border-left: 4px solid var(--accent);
+  border-radius: 0 3px 3px 0;
+}
+
+.callout strong { color: var(--accent); }
+
+.term {
+  display: inline-block;
+  padding: 1px 8px;
+  background: rgba(88, 196, 221, 0.15);
+  border-radius: 2px;
+  font-size: 0.92em;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 0 2px;
+}
+
+.compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.compare-card {
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px solid rgba(240, 240, 245, 0.1);
+  border-radius: 3px;
+}
+
+.compare-card h4 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  color: var(--accent-warm);
+}
+
+.code-block {
+  font-family: "Fira Code", "SF Mono", monospace;
+  font-size: 0.9em;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 14px 18px;
+  border-radius: 3px;
+  border-left: 3px solid var(--accent-yellow);
+  margin: 16px 0;
+  overflow-x: auto;
+}
+
+.controls {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  justify-content: center;
+  margin: 20px 0 8px;
+  flex-wrap: wrap;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--ink-light);
+  min-height: 36px;
+  padding: 4px 0;
+}
+
+.control-group label {
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.control-group span {
+  min-width: 48px;
+  text-align: right;
+}
+
+input[type="range"] {
+  accent-color: var(--accent);
+  height: 20px;
+  margin: 0;
+  vertical-align: middle;
+}
+
+.legend {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: var(--ink-light);
+}
+
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+
+.stats-bar {
+  margin: 16px auto 4px;
+  padding: 14px 24px;
+  display: inline-block;
+  background: rgba(88, 196, 221, 0.08);
+  border: 1px solid rgba(88, 196, 221, 0.25);
+  border-radius: 3px;
+  font-family: "Fira Code", "SF Mono", monospace;
+  font-size: 0.95rem;
+  color: var(--ink-light);
+}
+
+.stats-bar strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Navigation */
+.nav-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 64px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(240, 240, 245, 0.12);
+}
+
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  background: rgba(88, 196, 221, 0.08);
+  border: 1px solid rgba(88, 196, 221, 0.3);
+  border-radius: 3px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.nav-btn:hover {
+  background: rgba(88, 196, 221, 0.16);
+  border-color: var(--accent);
+}
+
+.nav-btn.disabled {
+  pointer-events: none;
+  color: var(--ink-light);
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(240, 240, 245, 0.1);
+}
+
+.progress {
+  font-family: "Fira Code", "SF Mono", monospace;
+  font-size: 0.9rem;
+  color: var(--ink-light);
+}
+
+/* Course contents grid */
+.contents-section {
+  margin: 32px 0 48px;
+}
+
+.contents-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.contents-title {
+  font-size: 1.1rem;
+  margin: 0;
+  color: var(--ink-light);
+  font-weight: 600;
+}
+
+.contents-subtitle {
+  font-size: 0.85rem;
+  color: var(--ink-light);
+  font-family: "Caveat", cursive;
+}
+
+.contents-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.contents-card {
+  display: block;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px solid rgba(240, 240, 245, 0.1);
+  border-radius: 3px;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.contents-card:hover {
+  background: rgba(88, 196, 221, 0.06);
+  border-color: rgba(88, 196, 221, 0.3);
+}
+
+.contents-card.active {
+  background: rgba(88, 196, 221, 0.1);
+  border-color: var(--accent);
+  pointer-events: none;
+}
+
+.contents-half-label {
+  font-family: "Fira Code", "SF Mono", monospace;
+  font-size: 0.75rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.contents-card-title {
+  font-size: 1.05rem;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+
+.contents-card-desc {
+  font-size: 0.85rem;
+  color: var(--ink-light);
+  margin: 0;
+  line-height: 1.55;
+}

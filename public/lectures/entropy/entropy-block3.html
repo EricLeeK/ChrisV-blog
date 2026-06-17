@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1200">
+  <title>熵与压缩智能 · 第3块：交叉熵与智能</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/entropy-style.css">
+</head>
+<body>
+<nav class="lecture-nav-bar" aria-label="讲座导航">
+  <a href="/" class="lecture-nav-back">← 回博客</a>
+  <span class="lecture-nav-title">熵与压缩智能</span>
+  <span class="lecture-nav-spacer"></span>
+</nav>
+
+<style>
+  .lecture-nav-bar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 24px;
+    background: #efeadd;
+    border-bottom: 1px solid #e0d8c8;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+
+  .lecture-nav-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #f7f5ef;
+    border: 1px solid #e0d8c8;
+    border-radius: 6px;
+    color: #2b2319;
+    font-size: 14px;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .lecture-nav-back:hover {
+    background: #fff;
+    border-color: #d0c8b8;
+  }
+
+  .lecture-nav-back:focus-visible {
+    outline: 2px solid #b85c38;
+    outline-offset: 2px;
+  }
+
+  .lecture-nav-title {
+    font-size: 14px;
+    color: #5c4f3d;
+    font-family: "Noto Serif SC", "Noto Serif", serif;
+    text-align: center;
+  }
+
+  .lecture-nav-spacer {
+    width: auto;
+  }
+
+  @media (max-width: 640px) {
+    .lecture-nav-bar {
+      padding: 12px 16px;
+    }
+    .lecture-nav-spacer {
+      display: none;
+    }
+  }
+</style>
+<!-- lecture-nav-injected -->
+
+  <div class="binding"></div>
+  <div class="page">
+    <header>
+      <div class="course-label">Lecture Guide · Block 3 / 3</div>
+      <h1>交叉熵与智能</h1>
+      <div class="meta">
+        <span>来源：Reinventing Entropy, Compression & Intelligence Part 1</span>
+        <span>主题：语言建模、交叉熵损失与压缩⇔智能</span>
+        <span>预计阅读：14 分钟</span>
+      </div>
+    </header>
+
+    <section class="intro">
+      <p>前两块的框架有一个隐藏假设：每个符号都服从同一个概率分布。但自然语言显然不是这样——每个词、每个字母的概率都强烈依赖于前文。现代<span class="term">语言模型</span>（Language Model）正是利用这一点。我们将看到，训练语言模型时常用的<span class="term">交叉熵</span>损失，本质上就是在训练一个尽可能高效的文本压缩器。</p>
+    </section>
+
+    <section class="contents-section">
+      <div class="contents-header">
+        <h2 class="contents-title">目录 Contents</h2>
+        <span class="contents-subtitle">3 blocks in total</span>
+      </div>
+      <div class="contents-grid">
+        <a href="entropy-block1.html" class="contents-card">
+          <div class="contents-half-label">Block 1</div>
+          <h3 class="contents-card-title">压缩的极限</h3>
+          <p class="contents-card-desc">机器人指令、前缀码、Huffman 编码与压缩极限。</p>
+        </a>
+        <a href="entropy-block2.html" class="contents-card">
+          <div class="contents-half-label">Block 2</div>
+          <h3 class="contents-card-title">信息与熵</h3>
+          <p class="contents-card-desc">信息定义 -log₂(p)、熵的面积解释、香农无噪声编码定理。</p>
+        </a>
+        <div class="contents-card active">
+          <div class="contents-half-label">Block 3</div>
+          <h3 class="contents-card-title">交叉熵与智能</h3>
+          <p class="contents-card-desc">语言建模、条件概率链式法则、交叉熵损失、压缩⇔智能。</p>
+        </div>
+      </div>
+    </section>
+
+    <h2>一、从机器人指令到自然语言</h2>
+    <p>机器人指令的例子过于理想化：四个方向的概率恰好是 2 的幂次，因此每个符号的信息量都是整数比特。真实数据远非如此。以英语为例，每个新字母的概率：</p>
+    <ul>
+      <li><strong>高度依赖上下文</strong>：看到 "th" 之后，下一个字母大概率是 "e"；</li>
+      <li><strong>不再是 2 的幂</strong>：每个字母对应的概率会产生小数位的信息量；</li>
+      <li><strong>符号数量巨大</strong>：词汇表不是 4 个，而是数万甚至数百万。</li>
+    </ul>
+    <p>这些差异并没有改变压缩极限的核心逻辑，只是让 Huffman 编码这样的单符号方案远远不够。我们需要一种能根据上下文动态调整概率的模型。</p>
+
+    <h2>二、条件概率与链式法则</h2>
+    <p>对于一段文本 <code>x₁, x₂, ..., xₙ</code>，其联合概率可以按顺序拆解：</p>
+    <div class="code-block">P(x₁, x₂, ..., xₙ) = P(x₁) · P(x₂|x₁) · P(x₃|x₁,x₂) · ... · P(xₙ|x₁,...,xₙ₋₁)</div>
+    <p>这就是概率的<span class="term">链式法则</span>。它把「整个句子的概率」转化为「已知前文后下一个符号的条件概率」的连乘。</p>
+    <p>取负对数后，连乘变成求和：</p>
+    <div class="code-block">-log₂ P(整个句子) = Σ -log₂ P(xᵢ | x₁...xᵢ₋₁)</div>
+    <p>于是，整条消息的总信息量，等于每个位置在给定上下文后的<span class="term">条件信息</span>之和。语言模型要学的，正是这些条件概率。</p>
+
+    <h2>三、交叉熵损失：预测即压缩</h2>
+    <p>在监督学习中，<span class="term">交叉熵损失</span>衡量模型预测分布 <code>q</code> 与真实分布 <code>p</code> 之间的差异：</p>
+    <div class="code-block">H(p, q) = -Σ p(x) · log₂ q(x)</div>
+    <p>在语言模型训练中，真实分布 <code>p</code> 通常是「下一个 token 的真实答案」——一个 one-hot 向量。因此交叉熵简化为：</p>
+    <div class="code-block">Loss = -log₂ q(正确 token)</div>
+    <p>也就是说：<strong>最小化交叉熵，等价于让模型给正确 token 分配更高的概率</strong>。从压缩视角看，如果模型对下一个 token 预测得越准，编码这条消息所需的比特就越少。</p>
+
+    <div class="compare">
+      <div class="compare-card">
+        <h4>低交叉熵</h4>
+        <p>模型对正确 token 很自信。信息量少，压缩率高，预测准确。</p>
+      </div>
+      <div class="compare-card">
+        <h4>高交叉熵</h4>
+        <p>模型分布平坦、不确定。信息量大，压缩率低，预测混乱。</p>
+      </div>
+    </div>
+
+    <h2>四、LLM 预训练目标的再框定</h2>
+    <p>大型语言模型的<span class="term">预训练</span>通常被描述为「下一个 token 预测」。但结合前面的讨论，我们可以把它重新框定为：</p>
+    <div class="callout"><strong>预训练的目标，是学习一个尽可能高效的通用文本压缩器。</strong></div>
+    <p>这个视角的价值在于：</p>
+    <ul>
+      <li>它解释了为什么要用交叉熵：因为交叉熵直接对应压缩所需的期望比特数；</li>
+      <li>它说明了大规模语料的必要性：要压缩各种文本，模型必须学会语言背后的规律；</li>
+      <li>它为「压缩即智能」的说法提供了数学基础——更好的压缩意味着更准确的预测、更深刻的规律把握。</li>
+    </ul>
+    <p>当然，"压缩就是智能" 仍是一个难以严格评判的口号，因为「智能」本身定义模糊。更稳妥的说法是：<strong>压缩的数学理论与人工智能高度相关</strong>。</p>
+
+    <div class="figure">
+      <canvas id="crossEntropyCanvas" width="880" height="300" role="img" aria-label="温度对 softmax 概率分布的影响：拖动滑块可观察分布尖锐程度与熵的变化。"></canvas>
+      <div class="controls">
+        <div class="control-group">
+          <label>温度 Temperature</label>
+          <input type="range" id="temperature" min="0.3" max="2.0" step="0.1" value="1.0">
+          <span id="tempValue">1.0</span>
+        </div>
+      </div>
+      <div class="figure-caption">图 3：温度改变概率分布的尖锐程度。低温更集中（压缩更好），高温更平坦（熵更高）。</div>
+    </div>
+
+    <div class="callout">
+      <strong>本块小结：</strong>自然语言的概率强烈依赖上下文，语言模型通过链式法则估计这些条件概率。<span class="term">交叉熵损失</span>让模型为正确的下一个 token 分配更高概率，而这等价于最小化文本压缩所需的比特数。因此，LLM 的<span class="term">预训练</span>可以被重新理解为构建一个高效的文本压缩器——这正是信息论与人工智能交汇的核心洞见。
+    </div>
+
+    <nav class="nav-bottom">
+      <a href="entropy-block2.html" class="nav-btn">← 上一块</a>
+      <span class="progress">Block 3 of 3</span>
+      <span class="nav-btn disabled" aria-disabled="true">完成</span>
+    </nav>
+  </div>
+
+  <script src="assets/entropy-common.js"></script>
+  <script>
+    const ceCanvas = document.getElementById('crossEntropyCanvas');
+    const ceCtx = ceCanvas.getContext('2d');
+
+    function softmax(logits, temperature) {
+      const exp = logits.map(z => Math.exp(z / temperature));
+      const sum = exp.reduce((a, b) => a + b, 0);
+      return exp.map(v => v / sum);
+    }
+
+    function drawCrossEntropy() {
+      const w = ceCanvas.width;
+      const h = ceCanvas.height;
+      ceCtx.clearRect(0, 0, w, h);
+      const temperature = parseFloat(document.getElementById('temperature').value);
+      document.getElementById('tempValue').textContent = temperature.toFixed(1);
+      const logits = [2.0, 1.0, 0.5, 0.2, -0.5];
+      const probs = softmax(logits, temperature);
+      const barX = 120, barY = 60, barW = 640, barH = 180;
+      const step = barW / probs.length;
+      probs.forEach((p, i) => {
+        const bh = p * barH;
+        const x = barX + i * step + step * 0.15;
+        const width = step * 0.7;
+        const hue = 180 + i * 25;
+        ceCtx.fillStyle = `hsl(${hue}, 75%, 60%)`;
+        ceCtx.globalAlpha = 0.85;
+        ceCtx.fillRect(x, barY + barH - bh, width, bh);
+        ceCtx.globalAlpha = 1;
+        ceCtx.strokeStyle = '#f0f0f5';
+        ceCtx.lineWidth = 1;
+        ceCtx.strokeRect(x, barY + barH - bh, width, bh);
+        ceCtx.fillStyle = '#f0f0f5';
+        ceCtx.font = '600 14px "Fira Code", monospace';
+        ceCtx.textAlign = 'center';
+        ceCtx.fillText(p.toFixed(3), x + width / 2, barY + barH - bh - 10);
+      });
+      const entropy = -probs.reduce((s, p) => s + p * Math.log2(p), 0);
+      ceCtx.fillStyle = '#9d70d1';
+      ceCtx.font = '700 15px "Fira Code", monospace';
+      ceCtx.textAlign = 'left';
+      ceCtx.fillText(`分布熵 H = ${entropy.toFixed(3)} bits`, barX, barY + barH + 36);
+    }
+
+    document.getElementById('temperature').addEventListener('input', drawCrossEntropy);
+    drawCrossEntropy();
+  </script>
+</body>
+</html>

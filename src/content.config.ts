@@ -7,7 +7,7 @@ const articles = defineCollection({
     title: z.string(),
     description: z.string(),
     date: z.coerce.date(),
-    category: z.enum(['AI', '设计', '艺术', '岩土工程', '碎碎念']),
+    category: z.enum(['AI', '设计', '艺术', '岩土工程', '数理', '碎碎念']),
     tags: z.array(z.string()).default([]),
     featured: z.boolean().default(false),
     cover: z.string().optional(),

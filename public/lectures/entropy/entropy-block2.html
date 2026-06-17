@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1200">
+  <title>熵与压缩智能 · 第2块：信息与熵</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/entropy-style.css">
+</head>
+<body>
+<nav class="lecture-nav-bar" aria-label="讲座导航">
+  <a href="/" class="lecture-nav-back">← 回博客</a>
+  <span class="lecture-nav-title">熵与压缩智能</span>
+  <span class="lecture-nav-spacer"></span>
+</nav>
+
+<style>
+  .lecture-nav-bar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 24px;
+    background: #efeadd;
+    border-bottom: 1px solid #e0d8c8;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+
+  .lecture-nav-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #f7f5ef;
+    border: 1px solid #e0d8c8;
+    border-radius: 6px;
+    color: #2b2319;
+    font-size: 14px;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .lecture-nav-back:hover {
+    background: #fff;
+    border-color: #d0c8b8;
+  }
+
+  .lecture-nav-back:focus-visible {
+    outline: 2px solid #b85c38;
+    outline-offset: 2px;
+  }
+
+  .lecture-nav-title {
+    font-size: 14px;
+    color: #5c4f3d;
+    font-family: "Noto Serif SC", "Noto Serif", serif;
+    text-align: center;
+  }
+
+  .lecture-nav-spacer {
+    width: auto;
+  }
+
+  @media (max-width: 640px) {
+    .lecture-nav-bar {
+      padding: 12px 16px;
+    }
+    .lecture-nav-spacer {
+      display: none;
+    }
+  }
+</style>
+<!-- lecture-nav-injected -->
+
+  <div class="binding"></div>
+  <div class="page">
+    <header>
+      <div class="course-label">Lecture Guide · Block 2 / 3</div>
+      <h1>信息与熵</h1>
+      <div class="meta">
+        <span>来源：Reinventing Entropy, Compression & Intelligence Part 1</span>
+        <span>主题：信息定义、熵的面积解释与香农定理</span>
+        <span>预计阅读：14 分钟</span>
+      </div>
+    </header>
+
+    <section class="intro">
+      <p>在上一块我们看到，压缩极限由概率分布决定，而最优前缀码可以通过 Huffman 算法构造。但这只是故事的一半。香农真正了不起的地方在于，他把「压缩需要多少比特」这个问题，提炼成了两个更基本的概念：<span class="term">信息</span>与<span class="term">熵</span>。这一块的中心目标，是让你感觉这两个定义几乎是被压缩问题逼迫出来的。</p>
+    </section>
+
+    <section class="contents-section">
+      <div class="contents-header">
+        <h2 class="contents-title">目录 Contents</h2>
+        <span class="contents-subtitle">3 blocks in total</span>
+      </div>
+      <div class="contents-grid">
+        <a href="entropy-block1.html" class="contents-card">
+          <div class="contents-half-label">Block 1</div>
+          <h3 class="contents-card-title">压缩的极限</h3>
+          <p class="contents-card-desc">机器人指令、前缀码、Huffman 编码与压缩极限。</p>
+        </a>
+        <div class="contents-card active">
+          <div class="contents-half-label">Block 2</div>
+          <h3 class="contents-card-title">信息与熵</h3>
+          <p class="contents-card-desc">信息定义 -log₂(p)、熵的面积解释、香农无噪声编码定理。</p>
+        </div>
+        <a href="entropy-block3.html" class="contents-card">
+          <div class="contents-half-label">Block 3</div>
+          <h3 class="contents-card-title">交叉熵与智能</h3>
+          <p class="contents-card-desc">语言建模、条件概率链式法则、交叉熵损失、压缩⇔智能。</p>
+        </a>
+      </div>
+    </section>
+
+    <h2>一、从完美压缩到随机噪声</h2>
+    <p>请回忆第二位同学的编码：她把常见指令「上」编码为 <code>0</code>，「下」编码为 <code>10</code>，「左」「右」分别编码为 <code>110</code>、<code>111</code>。我们现在问一个更抽象的问题：<strong>完美压缩后的比特流应该是什么样子？</strong></p>
+    <p>香农的洞察是：完美压缩应当产生与<span class="term">随机噪声</span>不可区分的输出。这里的随机噪声指每个比特为 0 或 1 的概率各为 50%，且所有比特彼此独立。如果压缩后的输出还存在可被预测的规律，那就说明我们还能进一步压缩它；只有当没有规律可循时，才到达极限。</p>
+    <p>以机器人指令为例，消息以「上」开头的概率是 1/2，所以第一位比特是 0 的概率也是 1/2；若第一位是 1，则下一位来自「下」「左」「右」的概率又各以 1/2 对半分。整个比特流每一步都像抛硬币，这正是完美压缩的标志。</p>
+
+    <h2>二、信息 <span class="term">-log₂(p)</span> 的含义</h2>
+    <p>完美压缩的消息若有 n 个比特，则这条消息的概率应为 1 / 2ⁿ，反过来说，分配的比特数 n = -log₂(p)。这就是<span class="term">信息</span>（information）的定义：</p>
+    <div class="code-block">I(x) = -log₂(p(x))</div>
+    <p>它测量的是：某个事件发生时，你需要把可能性空间对半分割多少次才能把它定位出来。罕见事件概率小、信息量大；常见事件概率大、信息量小。</p>
+
+    <div class="compare">
+      <div class="compare-card">
+        <h4>常见事件</h4>
+        <p>太阳东升，p ≈ 1，<code>-log₂(p) ≈ 0</code> 比特。几乎不提供新信息。</p>
+      </div>
+      <div class="compare-card">
+        <h4>罕见事件</h4>
+        <p>彩票中奖，p 极小，<code>-log₂(p)</code> 很大。一旦发生，带来巨大的信息量。</p>
+      </div>
+    </div>
+
+    <h2>三、熵的面积解释</h2>
+    <p>单个符号的信息量是 <code>-log₂(p)</code>，但压缩关心的是整条消息的平均成本。对所有符号取加权平均，就得到<span class="term">熵</span>（entropy）H：</p>
+    <div class="code-block">H = Σ pᵢ · (-log₂ pᵢ)</div>
+    <p>下图把每个符号画成一个矩形：宽度是概率 p，高度是信息量 -log₂(p)。所有矩形的总面积就是熵 H，也就是每个符号的平均信息量，也是无损压缩的理论下限。</p>
+
+    <div class="figure">
+      <canvas id="entropyCanvas" width="880" height="260" role="img" aria-label="熵面积图：四个方向的概率宽度乘以信息量高度，总面积等于熵 H。拖动滑块可实时观察变化。"></canvas>
+      <div class="controls">
+        <div class="control-group">
+          <label>上 ↑</label>
+          <input type="range" id="pUp" min="0.05" max="0.8" step="0.005" value="0.5">
+          <span id="vUp">50%</span>
+        </div>
+        <div class="control-group">
+          <label>下 ↓</label>
+          <input type="range" id="pDown" min="0.05" max="0.5" step="0.005" value="0.25">
+          <span id="vDown">25%</span>
+        </div>
+        <div class="control-group">
+          <label>左 ←</label>
+          <input type="range" id="pLeft" min="0.02" max="0.3" step="0.005" value="0.125">
+          <span id="vLeft">12.5%</span>
+        </div>
+        <div class="control-group">
+          <label>右 →</label>
+          <input type="range" id="pRight" min="0.02" max="0.3" step="0.005" value="0.125">
+          <span id="vRight">12.5%</span>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i style="background:#58c4dd;"></i>上 ↑</span>
+        <span><i style="background:#fc6255;"></i>下 ↓</span>
+        <span><i style="background:#f5d742;"></i>左 ←</span>
+        <span><i style="background:#83c167;"></i>右 →</span>
+      </div>
+      <div class="figure-caption">图 2：熵的面积解释。宽度 = 概率 p，高度 = 信息量 -log₂(p)，总面积 = 熵 H。拖动滑块观察均匀分布与偏斜分布如何改变总面积。</div>
+    </div>
+
+    <p>图中的紫色虚线标记熵 H 的高度。当分布越接近<span class="term">均匀分布</span>，每个符号的信息量越接近相等，总面积越大，熵越高；当分布越<span class="term">偏斜</span>，少数符号占据大部分概率，罕见符号虽然很高但只占很窄的宽度，总面积反而变小，熵越低。</p>
+
+    <h2>四、香农无噪声编码定理</h2>
+    <p>把前面的思想汇总起来，就得到信息论最核心的结果——<span class="term">香农无噪声编码定理</span>（Shannon's noiseless coding theorem）。它指出：</p>
+    <div class="callout"><strong>对于给定的离散概率分布，任何无损编码方案的平均码长都不可能低于熵 H；反过来，总存在某种编码，可以使平均码长任意接近 H。</strong></div>
+    <p>Huffman 编码给出的是最优的整数长度前缀码，它可能略高于 H，因为真实码长必须是整数。但如果允许对符号序列进行分组编码（比如一次编码多个符号），平均码长就会越来越逼近 H。</p>
+    <p>这个定理的重要性远超数据压缩。它把「压缩效率」与「不确定性」两个看似无关的概念牢牢绑在一起：熵既是描述一个分布需要多少比特的最低成本，也是分布内在不确定性的度量。</p>
+
+    <div class="callout">
+      <strong>本块小结：</strong>信息 <code>-log₂(p)</code> 度量单个事件的惊讶程度；熵 H 是对分布中所有事件取加权平均后的平均信息量。熵同时给出了无损压缩的理论下界——这就是<span class="term">香农定理</span>。分布越均匀，熵越高；分布越偏斜，熵越低。下一块将把这个框架扩展到不同符号遵循不同分布的情形，并引出交叉熵与语言模型预训练目标。
+    </div>
+
+    <nav class="nav-bottom">
+      <a href="entropy-block1.html" class="nav-btn">← 上一块</a>
+      <span class="progress">Block 2 of 3</span>
+      <a href="entropy-block3.html" class="nav-btn">下一块 →</a>
+    </nav>
+  </div>
+
+  <script src="assets/entropy-common.js"></script>
+  <script>
+    const entropyCanvas = document.getElementById('entropyCanvas');
+    const eCtx = entropyCanvas.getContext('2d');
+
+    function getRawProbs() {
+      return {
+        up: parseFloat(document.getElementById('pUp').value),
+        down: parseFloat(document.getElementById('pDown').value),
+        left: parseFloat(document.getElementById('pLeft').value),
+        right: parseFloat(document.getElementById('pRight').value)
+      };
+    }
+
+    function updateLabels(probs) {
+      document.getElementById('vUp').textContent = (probs.up * 100).toFixed(1) + '%';
+      document.getElementById('vDown').textContent = (probs.down * 100).toFixed(1) + '%';
+      document.getElementById('vLeft').textContent = (probs.left * 100).toFixed(1) + '%';
+      document.getElementById('vRight').textContent = (probs.right * 100).toFixed(1) + '%';
+    }
+
+    function drawEntropyArea() {
+      const w = entropyCanvas.width;
+      const h = entropyCanvas.height;
+      eCtx.clearRect(0, 0, w, h);
+      const probs = EntropyUtils.normalizeProbs(getRawProbs());
+      updateLabels(probs);
+      const items = [
+        { key: 'up', label: '上', color: EntropyUtils.COLORS.up, p: probs.up },
+        { key: 'down', label: '下', color: EntropyUtils.COLORS.down, p: probs.down },
+        { key: 'left', label: '左', color: EntropyUtils.COLORS.left, p: probs.left },
+        { key: 'right', label: '右', color: EntropyUtils.COLORS.right, p: probs.right }
+      ];
+      const barH = 160, barY = 60, barX = 80, barW = 720;
+      let x = barX, entropy = 0;
+      items.forEach(item => {
+        const width = item.p * barW;
+        const info = -Math.log2(item.p);
+        const rectH = Math.min(info * 40, barH);
+        entropy += item.p * info;
+        eCtx.fillStyle = item.color;
+        eCtx.globalAlpha = 0.85;
+        eCtx.fillRect(x, barY + barH - rectH, width, rectH);
+        eCtx.globalAlpha = 1;
+        eCtx.strokeStyle = '#f0f0f5';
+        eCtx.lineWidth = 1;
+        eCtx.strokeRect(x, barY + barH - rectH, width, rectH);
+        eCtx.fillStyle = '#f0f0f5';
+        eCtx.textAlign = 'center';
+        if (width > 50) {
+          eCtx.font = '600 14px "Noto Serif SC", serif';
+          eCtx.fillText(item.label, x + width / 2, barY + barH - rectH - 10);
+          eCtx.font = '400 12px "Fira Code", monospace';
+          eCtx.fillText(`${info.toFixed(2)} bits`, x + width / 2, barY + barH - rectH - 26);
+        }
+        x += width;
+      });
+      // axis
+      eCtx.strokeStyle = 'rgba(240,240,245,0.4)';
+      eCtx.lineWidth = 2;
+      eCtx.beginPath();
+      eCtx.moveTo(barX, barY + barH);
+      eCtx.lineTo(barX + barW, barY + barH);
+      eCtx.stroke();
+      // entropy line
+      const entropyH = Math.min(entropy * 40, barH);
+      eCtx.strokeStyle = '#9d70d1';
+      eCtx.lineWidth = 3;
+      eCtx.setLineDash([8, 6]);
+      eCtx.beginPath();
+      eCtx.moveTo(barX, barY + barH - entropyH);
+      eCtx.lineTo(barX + barW, barY + barH - entropyH);
+      eCtx.stroke();
+      eCtx.setLineDash([]);
+      eCtx.fillStyle = '#9d70d1';
+      eCtx.font = '700 15px "Fira Code", monospace';
+      eCtx.textAlign = 'left';
+      eCtx.fillText(`H = ${entropy.toFixed(3)} bits/symbol`, barX + 10, barY + barH - entropyH - 10);
+    }
+
+    ['pUp','pDown','pLeft','pRight'].forEach(id => {
+      document.getElementById(id).addEventListener('input', drawEntropyArea);
+    });
+    drawEntropyArea();
+  </script>
+</body>
+</html>
