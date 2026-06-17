@@ -1,37 +1,56 @@
-import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, renameSync, existsSync } from 'node:fs';
 import { join, extname } from 'node:path';
 
-const targetDir = 'public/lectures/retro-aesthetics';
-const navPath = join(targetDir, 'nav-bar.html');
-const navFragment = readFileSync(navPath, 'utf-8');
+const targetDir = process.argv[2] || 'public/lectures/retro-aesthetics';
+const navFile = process.argv[3] || 'nav-bar.html';
+const navPath = join(targetDir, navFile);
+const injectionMarker = '<!-- lecture-nav-injected -->';
+
+if (!existsSync(navPath)) {
+  console.error(`Error: nav file not found: ${navPath}`);
+  process.exit(1);
+}
+
+const navFragment = readFileSync(navPath, 'utf-8').trim();
+if (!navFragment) {
+  console.error(`Error: nav file is empty: ${navPath}`);
+  process.exit(1);
+}
+
+const fullFragment = `\n${navFragment}\n${injectionMarker}\n`;
 
 const files = readdirSync(targetDir).filter(
-  (file) => extname(file).toLowerCase() === '.html' && file !== 'nav-bar.html'
+  (file) => extname(file).toLowerCase() === '.html' && file !== navFile
 );
 
 let injectedCount = 0;
+let skippedCount = 0;
 
 for (const file of files) {
   const filePath = join(targetDir, file);
   let html = readFileSync(filePath, 'utf-8');
 
-  if (html.includes('lecture-nav-bar')) {
+  if (html.includes(injectionMarker) || html.includes('lecture-nav-bar')) {
     console.log(`skip ${file}: already injected`);
+    skippedCount++;
     continue;
   }
 
-  const bodyOpenIndex = html.toLowerCase().indexOf('<body>');
-  if (bodyOpenIndex === -1) {
+  const bodyMatch = html.match(/<body[^>]*>/i);
+  if (!bodyMatch) {
     console.warn(`skip ${file}: no <body> tag found`);
     continue;
   }
 
-  const insertIndex = bodyOpenIndex + '<body>'.length;
-  html = html.slice(0, insertIndex) + '\n' + navFragment + '\n' + html.slice(insertIndex);
+  const insertIndex = bodyMatch.index + bodyMatch[0].length;
+  html = html.slice(0, insertIndex) + fullFragment + html.slice(insertIndex);
 
-  writeFileSync(filePath, html, 'utf-8');
+  const tempPath = `${filePath}.tmp`;
+  writeFileSync(tempPath, html, 'utf-8');
+  renameSync(tempPath, filePath);
+
   injectedCount++;
   console.log(`injected ${file}`);
 }
 
-console.log(`done: ${injectedCount} file(s) injected`);
+console.log(`done: ${injectedCount} injected, ${skippedCount} skipped`);

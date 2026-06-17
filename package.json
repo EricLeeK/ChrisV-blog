@@ -12,7 +12,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "inject:lecture-nav": "node scripts/inject-lecture-nav.js"
   },
   "dependencies": {
     "astro": "^6.4.7"
