@@ -2,7 +2,6 @@
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import ImageTrail from '../components/ImageTrail.astro';
 
 interface Props {
   title?: string;
@@ -42,6 +41,5 @@ const { title = 'ChrisV', description = 'A researcher who builds, designs, and w
       <slot />
     </main>
     <Footer />
-    <ImageTrail />
   </body>
 </html>

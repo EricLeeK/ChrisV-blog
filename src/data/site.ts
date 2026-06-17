@@ -19,10 +19,21 @@ export const nav = [
 
 export const social = [
   { label: 'GitHub', href: 'https://github.com/EricLeeK', icon: 'github' },
-  { label: 'X', href: 'https://x.com/超级TT', icon: 'x' },
+  { label: 'X', href: 'https://x.com/Victori13579092', icon: 'x' },
   { label: 'Email', href: 'mailto:shiyaol492@gmail.com', icon: 'email' },
-  { label: 'WeChat', href: '#', icon: 'wechat' },
-  { label: '小红书', href: '#', icon: 'xiaohongshu' },
+  {
+    label: 'WeChat',
+    href: '#',
+    icon: 'wechat',
+    qrImage: '/images/wechat-qr.jpg',
+    qrTitle: '微信号',
+    qrValue: 'V',
+  },
+  {
+    label: '小红书',
+    href: 'https://xhslink.com/m/8FhFbx6a8DS',
+    icon: 'xiaohongshu',
+  },
 ];
 
 export const filters = [
@@ -35,7 +46,43 @@ export const filters = [
 ];
 
 export const categories = [
-  { id: 'research', title: '研究', subtitle: '岩土 × AI', href: '/articles?filter=ai' },
-  { id: 'projects', title: '项目', subtitle: 'Agents & Code', href: '/projects' },
-  { id: 'random', title: '碎碎念', subtitle: '短想法', href: '/random' },
+  {
+    id: 'research',
+    number: '01',
+    tag: 'ARTICLES',
+    title: '研究',
+    description: 'AI相关方向论文博客精读与探索',
+    href: '/articles?filter=ai',
+    icon: '/images/research-icon.png',
+    stats: [
+      { value: '{articles}', label: '篇文章' },
+      { value: '12.5k', label: '总阅读', hidden: true },
+    ],
+  },
+  {
+    id: 'projects',
+    number: '02',
+    tag: 'WORKS',
+    title: '项目',
+    description: '构建有价值的工具与开源项目',
+    href: '/projects',
+    icon: '/images/projects-icon.png',
+    stats: [
+      { value: '{projects}', label: '个项目' },
+      { value: '{opensource}', label: '在开源' },
+    ],
+  },
+  {
+    id: 'random',
+    number: '03',
+    tag: 'RANDOM',
+    title: '碎碎念',
+    description: '记录思考、灵感与生活片段',
+    href: '/random',
+    icon: '/images/random-icon.png',
+    stats: [
+      { value: '{random}', label: '条想法' },
+      { value: '持续', label: '更新中' },
+    ],
+  },
 ];

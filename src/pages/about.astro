@@ -2,8 +2,17 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import { social } from '../data/site';
+import { Icon } from 'astro-icon/components';
 
 const isExternal = (href: string) => href.startsWith('http');
+
+const iconMap: Record<string, string> = {
+  github: 'simple-icons:github',
+  x: 'simple-icons:x',
+  email: 'lucide:mail',
+  wechat: 'simple-icons:wechat',
+  xiaohongshu: 'simple-icons:xiaohongshu',
+};
 ---
 
 <BaseLayout title="关于 — ChrisV">
@@ -11,12 +20,13 @@ const isExternal = (href: string) => href.startsWith('http');
 
   <section class="container-inner pb-16">
     <div class="flex flex-col items-center gap-6 text-center">
-      <div
-        class="flex h-24 w-24 items-center justify-center rounded-full bg-[var(--color-200)] text-2xl text-[var(--color-0)]"
-        aria-label="ChrisV avatar"
-      >
-        CV
-      </div>
+      <img
+        src="/images/logo.jpg"
+        alt="ChrisV avatar"
+        width="96"
+        height="96"
+        class="h-24 w-24 rounded-full object-cover"
+      />
       <h2 class="text-2xl text-[var(--color-0)]">ChrisV</h2>
       <p
         class="max-w-[480px] text-base leading-relaxed text-[var(--color-300)] text-balance"
@@ -33,10 +43,10 @@ const isExternal = (href: string) => href.startsWith('http');
             href={item.href}
             target={isExternal(item.href) ? '_blank' : undefined}
             rel={isExternal(item.href) ? 'noopener noreferrer' : undefined}
-            class="group flex items-center gap-4 rounded-[6px] border border-[var(--border)] bg-[var(--card-color)] p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-main)]"
+            class="group flex items-center gap-4 rounded-[6px] border border-[var(--border)] bg-[var(--card-color)] p-4 transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] will-change-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-main)]"
           >
-            <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-200)] text-sm text-[var(--color-0)]">
-              {item.label[0]}
+            <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-200)] text-[var(--color-0)]">
+              <Icon name={iconMap[item.icon] || iconMap.email} class="h-5 w-5 fill-current" aria-hidden="true" />
             </span>
             <span class="text-base text-[var(--color-0)] group-hover:text-[var(--color-primary-main)]">
               {item.label}

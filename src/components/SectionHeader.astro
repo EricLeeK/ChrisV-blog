@@ -1,5 +1,6 @@
 ---
 import SocialLinks from './SocialLinks.astro';
+import DashedLine from './DashedLine.astro';
 
 interface Props {
   tag: string;
@@ -34,5 +35,12 @@ const { tag, title, description, showSocial = false } = Astro.props;
     )
   }
 
-  {showSocial && <SocialLinks class="mt-2" />}
+  {
+    showSocial && (
+      <div class="mt-2 flex flex-col items-center">
+        <SocialLinks class="justify-center" />
+        <DashedLine class="mt-4 w-full" />
+      </div>
+    )
+  }
 </section>

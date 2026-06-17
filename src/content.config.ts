@@ -26,6 +26,7 @@ const projects = defineCollection({
     featured: z.boolean().default(false),
     cover: z.string().optional(),
     link: z.string().optional(),
+    openSource: z.boolean().default(false),
   }),
 });
 

@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Inconsolata:wght@400;700&family=Noto+Sans+SC:wght@400;500;700&family=Special+Elite&display=swap');
-@import url('https://chinese-fonts-cdn.deno.dev/packages/hwmct/dist/汇文明朝体/result.css');
+@import url('/fonts/hwmct/result.css');
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
@@ -62,7 +61,10 @@
 
   /* Fonts */
   --font-system: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Lantinghei SC", "Microsoft YaHei", "HanHei SC", "Helvetica Neue", "Open Sans", "Hiragino Sans GB", 微软雅黑, STHeiti, "WenQuanYi Micro Hei", Arial, SimSun, sans-serif;
-  --font-body: "Inter", "Noto Sans SC", system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "MiSans", "Lantinghei SC", "Noto Sans SC", "Microsoft YaHei", "HanHei SC", "Helvetica Neue", "Open Sans", "Hiragino Sans GB", 微软雅黑, STHeiti, "WenQuanYi Micro Hei", Arial, SimSun, sans-serif;
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "MiSans", "Lantinghei SC", "Microsoft YaHei", "HanHei SC", "Helvetica Neue", "Open Sans", "Hiragino Sans GB", 微软雅黑, STHeiti, "WenQuanYi Micro Hei", Arial, SimSun, sans-serif;
+  --font-display: "Huiwen-mincho", "Noto Serif SC", "Songti SC", "SimSun", serif;
+  --font-tag: "Courier New", "SF Mono", Consolas, monospace;
+  --font-mono: "SFMono-Regular", "SF Mono", Consolas, "Liberation Mono", Menlo, Courier, monospace;
 
   /* Type Scale */
   --text-size: 16px;
@@ -72,6 +74,11 @@
 
   /* Responsive inner padding */
   --pad-inner: 108px;
+}
+
+.theme-dark {
+  --card-color: rgba(30, 45, 70, 0.32);
+  --card-color-selected: rgba(45, 65, 95, 0.42);
 }
 
 @media (max-width: 1440px) {
@@ -109,28 +116,31 @@
   }
 }
 
-/* Light mode override */
+/* Light mode override — warm paper palette */
 :root:not(.theme-dark) {
-  --color-0: #000;
-  --color-100: #101010;
-  --color-200: #303030;
-  --color-300: #505050;
-  --color-400: #707070;
-  --color-500: #909090;
-  --color-600: #c0c0c0;
-  --color-700: #e0e0e0;
-  --color-800: #f3f4f7;
-  --color-900: #f9f8f7;
-  --color-999: #f9f8f7;
-  --color-999-rgb: 249, 248, 247;
-  --border: #ececec;
+  --color-0: #2a2620;
+  --color-100: #e8e0d2;
+  --color-200: #f7f3eb;
+  --color-300: #6b6558;
+  --color-400: #8a8272;
+  --color-500: #a8a091;
+  --color-600: #c4bdb0;
+  --color-700: #ddd7cc;
+  --color-800: #ede6da;
+  --color-900: #f5efe4;
+  --color-999: #f7f1e6;
+  --color-999-rgb: 247, 241, 230;
+  --border: #e0d8c8;
 
-  --accent-light: #808080;
-  --accent-regular: #404040;
-  --accent-dark: #202020;
-  --accent-overlay: hsla(0, 0%, 0%, 0.35);
+  --card-color: rgba(255, 252, 245, 0.72);
+  --card-color-selected: rgba(255, 250, 240, 0.88);
 
-  --link-color: var(--accent-regular);
+  --accent-light: #8a8272;
+  --accent-regular: #5a5448;
+  --accent-dark: #3a352c;
+  --accent-overlay: hsla(40, 20%, 15%, 0.22);
+
+  --link-color: var(--accent-dark);
 }
 
 @theme {
@@ -243,10 +253,6 @@
   box-shadow: 0 0 24px 11px rgba(247, 210, 82, 0.75);
 }
 
-@utility ricoui-magic-glow {
-  box-shadow: 0 0 12px 6px rgba(247, 210, 82, 0.3);
-}
-
 @utility text-balance {
   text-wrap: balance;
 }
@@ -265,6 +271,7 @@ html {
 }
 
 body {
+  position: relative;
   font-family: var(--font-body);
   color: var(--color-0);
   background-color: var(--color-999);
@@ -272,9 +279,45 @@ body {
   transition: background-color var(--theme-transition), color var(--theme-transition);
 }
 
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+body::before {
+  z-index: -2;
+  background-color: var(--color-999);
+  background-image: url('/images/rainbow-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  transition: background var(--theme-transition);
+}
+
+.theme-dark body::before {
+  background-image: url('/images/fractal-bg.jpg');
+}
+
+body::after {
+  z-index: -1;
+  background: rgba(255, 255, 255, 0.35);
+  opacity: 1;
+  transition: opacity var(--theme-transition), background var(--theme-transition);
+}
+
+.theme-dark body::after {
+  background: radial-gradient(ellipse at 20% 20%, rgba(25, 25, 35, 0.55) 0%, transparent 55%),
+              radial-gradient(ellipse at 80% 80%, rgba(15, 15, 30, 0.65) 0%, transparent 55%),
+              rgba(10, 10, 18, 0.72);
+}
+
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
-  font-weight: 400;
+  font-family: var(--font-body);
+  font-weight: 500;
   line-height: 1.2;
   color: var(--color-0);
 }
@@ -320,4 +363,18 @@ img, picture, video, canvas, svg {
 ::selection {
   background-color: var(--color-selected);
   color: var(--color-999);
+}
+
+/* Frosted glass on translucent cards so the starry background stays readable */
+.bg-\[var\(--card-color\)\],
+.bg-\[var\(--card-color-selected\)\] {
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+}
+
+/* Optional: reduce motion for the fixed background */
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    background-attachment: scroll;
+  }
 }

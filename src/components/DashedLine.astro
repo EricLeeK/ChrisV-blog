@@ -1,0 +1,39 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={['h-px w-full', className]} aria-hidden="true">
+  <div class="dashed-line-inner h-full w-full"></div>
+</div>
+
+<style>
+  .dashed-line-inner {
+    background-image: linear-gradient(
+      90deg,
+      var(--color-600) 0%,
+      var(--color-600) 50%,
+      transparent 50%,
+      transparent 100%
+    );
+    background-size: 8px 1px;
+    background-repeat: repeat-x;
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      black 12%,
+      black 88%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      black 12%,
+      black 88%,
+      transparent 100%
+    );
+  }
+</style>

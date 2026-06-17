@@ -4,43 +4,28 @@
 <button
   type="button"
   id="theme-toggle"
-  class="theme-toggle relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border border-[var(--border)] bg-[var(--color-200)] transition-colors"
+  class="theme-toggle relative inline-flex h-7 w-14 shrink-0 cursor-pointer items-center rounded-full border border-[var(--border)] bg-[var(--color-200)] transition-colors"
   aria-label="Toggle theme"
   aria-pressed="true"
 >
   <span class="sr-only">Toggle dark mode</span>
+
+  <!-- Sun (left / light side) -->
   <span
-    id="theme-toggle-indicator"
-    class="pointer-events-none absolute left-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--color-0)] text-[var(--color-100)] shadow-sm transition-transform duration-300 ease-[cubic-bezier(0.075,0.82,0.165,1)]"
+    class="absolute left-1.5 top-1/2 z-10 flex h-5 w-5 -translate-y-1/2 items-center justify-center text-[var(--color-500)] transition-colors duration-300"
+    id="theme-icon-sun"
+    aria-hidden="true"
   >
     <svg
-      id="theme-icon-moon"
       xmlns="http://www.w3.org/2000/svg"
-      width="12"
-      height="12"
+      width="14"
+      height="14"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-    </svg>
-    <svg
-      id="theme-icon-sun"
-      class="hidden"
-      xmlns="http://www.w3.org/2000/svg"
-      width="12"
-      height="12"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      aria-hidden="true"
     >
       <circle cx="12" cy="12" r="4"></circle>
       <path d="M12 2v2"></path>
@@ -53,26 +38,57 @@
       <path d="m19.07 4.93-1.41 1.41"></path>
     </svg>
   </span>
+
+  <!-- Moon (right / dark side) -->
+  <span
+    class="absolute right-1.5 top-1/2 z-10 flex h-5 w-5 -translate-y-1/2 items-center justify-center text-[var(--color-500)] transition-colors duration-300"
+    id="theme-icon-moon"
+    aria-hidden="true"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+    </svg>
+  </span>
+
+  <!-- Sliding indicator -->
+  <span
+    id="theme-toggle-indicator"
+    class="pointer-events-none absolute top-0.5 left-0.5 z-0 flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-0)] shadow-sm transition-transform duration-300 ease-[cubic-bezier(0.075,0.82,0.165,1)]"
+  ></span>
 </button>
 
 <script is:inline>
   (function () {
     const toggle = document.getElementById('theme-toggle');
     const indicator = document.getElementById('theme-toggle-indicator');
-    const moon = document.getElementById('theme-icon-moon');
     const sun = document.getElementById('theme-icon-sun');
+    const moon = document.getElementById('theme-icon-moon');
     const root = document.documentElement;
 
     function updateUI(dark) {
-      if (!indicator || !moon || !sun) return;
+      if (!indicator || !sun || !moon) return;
       if (dark) {
-        indicator.style.transform = 'translateX(20px)';
-        moon.classList.remove('hidden');
-        sun.classList.add('hidden');
+        indicator.style.transform = 'translateX(28px)';
+        sun.classList.remove('text-[var(--color-0)]');
+        sun.classList.add('text-[var(--color-500)]');
+        moon.classList.remove('text-[var(--color-500)]');
+        moon.classList.add('text-[var(--color-0)]');
       } else {
         indicator.style.transform = 'translateX(0)';
-        moon.classList.add('hidden');
-        sun.classList.remove('hidden');
+        sun.classList.remove('text-[var(--color-500)]');
+        sun.classList.add('text-[var(--color-0)]');
+        moon.classList.remove('text-[var(--color-0)]');
+        moon.classList.add('text-[var(--color-500)]');
       }
       if (toggle) {
         toggle.setAttribute('aria-pressed', String(dark));

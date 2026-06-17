@@ -1,0 +1,139 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  icon: string;
+  label: string;
+  qrImage: string;
+  qrTitle: string;
+  qrValue: string;
+}
+
+const { icon, label, qrImage, qrTitle, qrValue } = Astro.props;
+
+const iconMap: Record<string, string> = {
+  github: 'simple-icons:github',
+  x: 'simple-icons:x',
+  email: 'lucide:mail',
+  wechat: 'simple-icons:wechat',
+  xiaohongshu: 'simple-icons:xiaohongshu',
+};
+---
+
+<div class="qr-popover-wrap relative inline-flex">
+  <button
+    type="button"
+    class="qr-trigger flex items-center justify-center rounded-full p-2 text-[var(--color-400)] transition-colors hover:bg-[var(--color-200)] hover:text-[var(--color-0)]"
+    aria-label={label}
+    aria-haspopup="dialog"
+    aria-expanded="false"
+  >
+    <Icon name={iconMap[icon] || iconMap.email} class="h-5 w-5 fill-current" aria-hidden="true" />
+  </button>
+
+  <div
+    class="qr-popover pointer-events-none absolute left-1/2 top-full z-50 mt-3 w-56 -translate-x-1/2 opacity-0 transition-all duration-200 scale-95"
+    role="dialog"
+    aria-label={`${label} 二维码`}
+  >
+    <div class="relative rounded-xl border border-[var(--border)] bg-[var(--card-color)] p-4 shadow-xl backdrop-blur-md">
+      <!-- arrow -->
+      <span class="absolute -top-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-l border-t border-[var(--border)] bg-[var(--card-color)]"></span>
+
+      <img
+        src={qrImage}
+        alt={`${label} 二维码`}
+        width="192"
+        height="192"
+        class="relative z-10 w-full rounded-lg object-cover"
+      />
+
+      <div class="relative z-10 mt-3 flex items-end justify-between gap-2">
+        <div class="min-w-0">
+          <p class="text-[11px] uppercase tracking-wider text-[var(--color-500)]">{qrTitle}</p>
+          <p class="truncate text-sm font-medium text-[var(--color-0)]">{qrValue}</p>
+        </div>
+        <button
+          type="button"
+          class="qr-copy shrink-0 rounded-md bg-[var(--color-0)] px-2.5 py-1.5 text-xs font-medium text-[var(--color-999)] transition-colors hover:bg-[var(--color-primary-main)] hover:text-[var(--color-white)]"
+          data-value={qrValue}
+        >
+          复制
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const wraps = document.querySelectorAll<HTMLElement>('.qr-popover-wrap');
+
+    wraps.forEach((wrap) => {
+      const trigger = wrap.querySelector<HTMLButtonElement>('.qr-trigger');
+      const popover = wrap.querySelector<HTMLElement>('.qr-popover');
+      const copyBtn = wrap.querySelector<HTMLButtonElement>('.qr-copy');
+
+      if (!trigger || !popover) return;
+
+      function open() {
+        popover.classList.remove('pointer-events-none', 'opacity-0', 'scale-95');
+        popover.classList.add('pointer-events-auto', 'opacity-100', 'scale-100');
+        trigger.setAttribute('aria-expanded', 'true');
+      }
+
+      function close() {
+        popover.classList.add('pointer-events-none', 'opacity-0', 'scale-95');
+        popover.classList.remove('pointer-events-auto', 'opacity-100', 'scale-100');
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = trigger.getAttribute('aria-expanded') === 'true';
+        // close others
+        document.querySelectorAll<HTMLElement>('.qr-popover').forEach((p) => {
+          if (p !== popover) {
+            p.classList.add('pointer-events-none', 'opacity-0', 'scale-95');
+            p.classList.remove('pointer-events-auto', 'opacity-100', 'scale-100');
+            const t = p.parentElement?.querySelector<HTMLButtonElement>('.qr-trigger');
+            t?.setAttribute('aria-expanded', 'false');
+          }
+        });
+        isOpen ? close() : open();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!wrap.contains(e.target as Node)) close();
+      });
+
+      copyBtn?.addEventListener('click', async () => {
+        const value = copyBtn.getAttribute('data-value');
+        if (!value) return;
+        try {
+          await navigator.clipboard.writeText(value);
+          const original = copyBtn.textContent;
+          copyBtn.textContent = '已复制';
+          setTimeout(() => {
+            copyBtn.textContent = original;
+          }, 1500);
+        } catch {
+          // fallback
+          const textarea = document.createElement('textarea');
+          textarea.value = value;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+          const original = copyBtn.textContent;
+          copyBtn.textContent = '已复制';
+          setTimeout(() => {
+            copyBtn.textContent = original;
+          }, 1500);
+        }
+      });
+    });
+  })();
+</script>

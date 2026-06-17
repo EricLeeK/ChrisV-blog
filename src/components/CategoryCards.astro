@@ -1,19 +1,168 @@
 ---
 import { categories } from '../data/site';
+import { getCollection } from 'astro:content';
+import DashedLine from './DashedLine.astro';
+
+const articles = await getCollection('articles');
+const projects = await getCollection('projects');
+const randomEntries = await getCollection('random');
+
+const openSourceCount = projects.filter((p) => p.data.openSource).length;
+
+const countMap: Record<string, string | number> = {
+  articles: articles.length,
+  projects: projects.length,
+  random: randomEntries.length,
+  opensource: openSourceCount,
+};
+
+const resolvedCategories = categories.map((cat) => ({
+  ...cat,
+  stats: cat.stats
+    .filter((stat) => !('hidden' in stat && stat.hidden))
+    .map((stat) => ({
+      ...stat,
+      value: stat.value.replace(/\{(\w+)\}/g, (_, key) => String(countMap[key] ?? stat.value)),
+    })),
+}));
 ---
 
 <section class="container-inner py-8">
-  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
     {
-      categories.map((cat) => (
+      resolvedCategories.map((cat, index) => (
         <a
           href={cat.href}
-          class="group flex flex-col gap-1 rounded-[6px] border border-[var(--border)] bg-[var(--card-color)] p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-main)]"
+          class="category-card group relative flex min-h-[260px] overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card-color)] p-6 transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] will-change-transform hover:-translate-y-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-main)] sm:p-7"
         >
-          <h3 class="text-xl text-[var(--color-0)]">{cat.title}</h3>
-          <p class="text-sm text-[var(--color-300)]">{cat.subtitle}</p>
+          <div class="relative z-10 flex w-full flex-col justify-between">
+            <div>
+              <div class="flex items-baseline gap-2.5">
+                <span class="category-number text-base font-normal tracking-tight">{cat.number}</span>
+                <span
+                  class="text-[10px] uppercase tracking-[0.22em] text-[var(--color-500)]"
+                  style="font-family: var(--font-tag);"
+                >
+                  {cat.tag}
+                </span>
+              </div>
+              <h3 class="mt-3 text-[26px] font-bold leading-tight tracking-tight text-[var(--color-0)] sm:text-[28px]">
+                {cat.title}
+              </h3>
+              <p class="mt-1.5 max-w-[210px] text-sm leading-relaxed text-[var(--color-300)]">
+                {cat.description}
+              </p>
+            </div>
+
+            <div class="mt-6 flex items-end justify-between">
+              <div class="flex items-center gap-4 sm:gap-5">
+                {cat.stats.map((stat, statIndex) => (
+                  <>
+                    {statIndex > 0 && (
+                      <span class="stat-divider self-stretch border-l border-dashed border-[var(--color-500)] opacity-40" />
+                    )}
+                    <div class="flex flex-col">
+                      <span class="text-lg font-medium text-[var(--color-0)] sm:text-xl">{stat.value}</span>
+                      <span class="text-[11px] text-[var(--color-500)]">{stat.label}</span>
+                    </div>
+                  </>
+                ))}
+              </div>
+
+              <span class="arrow-btn flex h-10 w-10 items-center justify-center rounded-full text-white shadow-lg transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-110 group-hover:rotate-45">
+                <svg
+                  class="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M7 17L17 7" />
+                  <path d="M7 7h10v10" />
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <img
+            src={cat.icon}
+            alt=""
+            class="pointer-events-none absolute right-0 top-1/2 z-0 h-40 w-40 -translate-y-1/2 object-contain opacity-95 transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-105 sm:right-1 sm:h-44 sm:w-44 lg:h-48 lg:w-48"
+            loading="lazy"
+            aria-hidden="true"
+          />
         </a>
       ))
     }
   </div>
+  <DashedLine class="mt-8" />
 </section>
+
+<script>
+  (function () {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+
+    const cards = document.querySelectorAll<HTMLElement>('.category-card');
+    cards.forEach((card) => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--shine-x', `${x}px`);
+        card.style.setProperty('--shine-y', `${y}px`);
+      });
+    });
+  })();
+</script>
+
+<style>
+  .category-number {
+    background: linear-gradient(135deg, #6b8cff 0%, #a855f7 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .arrow-btn {
+    background:
+      linear-gradient(var(--card-color), var(--card-color)) padding-box,
+      linear-gradient(135deg, #6b8cff 0%, #a855f7 100%) border-box;
+    border: 2px solid transparent;
+  }
+
+  .category-card::before {
+    content: '';
+    position: absolute;
+    left: var(--shine-x, 50%);
+    top: var(--shine-y, 50%);
+    width: 260px;
+    height: 260px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(
+      circle at center,
+      rgba(255, 255, 255, 0.14) 0%,
+      rgba(255, 255, 255, 0.05) 35%,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.45s ease;
+    pointer-events: none;
+  }
+
+  .category-card:hover::before,
+  .category-card.shine-active::before {
+    opacity: 1;
+  }
+
+  :global(:root:not(.theme-dark)) .category-card::before {
+    background: radial-gradient(
+      circle at center,
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(255, 255, 255, 0.18) 35%,
+      transparent 70%
+    );
+  }
+</style>

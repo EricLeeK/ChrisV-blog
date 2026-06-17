@@ -1,25 +1,46 @@
 ---
 import { social } from '../data/site';
+import QRCodePopover from './QRCodePopover.astro';
+import { Icon } from 'astro-icon/components';
 
 interface Props {
   class?: string;
 }
 
 const { class: className } = Astro.props;
+
+const iconMap: Record<string, string> = {
+  github: 'simple-icons:github',
+  x: 'simple-icons:x',
+  email: 'lucide:mail',
+  wechat: 'simple-icons:wechat',
+  xiaohongshu: 'simple-icons:xiaohongshu',
+};
 ---
 
-<ul class:list={['flex flex-wrap items-center justify-center gap-4', className]} aria-label="Social links">
+<ul class:list={['flex flex-wrap items-center gap-4', className]} aria-label="Social links">
   {
     social.map((item) => (
       <li>
-        <a
-          href={item.href}
-          target={item.href.startsWith('mailto:') || item.href.startsWith('#') ? undefined : '_blank'}
-          rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-          class="text-sm text-[var(--color-0)] opacity-75 transition-opacity hover:opacity-100"
-        >
-          {item.label}
-        </a>
+        {'qrImage' in item && item.qrImage ? (
+          <QRCodePopover
+            icon={item.icon}
+            label={item.label}
+            qrImage={item.qrImage}
+            qrTitle={item.qrTitle || ''}
+            qrValue={item.qrValue || ''}
+          />
+        ) : (
+          <a
+            href={item.href}
+            target={item.href.startsWith('mailto:') || item.href.startsWith('#') ? undefined : '_blank'}
+            rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+            class="flex items-center justify-center rounded-full p-2 text-[var(--color-400)] transition-colors hover:bg-[var(--color-200)] hover:text-[var(--color-0)]"
+            aria-label={item.label}
+          >
+            <Icon name={iconMap[item.icon] || iconMap.email} class="h-5 w-5 fill-current" aria-hidden="true" />
+          </a>
+        )}
       </li>
     ))
   }

@@ -1,7 +1,6 @@
 ---
 import { site, nav } from '../data/site';
 import ThemeToggle from './ThemeToggle.astro';
-import MagicSwitch from './MagicSwitch.astro';
 
 const pathname = Astro.url.pathname;
 
@@ -28,16 +27,15 @@ function isActive(href: string): boolean {
         aria-label={`${site.title} home`}
       >
         <img
-          src="/images/avatar.svg"
+          src="/images/logo.jpg"
           alt=""
           width="36"
           height="36"
-          class="rounded-full"
+          class="rounded-full object-cover"
           aria-hidden="true"
         />
         <span class="text-lg font-medium tracking-tight">{site.title}</span>
       </a>
-      <MagicSwitch />
     </div>
 
     <div class="flex items-center gap-2 sm:gap-4">
