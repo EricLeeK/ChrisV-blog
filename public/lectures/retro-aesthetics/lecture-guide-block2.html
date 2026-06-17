@@ -378,6 +378,70 @@
   </style>
 </head>
 <body>
+<nav class="lecture-nav-bar" aria-label="讲座导航">
+  <a href="/" class="lecture-nav-back">← 回博客</a>
+  <span class="lecture-nav-title">逆行之美学</span>
+  <span class="lecture-nav-spacer"></span>
+</nav>
+
+<style>
+  .lecture-nav-bar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 24px;
+    background: #efeadd;
+    border-bottom: 1px solid #e0d8c8;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+
+  .lecture-nav-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #f7f5ef;
+    border: 1px solid #e0d8c8;
+    border-radius: 6px;
+    color: #2b2319;
+    font-size: 14px;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .lecture-nav-back:hover {
+    background: #fff;
+    border-color: #d0c8b8;
+  }
+
+  .lecture-nav-back:focus-visible {
+    outline: 2px solid #b85c38;
+    outline-offset: 2px;
+  }
+
+  .lecture-nav-title {
+    font-size: 14px;
+    color: #5c4f3d;
+    font-family: "Noto Serif SC", "Noto Serif", serif;
+    text-align: center;
+  }
+
+  .lecture-nav-spacer {
+    width: auto;
+  }
+
+  @media (max-width: 640px) {
+    .lecture-nav-bar {
+      padding: 12px 16px;
+    }
+    .lecture-nav-spacer {
+      display: none;
+    }
+  }
+</style>
+
+
   <div class="binding"></div>
   <div class="page">
     <header>
