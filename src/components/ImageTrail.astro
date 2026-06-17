@@ -59,7 +59,7 @@
 
     function setVisible(state: string) {
       active = state !== 'OFF';
-      trail.dataset.state = state;
+      if (trail) trail.dataset.state = state;
       items.forEach((item) => item.classList.toggle('is-active', active));
       if (!active && rafId !== null) {
         cancelAnimationFrame(rafId);
