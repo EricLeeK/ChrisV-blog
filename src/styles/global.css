@@ -1,4 +1,5 @@
 @import url('/fonts/hwmct/result.css');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap');
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
@@ -61,8 +62,8 @@
 
   /* Fonts */
   --font-system: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Lantinghei SC", "Microsoft YaHei", "HanHei SC", "Helvetica Neue", "Open Sans", "Hiragino Sans GB", 微软雅黑, STHeiti, "WenQuanYi Micro Hei", Arial, SimSun, sans-serif;
-  --font-body: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "MiSans", "Lantinghei SC", "Microsoft YaHei", "HanHei SC", "Helvetica Neue", "Open Sans", "Hiragino Sans GB", 微软雅黑, STHeiti, "WenQuanYi Micro Hei", Arial, SimSun, sans-serif;
-  --font-display: "Huiwen-mincho", "Noto Serif SC", "Songti SC", "SimSun", serif;
+  --font-body: "Fraunces", system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "MiSans", "Lantinghei SC", "Microsoft YaHei", "HanHei SC", "Helvetica Neue", "Open Sans", "Hiragino Sans GB", 微软雅黑, STHeiti, "WenQuanYi Micro Hei", Arial, SimSun, sans-serif;
+  --font-display: "Fraunces", "Huiwen-mincho", "Noto Serif SC", "Songti SC", "SimSun", serif;
   --font-tag: "Courier New", "SF Mono", Consolas, monospace;
   --font-mono: "SFMono-Regular", "SF Mono", Consolas, "Liberation Mono", Menlo, Courier, monospace;
 
@@ -173,7 +174,7 @@
 
   /* Typography */
   --font-sans: var(--font-body);
-  --font-display: "Huiwen-mincho", "Noto Serif SC", "Songti SC", "SimSun", serif;
+  --font-display: "Fraunces", "Huiwen-mincho", "Noto Serif SC", "Songti SC", "SimSun", serif;
   --font-tag: "Special Elite", var(--font-system);
   --font-mono: "Inconsolata", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
 
@@ -273,6 +274,7 @@ html {
 body {
   position: relative;
   font-family: var(--font-body);
+  font-weight: 300;
   color: var(--color-0);
   background-color: var(--color-999);
   line-height: 1.6;
@@ -316,7 +318,7 @@ body::after {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-weight: 500;
   line-height: 1.2;
   color: var(--color-0);

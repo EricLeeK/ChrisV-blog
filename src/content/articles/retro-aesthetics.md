@@ -4,8 +4,7 @@ description: "十块系列：从 LLM 现状、技术爆发，到文化反弹与�
 date: 2026-06-15
 category: "艺术"
 tags: ["AI美学", "讲座", "HTML"]
-featured: true
-cover: "/images/placeholder.svg"
+cover: "/images/retro-aesthetics-cover.png"
 externalUrl: "/lectures/retro-aesthetics/lecture-guide-block1.html"
 ---
 

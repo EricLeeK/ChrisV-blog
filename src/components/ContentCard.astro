@@ -7,7 +7,6 @@ interface Props {
   date?: Date | string;
   category: string;
   tags?: string[];
-  featured?: boolean;
   href: string;
   /** Same-site URL override (e.g. for static HTML lecture pages). Not opened in a new tab. */
   externalUrl?: string;
@@ -20,7 +19,6 @@ const {
   date,
   category,
   tags = [],
-  featured = false,
   href,
   externalUrl,
   cover,
@@ -33,7 +31,6 @@ const filterSlugs = getFilterSlugs(category, tags);
 <a
   href={externalUrl || href}
   data-categories={filterSlugs}
-  data-featured={featured ? 'true' : 'false'}
   class="group relative flex flex-col overflow-hidden rounded-[6px] border border-[var(--border)] bg-[var(--card-color)] transition-all duration-300 hover:shadow-[var(--shadow-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-main)]"
 >
   <div class="relative aspect-video overflow-hidden">
@@ -52,13 +49,6 @@ const filterSlugs = getFilterSlugs(category, tags);
       )
     }
 
-    {featured && (
-      <span
-        class="absolute top-3 right-3 rounded-[36px] bg-[var(--color-blue)] px-2.5 py-1 text-xs font-medium text-white"
-      >
-        推荐
-      </span>
-    )}
   </div>
 
   <div class="flex flex-1 flex-col gap-2 p-4">

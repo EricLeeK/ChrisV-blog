@@ -27,7 +27,7 @@ export const social = [
     icon: 'wechat',
     qrImage: '/images/wechat-qr.jpg',
     qrTitle: '微信号',
-    qrValue: 'V',
+    qrValue: 'a13623819167',
   },
   {
     label: '小红书',
@@ -38,11 +38,10 @@ export const social = [
 
 export const filters = [
   { id: 'all', label: '全部' },
-  { id: 'featured', label: '🔥 推荐' },
-  { id: 'ai', label: 'AI' },
-  { id: 'design', label: '设计' },
-  { id: 'art', label: '艺术' },
-  { id: 'random', label: '碎碎念' },
+  { id: 'ai-theory', label: 'AI 理论' },
+  { id: 'agent-practice', label: 'Agent 实践与开发' },
+  { id: 'ai-exploration', label: 'AI 探索' },
+  { id: 'design-art', label: '设计艺术' },
 ];
 
 export const categories = [
@@ -52,7 +51,7 @@ export const categories = [
     tag: 'ARTICLES',
     title: '研究',
     description: 'AI相关方向论文博客精读与探索',
-    href: '/articles?filter=ai',
+    href: '/articles',
     icon: '/images/research-icon.png',
     stats: [
       { value: '{articles}', label: '篇文章' },

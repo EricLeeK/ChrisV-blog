@@ -4,6 +4,7 @@ node_modules/
 # build
 dist/
 .astro/
+temp/
 
 # logs
 *.log
@@ -29,3 +30,6 @@ yarn-error.log*
 
 # vercel
 .vercel/
+
+# superpower
+.superpowers/

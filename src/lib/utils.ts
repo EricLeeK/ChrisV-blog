@@ -13,14 +13,15 @@ export function slugify(text: string): string {
 }
 
 const CATEGORY_FILTER_MAP: Record<string, string> = {
-  AI: 'ai',
-  设计: 'design',
-  艺术: 'art',
-  碎碎念: 'random',
+  'AI 理论': 'ai-theory',
+  'Agent 实践与开发': 'agent-practice',
+  'AI 探索': 'ai-exploration',
+  设计: 'design-art',
+  艺术: 'design-art',
   'AI Agents': 'ai-agents',
   NLP: 'nlp',
   'Creative Coding': 'creative-coding',
-  Design: 'design',
+  Design: 'design-art',
   'Research Tools': 'research-tools',
 };
 

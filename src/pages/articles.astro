@@ -18,7 +18,7 @@ const articles = (await getCollection('articles')).sort(
   />
 
   <section class="container-inner pb-16">
-    <FilterBar active="ai" />
+    <FilterBar active="all" />
     <CardGrid items={articles} />
   </section>
 </BaseLayout>

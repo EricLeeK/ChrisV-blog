@@ -1,18 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
-import { social } from '../data/site';
-import { Icon } from 'astro-icon/components';
-
-const isExternal = (href: string) => href.startsWith('http');
-
-const iconMap: Record<string, string> = {
-  github: 'simple-icons:github',
-  x: 'simple-icons:x',
-  email: 'lucide:mail',
-  wechat: 'simple-icons:wechat',
-  xiaohongshu: 'simple-icons:xiaohongshu',
-};
+import SocialLinks from '../components/SocialLinks.astro';
+import DashedLine from '../components/DashedLine.astro';
 ---
 
 <BaseLayout title="关于 — ChrisV">
@@ -28,32 +18,52 @@ const iconMap: Record<string, string> = {
         class="h-24 w-24 rounded-full object-cover"
       />
       <h2 class="text-2xl text-[var(--color-0)]">ChrisV</h2>
-      <p
-        class="max-w-[480px] text-base leading-relaxed text-[var(--color-300)] text-balance"
-      >
-        Current geotechnical engineering graduate student with a side passion for
-        AI, agents, NLP, and design.
-      </p>
-    </div>
+      <SocialLinks class="justify-center" />
 
-    <div class="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {
-        social.map((item) => (
-          <a
-            href={item.href}
-            target={isExternal(item.href) ? '_blank' : undefined}
-            rel={isExternal(item.href) ? 'noopener noreferrer' : undefined}
-            class="group flex items-center gap-4 rounded-[6px] border border-[var(--border)] bg-[var(--card-color)] p-4 transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] will-change-transform hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-main)]"
-          >
-            <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-200)] text-[var(--color-0)]">
-              <Icon name={iconMap[item.icon] || iconMap.email} class="h-5 w-5 fill-current" aria-hidden="true" />
-            </span>
-            <span class="text-base text-[var(--color-0)] group-hover:text-[var(--color-primary-main)]">
-              {item.label}
-            </span>
-          </a>
-        ))
-      }
+      <div
+        class="max-w-[520px] space-y-4 text-base leading-relaxed text-[var(--color-300)] text-balance"
+      >
+        <p>我是一名传统工科的硕士研究生，但心思常常不在同一处。</p>
+        <p>
+          白天算偏微分方程、算有限元、做学校的科研项目，晚上读论文、写代码、调模型。我着迷于把一件事的逻辑拆干净，也着迷于让呈现方式好看优雅一点。AI、Agent、NLP
+          是我探索世界的工具，设计和艺术是我理解自己的方式。
+        </p>
+        <p>
+          这个博客是我的工作台，也是我的草稿纸。这里会放我读过的论文、做过的项目、突然冒出来的念头。我不确定最后会走到哪里，但我很享受这种一边建造一边思考的状态。
+        </p>
+        <p>
+          如果你也对智能系统和美学之间的缝隙感兴趣，欢迎在这里随便逛逛。
+        </p>
+      </div>
+
+      <DashedLine class="max-w-[120px]" />
+
+      <div
+        class="max-w-[520px] space-y-4 text-base leading-relaxed text-[var(--color-300)] text-balance"
+      >
+        <p>
+          I am a master's student in traditional engineering, though my mind
+          rarely stays in one place.
+        </p>
+        <p>
+          By day I solve partial differential equations, run finite element
+          analysis, and work on my university research projects; by night I read
+          papers, write code, and tune models. I am obsessed with taking things
+          apart until the logic is clean, and just as obsessed with making the
+          presentation beautiful and elegant. AI, agents, and NLP are my tools
+          for exploring the world; design and art are how I understand myself.
+        </p>
+        <p>
+          This blog is my workbench and my scratch paper. Here I keep papers I
+          have read, projects I have built, and ideas that pop up out of nowhere.
+          I am not sure where all of this will lead, but I enjoy the state of
+          building and thinking at the same time.
+        </p>
+        <p>
+          If you too are interested in the space between intelligent systems and
+          aesthetics, feel free to wander around.
+        </p>
+      </div>
     </div>
   </section>
 </BaseLayout>

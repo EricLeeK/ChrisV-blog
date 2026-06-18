@@ -16,7 +16,6 @@ type CardItem =
         date?: Date | string;
         category: string;
         tags?: string[];
-        featured?: boolean;
         cover?: string;
         externalUrl?: string;
       };
@@ -49,7 +48,6 @@ function hasCardData(item: CardItem): item is CardItem & {
         date?: Date | string;
         category: string;
         tags?: string[];
-        featured?: boolean;
         cover?: string;
         externalUrl?: string;
       };
@@ -60,7 +58,6 @@ function hasCardData(item: CardItem): item is CardItem & {
           date={data.date}
           category={data.category}
           tags={data.tags}
-          featured={data.featured}
           href={item.collection === 'random' ? '/random' : `/${item.collection}/${item.id}`}
           externalUrl={data.externalUrl}
           cover={data.cover}

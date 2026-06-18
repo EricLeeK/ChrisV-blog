@@ -78,8 +78,6 @@ const { active = 'all' } = Astro.props;
           var visible = false;
           if (filterId === 'all') {
             visible = true;
-          } else if (filterId === 'featured') {
-            visible = card.getAttribute('data-featured') === 'true';
           } else {
             var categories = (card.getAttribute('data-categories') || '').split(',');
             visible = categories.indexOf(filterId) !== -1;

@@ -69,9 +69,9 @@ const resolvedCategories = categories.map((cat) => ({
                 ))}
               </div>
 
-              <span class="arrow-btn flex h-10 w-10 items-center justify-center rounded-full text-white shadow-lg transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:scale-110 group-hover:rotate-45">
+              <span class="flex items-center justify-center text-[var(--color-0)] transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] group-hover:rotate-45">
                 <svg
-                  class="h-4 w-4"
+                  class="h-5 w-5"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -124,13 +124,6 @@ const resolvedCategories = categories.map((cat) => ({
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-  }
-
-  .arrow-btn {
-    background:
-      linear-gradient(var(--card-color), var(--card-color)) padding-box,
-      linear-gradient(135deg, #6b8cff 0%, #a855f7 100%) border-box;
-    border: 2px solid transparent;
   }
 
   .category-card::before {

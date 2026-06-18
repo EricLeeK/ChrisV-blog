@@ -14,6 +14,8 @@ const notesWithContent = await Promise.all(
     return { note, Content };
   })
 );
+
+const allTags = Array.from(new Set(notes.flatMap((note) => note.data.tags))).sort();
 ---
 
 <BaseLayout title="碎碎念 — ChrisV">
@@ -24,16 +26,49 @@ const notesWithContent = await Promise.all(
   />
 
   <section class="container-inner pb-16">
-    <div class="flex flex-col gap-8">
+    {
+      allTags.length > 0 && (
+        <div class="mb-8 flex flex-wrap items-center gap-2" data-tag-bar>
+          <button
+            type="button"
+            data-tag="all"
+            aria-pressed="true"
+            class="rounded-[36px] px-3 py-1 text-xs transition-all bg-[var(--color-0)] text-[var(--color-999)]"
+          >
+            全部
+          </button>
+          {allTags.map((tag) => (
+            <button
+              type="button"
+              data-tag={tag}
+              aria-pressed="false"
+              class="rounded-[36px] border border-[var(--border)] bg-[var(--color-900)] px-3 py-1 text-xs text-[var(--color-500)] transition-all hover:opacity-90"
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      )
+    }
+
+    <div class="flex flex-col gap-8" data-notes-list>
       {
         notesWithContent.map(({ note, Content }) => (
-          <article class="rounded-[6px] border border-[var(--border)] bg-[var(--card-color)] p-6">
-            <time
-              class="ricoui-tag text-[var(--color-500)]"
-              datetime={note.data.date.toISOString()}
-            >
-              {formatDate(note.data.date)}
-            </time>
+          <article
+            class="rounded-[6px] border border-[var(--border)] bg-[var(--card-color)] p-6"
+            data-tags={note.data.tags.join(',')}
+          >
+            <div class="flex flex-wrap items-center gap-3">
+              <time
+                class="ricoui-tag text-[var(--color-500)]"
+                datetime={note.data.date.toISOString()}
+              >
+                {formatDate(note.data.date)}
+              </time>
+              {note.data.tags.map((tag) => (
+                <span class="ricoui-tag text-[var(--color-500)]">{tag}</span>
+              ))}
+            </div>
             <div class="prose mt-4 max-w-none text-[var(--color-300)]">
               <Content />
             </div>
@@ -43,3 +78,51 @@ const notesWithContent = await Promise.all(
     </div>
   </section>
 </BaseLayout>
+
+<script is:inline>
+  (function () {
+    function ready(fn) {
+      if (document.readyState !== 'loading') fn();
+      else document.addEventListener('DOMContentLoaded', fn);
+    }
+
+    ready(function () {
+      var tagBar = document.querySelector('[data-tag-bar]');
+      var notesList = document.querySelector('[data-notes-list]');
+      if (!tagBar || !notesList) return;
+
+      var buttons = tagBar.querySelectorAll('button[data-tag]');
+      var notes = notesList.querySelectorAll('article[data-tags]');
+
+      var activeClasses = ['bg-[var(--color-0)]', 'text-[var(--color-999)]'];
+      var inactiveClasses = ['border', 'border-[var(--border)]', 'bg-[var(--color-900)]', 'text-[var(--color-500)]'];
+
+      function setActive(button) {
+        buttons.forEach(function (btn) {
+          btn.setAttribute('aria-pressed', 'false');
+          btn.classList.remove.apply(btn.classList, activeClasses);
+          btn.classList.add.apply(btn.classList, inactiveClasses);
+        });
+        button.setAttribute('aria-pressed', 'true');
+        button.classList.remove.apply(button.classList, inactiveClasses);
+        button.classList.add.apply(button.classList, activeClasses);
+      }
+
+      function applyFilter(tag) {
+        notes.forEach(function (note) {
+          var tags = (note.getAttribute('data-tags') || '').split(',');
+          var visible = tag === 'all' || tags.indexOf(tag) !== -1;
+          note.style.display = visible ? '' : 'none';
+        });
+      }
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var tag = btn.getAttribute('data-tag');
+          setActive(btn);
+          applyFilter(tag);
+        });
+      });
+    });
+  })();
+</script>
