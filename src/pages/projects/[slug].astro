@@ -28,17 +28,33 @@ const { Content } = await render(post);
       {post.data.description && (
         <p class="mx-auto mt-6 max-w-2xl text-base leading-relaxed" style="color: var(--color-300);">{post.data.description}</p>
       )}
-      {post.data.link && (
-        <a
-          href={post.data.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="mt-6 inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-medium transition-colors"
-          style="background-color: var(--color-yellow); color: var(--color-100);"
-        >
-          <Icon name="simple-icons:github" class="h-4 w-4 fill-current" aria-hidden="true" />
-          <span>GitHub</span>
-        </a>
+      {(post.data.website || post.data.link) && (
+        <div class="mt-6 flex flex-wrap justify-center gap-3">
+          {post.data.website && (
+            <a
+              href={post.data.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-medium transition-colors"
+              style="background-color: var(--color-yellow); color: var(--color-100);"
+            >
+              <Icon name="lucide:external-link" class="h-4 w-4" aria-hidden="true" />
+              <span>在线体验</span>
+            </a>
+          )}
+          {post.data.link && (
+            <a
+              href={post.data.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-medium transition-colors"
+              style="border-color: var(--border); color: var(--color-0);"
+            >
+              <Icon name="simple-icons:github" class="h-4 w-4 fill-current" aria-hidden="true" />
+              <span>GitHub</span>
+            </a>
+          )}
+        </div>
       )}
     </header>
     <div class="prose prose-invert max-w-none" style="color: var(--color-300);">

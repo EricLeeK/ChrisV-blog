@@ -6,6 +6,7 @@ category: "AI Agents"
 tags: ["AI-tutor", "Japanese", "TypeScript", "AI-Studio"]
 cover: "/images/nihongo-study-tutorweb-cover.png"
 link: "https://github.com/EricLeeK/nihongo-study-tutorweb"
+website: "https://ericleek.github.io/nihongo-study-tutorweb/"
 openSource: true
 ---
 

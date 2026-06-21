@@ -6,6 +6,7 @@ category: "AI Agents"
 tags: ["life-management", "AI-assisted", "React", "Supabase"]
 cover: "/images/v-life-cover.png"
 link: "https://github.com/EricLeeK/v-life"
+website: "https://shenghuo.homes/"
 openSource: true
 ---
 
