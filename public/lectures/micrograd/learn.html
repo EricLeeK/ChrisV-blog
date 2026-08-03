@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="meta.title">Learning micrograd — How backpropagation actually works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Design system — Anthropic-style: ivory paper, clay accent, serif
+   ============================================================ */
+:root {
+  --bg:        #F5F1E8;   /* ivory paper */
+  --surface:   #FFFCF5;   /* soft paper card */
+  --surface-2: #EFEBE0;   /* recessed panel */
+  --ink:       #191919;   /* near-black text */
+  --ink-2:     #3A3733;   /* body */
+  --muted:     #6B6557;   /* secondary text */
+  --rule:      #D9D3C4;   /* hairline rules */
+  --accent:    #CC785C;   /* clay / terracotta */
+  --accent-2:  #E8A48C;   /* light clay */
+  --accent-bg: #F4E3D9;   /* faint clay wash */
+  --green:     #6B8E6B;   /* secondary accent (forward/data) */
+  --green-bg:  #E3E9DF;
+  --max: 720px;
+  --max-wide: 1000px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink-2);
+  font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Segoe UI', sans-serif;
+  font-size: 17px;
+  line-height: 1.72;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.serif { font-family: 'Newsreader', 'Noto Serif SC', Georgia, 'Songti SC', 'STSong', serif; }
+.mono  { font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace; }
+
+/* Chinese needs a touch more breathing room */
+:lang(zh) body { font-size: 16.5px; }
+:lang(zh) .prose p, :lang(zh) .prose li { line-height: 1.8; }
+:lang(zh) .hero .lede { letter-spacing: 0.01em; }
+
+/* ---- top bar ---- */
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(245, 241, 232, 0.82);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--rule);
+}
+.topbar-inner {
+  max-width: var(--max-wide);
+  margin: 0 auto;
+  padding: 14px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 13px;
+}
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--ink); }
+.brand-dot { width: 9px; height: 9px; background: var(--accent); border-radius: 2px; transform: rotate(45deg); }
+.back-blog {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 6px 12px; margin-right: 4px;
+  background: var(--surface-2); border: 1px solid var(--rule); border-radius: 6px;
+  color: var(--ink); font-size: 13px; font-weight: 500; text-decoration: none;
+  transition: all .15s; white-space: nowrap;
+}
+.back-blog:hover { background: #fff; border-color: var(--accent-2); color: var(--accent); }
+.topbar nav { display: flex; align-items: center; gap: 24px; }
+.topbar nav a {
+  color: var(--muted); text-decoration: none;
+  transition: color .15s;
+}
+.topbar nav a:hover { color: var(--ink); }
+
+/* language toggle */
+.lang-toggle {
+  display: inline-flex; align-items: center;
+  border: 1px solid var(--rule);
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+.lang-toggle button {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 600;
+  padding: 5px 11px;
+  border: none; background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .15s;
+  letter-spacing: 0.02em;
+}
+.lang-toggle button.active { background: var(--accent); color: #fff; }
+.lang-toggle button:not(.active):hover { color: var(--ink); }
+
+/* ---- shell ---- */
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 32px; }
+.wrap.wide { max-width: var(--max-wide); }
+
+section { padding: 72px 0; }
+section + section { border-top: 1px solid var(--rule); }
+
+/* ---- typography ---- */
+h1, h2, h3 { font-family: 'Newsreader', 'Noto Serif SC', Georgia, serif; color: var(--ink); letter-spacing: -0.01em; }
+
+.hero { padding: 110px 0 90px; }
+.hero .eyebrow { margin-bottom: 28px; }
+.hero h1 {
+  font-size: clamp(40px, 6vw, 64px);
+  font-weight: 500;
+  line-height: 1.08;
+  margin-bottom: 28px;
+  letter-spacing: -0.02em;
+}
+:lang(zh) .hero h1 { letter-spacing: -0.005em; font-weight: 600; }
+.hero .lede {
+  font-family: 'Newsreader', 'Noto Serif SC', Georgia, serif;
+  font-size: 22px; line-height: 1.55;
+  color: var(--ink-2);
+  font-weight: 400;
+}
+.hero .lede em { color: var(--accent); font-style: italic; }
+:lang(zh) .hero .lede em { font-style: normal; font-weight: 500; }
+
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px; font-weight: 500;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--accent);
+  display: inline-flex; align-items: center; gap: 10px;
+}
+.eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--accent); display: inline-block; }
+
+h2.section-title {
+  font-size: clamp(28px, 3.5vw, 36px);
+  font-weight: 500;
+  line-height: 1.2;
+  margin: 14px 0 28px;
+  letter-spacing: -0.015em;
+}
+
+h3 {
+  font-size: 21px; font-weight: 500;
+  margin: 36px 0 12px;
+}
+
+p { margin-bottom: 20px; }
+p:last-child { margin-bottom: 0; }
+
+.prose p, .prose li { font-family: 'Newsreader', 'Noto Serif SC', Georgia, serif; font-size: 19px; line-height: 1.68; color: var(--ink-2); }
+.prose strong { color: var(--ink); font-weight: 600; }
+.prose em { color: var(--accent); font-style: italic; }
+:lang(zh) .prose em { font-style: normal; font-weight: 500; }
+
+/* ---- No italics anywhere in Chinese; use clay color + weight for emphasis ---- */
+:lang(zh) .hero .lede em,
+:lang(zh) .prose em,
+:lang(zh) .code .com,
+:lang(zh) .formula,
+:lang(zh) .callout p em { font-style: normal; }
+
+a.inline { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-2); }
+a.inline:hover { border-bottom-color: var(--accent); }
+
+code, .c {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88em;
+  background: var(--surface-2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--ink);
+}
+
+/* ---- code block ---- */
+.code {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 22px 26px;
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-x: auto;
+  margin: 24px 0;
+  white-space: pre;
+  color: var(--ink);
+}
+.code .kw { color: var(--accent); }
+.code .str { color: var(--green); }
+.code .com { color: var(--muted); font-style: italic; }
+.code .num { color: #B45A3C; }
+.code .fn { color: #8B5A2B; }
+.code .hl { background: var(--accent-bg); border-radius: 3px; padding: 1px 4px; margin: 0 -4px; }
+
+/* ---- callout ---- */
+.callout {
+  background: var(--accent-bg);
+  border-left: 3px solid var(--accent);
+  padding: 20px 26px;
+  margin: 28px 0;
+  border-radius: 0 8px 8px 0;
+}
+.callout .label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 8px;
+}
+.callout p { font-family: 'Newsreader', 'Noto Serif SC', serif; font-size: 18px; margin: 0; color: var(--ink); }
+
+.callout.green { background: var(--green-bg); border-left-color: var(--green); }
+.callout.green .label { color: var(--green); }
+
+/* ---- formula ---- */
+.formula {
+  font-family: 'Newsreader', 'Noto Serif SC', serif;
+  font-style: italic;
+  font-size: 24px;
+  text-align: center;
+  color: var(--ink);
+  padding: 26px 0;
+  margin: 24px 0;
+}
+.formula .sub { font-size: 0.62em; vertical-align: sub; font-style: normal; }
+.formula .sup { font-size: 0.62em; vertical-align: super; font-style: normal; }
+
+/* ---- field table ---- */
+.field-table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 15px; }
+.field-table th, .field-table td {
+  text-align: left; padding: 12px 14px;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+.field-table th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--muted); font-weight: 500;
+  border-bottom: 1.5px solid var(--rule);
+}
+.field-table td:first-child { font-family: 'JetBrains Mono', monospace; color: var(--accent); white-space: nowrap; }
+.field-table td:nth-child(2) { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--ink-2); }
+.field-table td:last-child { font-family: 'Newsreader','Noto Serif SC',serif; }
+
+/* ============================================================
+   Computational graph (the centerpiece)
+   ============================================================ */
+.graph-card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 32px;
+  margin: 28px 0;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.02), 0 12px 32px -24px rgba(80,60,30,0.18);
+}
+.graph-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 22px; flex-wrap: wrap; gap: 16px;
+}
+.graph-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px; color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.graph-status .phase { color: var(--accent); font-weight: 600; }
+.graph-status .phase.green { color: var(--green); }
+.graph-controls { display: flex; gap: 10px; }
+
+.btn {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  font-size: 13.5px; font-weight: 500;
+  padding: 9px 18px;
+  border-radius: 7px;
+  border: 1px solid var(--rule);
+  background: var(--surface-2);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn:hover { border-color: var(--accent-2); background: var(--accent-bg); }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn.primary:hover { background: #B8674D; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn:disabled:hover { background: var(--surface-2); border-color: var(--rule); }
+
+.graph-canvas { width: 100%; overflow-x: auto; }
+.graph-canvas svg { display: block; margin: 0 auto; max-width: 100%; }
+
+/* SVG node styles */
+.node-rect {
+  fill: var(--surface);
+  stroke: var(--ink);
+  stroke-width: 1.4;
+  transition: all .35s ease;
+}
+.node-rect.active { stroke: var(--accent); stroke-width: 2.4; }
+.node-rect.fired  { stroke: var(--green); stroke-width: 2; fill: var(--green-bg); }
+.node-rect.leaf   { fill: var(--surface-2); }
+
+.node-divider { stroke: var(--ink); stroke-width: 1.2; }
+.node-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px; font-weight: 600;
+  fill: var(--muted); letter-spacing: 0.04em;
+}
+.node-data {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 500; fill: var(--ink);
+}
+.node-data.muted { fill: #BFB8A8; transition: fill .35s; }
+.node-grad {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 500; fill: var(--accent);
+  transition: fill .35s;
+}
+.node-grad.empty { fill: #CFC8B8; }
+
+.op-circle {
+  fill: var(--surface);
+  stroke: var(--ink);
+  stroke-width: 1.6;
+  transition: all .35s ease;
+}
+.op-circle.active { stroke: var(--accent); stroke-width: 3; fill: var(--accent-bg); }
+.op-circle.fired  { stroke: var(--green); stroke-width: 2.2; fill: var(--green-bg); }
+.op-text {
+  font-family: 'Newsreader', serif;
+  font-size: 30px; font-weight: 800; fill: var(--ink);
+  pointer-events: none;
+}
+.op-circle.active + .op-text, .op-text.active { fill: var(--accent); }
+
+/* floating "ghost" gradient value travelling along an edge during backward */
+.grad-ghost-bg {
+  fill: var(--accent);
+  stroke: var(--surface);
+  stroke-width: 2;
+  filter: drop-shadow(0 2px 4px rgba(80,40,20,0.28));
+}
+.grad-ghost-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px; font-weight: 700;
+  fill: #fff;
+  pointer-events: none;
+}
+/* pulse on a grad value when it gets updated */
+.grad-pulse { animation: gradPulse .55s ease; transform-box: fill-box; transform-origin: center; }
+@keyframes gradPulse {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.45); }
+  100% { transform: scale(1); }
+}
+
+.edge { stroke: #B8B1A0; stroke-width: 1.4; fill: none; transition: all .35s ease; }
+.edge.active { stroke: var(--accent); stroke-width: 2.4; }
+.edge.fired  { stroke: var(--green); stroke-width: 2; }
+.edge.contrib { stroke: var(--accent); stroke-width: 3; }
+
+.step-readout {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; line-height: 1.85;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 18px 22px;
+  margin-top: 22px;
+  min-height: 56px;
+  color: var(--ink-2);
+  white-space: pre-wrap;
+}
+.step-readout .placeholder { color: #B8B1A0; }
+
+.legend {
+  display: flex; gap: 22px; flex-wrap: wrap;
+  margin-top: 18px; font-size: 12.5px; color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+.legend-item { display: flex; align-items: center; gap: 8px; }
+.legend-swatch { width: 14px; height: 14px; border-radius: 3px; border: 1.4px solid var(--ink); }
+.legend-swatch.leaf { background: var(--surface-2); }
+.legend-swatch.computed { background: var(--surface); }
+.legend-swatch.accent { border-color: var(--accent); background: var(--accent-bg); }
+.legend-swatch.green { border-color: var(--green); background: var(--green-bg); }
+
+/* mini static graph for §1 */
+.mini-graph { margin: 28px 0; }
+.mini-graph svg { display: block; margin: 0 auto; max-width: 100%; }
+
+/* build-up diagram (Value->MLP) */
+.buildup {
+  display: flex; align-items: stretch; gap: 0;
+  margin: 28px 0; flex-wrap: wrap; justify-content: center;
+}
+.buildup-step {
+  flex: 1; min-width: 150px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  padding: 22px 18px;
+  text-align: center;
+  position: relative;
+}
+.buildup-step + .buildup-step { border-left: none; }
+.buildup-step .lvl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--accent); font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.buildup-step .name {
+  font-family: 'Newsreader', serif;
+  font-size: 22px; font-weight: 500; color: var(--ink);
+  margin-bottom: 6px;
+}
+.buildup-step .desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.buildup-step .arrow {
+  position: absolute; right: -10px; top: 50%;
+  transform: translateY(-50%); z-index: 2;
+  color: var(--accent); font-size: 20px;
+  background: var(--bg); padding: 2px 4px;
+}
+
+/* footer */
+footer {
+  border-top: 1px solid var(--rule);
+  padding: 56px 0 80px;
+  color: var(--muted);
+  font-size: 14px;
+}
+footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+footer a { color: var(--ink-2); text-decoration: none; border-bottom: 1px solid var(--rule); }
+footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* responsive */
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .wrap, .wrap.wide, .topbar-inner { padding-left: 20px; padding-right: 20px; }
+  section { padding: 56px 0; }
+  .hero { padding: 70px 0 60px; }
+  .hero .lede, .prose p, .prose li { font-size: 17px; }
+  .graph-card { padding: 18px; }
+  .topbar nav a:not(.repo-link):not(.lang-toggle *) { display: none; }
+  .topbar .brand span:last-child { display: none; }
+}
+
+/* small reveal animation */
+.reveal { opacity: 0; transform: translateY(14px); transition: opacity .7s ease, transform .7s ease; }
+.reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  * { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== TOP BAR ===== -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="back-blog" data-i18n="nav.back">← Blog</a>
+    <div class="brand"><span class="brand-dot"></span> <span data-i18n="brand">Learning micrograd</span></div>
+    <nav>
+      <a href="#forward" data-i18n="nav.forward">Forward</a>
+      <a href="#value" data-i18n="nav.value">Value</a>
+      <a href="#operators" data-i18n="nav.operators">Operators</a>
+      <a href="#graph" class="repo-link" data-i18n="nav.graph">Graph</a>
+      <a href="#mlp" data-i18n="nav.mlp">MLP</a>
+      <span class="lang-toggle" role="group" aria-label="Language">
+        <button type="button" data-lang="en">EN</button>
+        <button type="button" data-lang="zh">中文</button>
+      </span>
+    </nav>
+  </div>
+</div>
+
+<!-- ===== HERO ===== -->
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow reveal" data-i18n="hero.eyebrow">Educational · Backpropagation</div>
+    <h1 class="reveal" data-i18n-html="hero.title">How backpropagation<br>actually works.</h1>
+    <p class="lede reveal" data-i18n-html="hero.lede">
+      A visual walkthrough of <em>micrograd</em> — Andrej Karpathy's ~150-line autograd engine.
+      No matrices, no vectors. Just scalars, a computation graph, and the chain rule
+      you already know. By the end you'll have watched a real backward pass happen, one node at a time.
+    </p>
+  </div>
+</header>
+
+<!-- ===== §1 FORWARD PASS ===== -->
+<section id="forward">
+  <div class="wrap">
+    <div class="eyebrow reveal" data-i18n="s1.eyebrow">§ 1 — The forward pass</div>
+    <h2 class="section-title reveal" data-i18n="s1.title">First, we compute a number.</h2>
+    <div class="prose reveal">
+      <p data-i18n-html="s1.p1">
+        Forget neural networks for a moment. We have two inputs,
+        <code>a = 3</code> and <code>b = 4</code>, and we build up a result through a few simple steps.
+        At each step we remember <strong>which numbers produced it</strong> and <strong>which operation was used</strong> —
+        that memory is what turns arithmetic into a "computation graph".
+      </p>
+      <div class="code"><span class="com" data-i18n="s1.code.cmt1"># the example we'll carry through the whole page</span>
+a = <span class="num">3</span>;  b = <span class="num">4</span>
+
+c = a + b     <span class="com" data-i18n="s1.code.c1"># 7   &larr; produced by a, b  via +</span>
+d = a * b     <span class="com" data-i18n="s1.code.c2"># 12  &larr; produced by a, b  via *</span>
+e = c * d     <span class="com" data-i18n="s1.code.c3"># 84  &larr; produced by c, d  via *</span></div>
+      <p data-i18n-html="s1.p2">
+        Read it left to right: inputs flow into operations, operations produce new values,
+        those values feed the next operations, until we reach the final output <code>e = 84</code>.
+        Notice something important about <strong class="c" style="background:var(--accent-bg);color:var(--accent);padding:2px 6px;border-radius:4px">a</strong> —
+        it's used <em>twice</em>: once to make <code>c</code>, once to make <code>d</code>. Hold onto that thought.
+      </p>
+    </div>
+
+    <!-- mini static graph -->
+    <div class="mini-graph reveal">
+      <svg viewBox="0 0 820 200" width="820" height="200" role="img" aria-label="forward computation graph">
+        <path class="edge" d="M 90 55 C 160 55, 160 55, 230 55"/>
+        <path class="edge" d="M 90 145 C 160 145, 160 145, 230 145"/>
+        <path class="edge" d="M 90 55 C 160 55, 160 145, 230 145"/>
+        <path class="edge" d="M 90 145 C 160 145, 160 55, 230 55"/>
+        <path class="edge" d="M 320 100 C 380 100, 380 100, 440 100"/>
+        <g><rect class="node-rect leaf" x="20" y="35" width="140" height="40" rx="5"/><text class="node-data" x="40" y="60">a = 3</text></g>
+        <g><rect class="node-rect leaf" x="20" y="125" width="140" height="40" rx="5"/><text class="node-data" x="40" y="150">b = 4</text></g>
+        <g><circle class="op-circle" cx="275" cy="55" r="20"/><text class="op-text" x="275" y="64" text-anchor="middle">+</text></g>
+        <g><circle class="op-circle" cx="275" cy="145" r="20"/><text class="op-text" x="275" y="154" text-anchor="middle">×</text></g>
+        <g><rect class="node-rect" x="320" y="35" width="120" height="40" rx="5"/><text class="node-data" x="340" y="60">c = 7</text></g>
+        <g><rect class="node-rect" x="320" y="125" width="120" height="40" rx="5"/><text class="node-data" x="340" y="150">d = 12</text></g>
+        <g><circle class="op-circle" cx="485" cy="100" r="20"/><text class="op-text" x="485" y="109" text-anchor="middle">×</text></g>
+        <path class="edge" d="M 440 55 C 470 55, 470 100, 485 100"/>
+        <path class="edge" d="M 440 145 C 470 145, 470 100, 485 100"/>
+        <g><rect class="node-rect" x="530" y="80" width="180" height="40" rx="5"/><text class="node-data" x="550" y="105"><tspan data-i18n="s1.graph.e">e = 84  (output)</tspan></text></g>
+      </svg>
+    </div>
+
+    <div class="prose reveal">
+      <p data-i18n-html="s1.p3">
+        The forward pass is the easy half. The interesting question — the one backpropagation answers —
+        is the <em>reverse</em>: <strong>"if <code>a</code> wiggled a little, how much would <code>e</code> move?"</strong>
+        In calculus class you'd call that <code>de/da</code>. In code, we call it <code>a.grad</code>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== §2 VALUE OBJECT ===== -->
+<section id="value">
+  <div class="wrap">
+    <div class="eyebrow reveal" data-i18n="s2.eyebrow">§ 2 — The Value object</div>
+    <h2 class="section-title reveal" data-i18n="s2.title">One object that holds a number — and its history.</h2>
+    <div class="prose reveal">
+      <p data-i18n-html="s2.p1">
+        Everything in micrograd is a <code>Value</code>. It's just a number wrapped together with four extra fields
+        that record <em>how it came to exist</em>. That's the whole trick: by remembering its own birth,
+        a number becomes a node in a graph that knows how to differentiate itself.
+      </p>
+      <div class="code"><span class="kw">class</span> <span class="fn">Value</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, data, _children=(), _op=<span class="str">''</span>):
+        self.data = data            <span class="com" data-i18n="s2.code.l1"># the number itself</span>
+        self.grad = <span class="num">0</span>               <span class="com" data-i18n="s2.code.l2"># d(output)/d(this)  &larr; filled in during backward</span>
+        self._backward = <span class="kw">lambda</span>: <span class="kw">None</span>   <span class="com" data-i18n="s2.code.l3"># how to push grad to my parents</span>
+        self._prev = set(_children) <span class="com" data-i18n="s2.code.l4"># the Values that produced me</span>
+        self._op = _op              <span class="com" data-i18n="s2.code.l5"># the op that produced me (+, *, ...)</span></div>
+      <p data-i18n="s2.p2">
+        Five fields. Don't gloss over them — the entire engine is just these five fields being read and written.
+      </p>
+    </div>
+
+    <table class="field-table reveal">
+      <thead><tr>
+        <th data-i18n="s2.table.h1">Field</th>
+        <th data-i18n="s2.table.h2">Holds</th>
+        <th data-i18n="s2.table.h3">Plain meaning</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>data</td><td data-i18n="s2.table.r1c2">a float</td><td data-i18n="s2.table.r1c3">The number this node represents.</td></tr>
+        <tr><td>grad</td><td data-i18n="s2.table.r2c2">a float, starts 0</td><td data-i18n-html="s2.table.r2c3">How much the final output changes if <em>this</em> node changes. Filled in during backward.</td></tr>
+        <tr><td>_prev</td><td data-i18n="s2.table.r3c2">set of Values</td><td data-i18n-html="s2.table.r3c3">My parents — the inputs that produced me. Empty for leaves like <code>a</code> and <code>b</code>.</td></tr>
+        <tr><td>_op</td><td data-i18n="s2.table.r4c2">a string</td><td data-i18n-html="s2.table.r4c3">The symbol of the operation that made me (<code>'+'</code>, <code>'*'</code>, <code>'ReLU'</code>…).</td></tr>
+        <tr><td>_backward</td><td data-i18n="s2.table.r5c2">a function</td><td data-i18n="s2.table.r5c3">A closure that pushes my received gradient back to my parents. The heart of the engine.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout reveal">
+      <div class="label" data-i18n="s2.callout.label">Key insight</div>
+      <p data-i18n-html="s2.callout.body">A Value never "looks forward". It only knows its <em>parents</em> (in <code>_prev</code>), and it carries a
+      <code>_backward</code> recipe for handing gradients <em>back</em> to those parents. Reverse-mode autodiff is just
+      a wave of these recipes firing in the right order.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== §3 OPERATORS ===== -->
+<section id="operators">
+  <div class="wrap">
+    <div class="eyebrow reveal" data-i18n="s3.eyebrow">§ 3 — Operators &amp; local gradients</div>
+    <h2 class="section-title reveal" data-i18n="s3.title">Each operation knows one tiny fact.</h2>
+    <div class="prose reveal">
+      <p data-i18n-html="s3.p1">
+        Here is the most important mental shift in the whole subject.
+        When <code>c = a + b</code> runs, the code does <strong>two</strong> things, not one:
+      </p>
+      <ol style="font-family:'Newsreader','Noto Serif SC',serif;font-size:19px;line-height:1.7;margin:8px 0 20px 28px;color:var(--ink-2)">
+        <li data-i18n-html="s3.li1"><strong>Forward:</strong> computes <code>c.data = a.data + b.data</code> and remembers <code>c._prev = {a, b}</code>.</li>
+        <li data-i18n-html="s3.li2"><strong>Stages a recipe:</strong> defines a closure <code>_backward</code> and attaches it to <code>c</code>, <em>to be run later</em>.</li>
+      </ol>
+      <p data-i18n-html="s3.p2">
+        That closure doesn't run yet. It's a sticky note left on <code>c</code> saying:
+        <em>"when the time comes, here's how I forward my gradient to my parents."</em>
+      </p>
+    </div>
+
+    <h3 class="serif reveal" style="margin-top:40px" data-i18n="s3.h.add">Addition: the gradient passes straight through</h3>
+    <div class="code reveal"><span class="kw">def</span> <span class="fn">__add__</span>(self, other):
+    other = other <span class="kw">if</span> isinstance(other, Value) <span class="kw">else</span> Value(other)
+    out = Value(self.data + other.data, (self, other), <span class="str">'+'</span>)
+
+    <span class="kw">def</span> <span class="fn">_backward</span>():
+        <span class="hl">self.grad  += out.grad</span>     <span class="com" data-i18n="s3.addcode.c1"># local derivative d(out)/d(self) = 1</span>
+        <span class="hl">other.grad += out.grad</span>     <span class="com" data-i18n="s3.addcode.c2"># local derivative d(out)/d(other) = 1</span>
+    out._backward = _backward
+    <span class="kw">return</span> out</div>
+
+    <div class="prose reveal">
+      <p data-i18n-html="s3.addp">
+        The local derivative of a sum with respect to either input is <strong>1</strong> — so each parent
+        receives exactly what <code>out</code> received, undiminished. That's the whole <code>+</code> operator.
+      </p>
+    </div>
+
+    <div class="callout reveal">
+      <div class="label" data-i18n-html="s3.near.label">Two things this code is <em>not</em> doing</div>
+      <p data-i18n-html="s3.near.body"></p>
+    </div>
+
+    <h3 class="serif reveal" style="margin-top:40px" data-i18n="s3.h.mul">Multiplication: where the chain rule appears</h3>
+    <div class="code reveal"><span class="kw">def</span> <span class="fn">__mul__</span>(self, other):
+    other = other <span class="kw">if</span> isinstance(other, Value) <span class="kw">else</span> Value(other)
+    out = Value(self.data * other.data, (self, other), <span class="str">'*'</span>)
+
+    <span class="kw">def</span> <span class="fn">_backward</span>():
+        <span class="hl">self.grad  += other.data * out.grad</span>   <span class="com" data-i18n="s3.mulcode.c1"># d(out)/d(self) = other</span>
+        <span class="hl">other.grad += self.data  * out.grad</span>   <span class="com" data-i18n="s3.mulcode.c2"># d(out)/d(other) = self</span>
+    out._backward = _backward
+    <span class="kw">return</span> out</div>
+
+    <div class="prose reveal">
+      <p data-i18n-html="s3.mulp">
+        For <code>out = self · other</code>, the derivative w.r.t. <code>self</code> is <code>other</code> (and vice versa).
+        So the parent receives <code>other.data * out.grad</code> — that multiplication
+        <em>is</em> the chain rule, written out: <strong>local gradient × upstream gradient</strong>.
+      </p>
+      <p data-i18n-html="s3.compp">
+        And that's the whole toolkit. Subtraction is <code>a + (-b)</code>; division is <code>a · b⁻¹</code>;
+        <code>sin</code>, <code>tanh</code>, <code>exp</code> slot in the same way — each just needs its own one-line
+        derivative in a closure. micrograd ships only <code>+</code>, <code>*</code>, <code>**</code>, and <code>relu</code>
+        because everything else composes from those four, no new machinery required.
+      </p>
+    </div>
+
+    <div class="formula reveal" data-i18n-html="s3.formula1">
+      grad reaching a parent &nbsp;=&nbsp; <span style="color:var(--accent)">(local derivative)</span>
+      &nbsp;×&nbsp; <span style="color:var(--green)">(gradient the node received)</span>
+    </div>
+
+    <h3 class="serif reveal" style="margin-top:44px" data-i18n-html="s3.h.why">The question everyone asks: why <code style="font-size:0.9em">+=</code> and not <code style="font-size:0.9em">=</code>?</h3>
+    <div class="prose reveal">
+      <p data-i18n-html="s3.whyp1">
+        Because a node can reach the output through <strong>multiple paths</strong>.
+        Remember <code>a</code> from §1? It feeds <em>both</em> <code>c</code> and <code>d</code>,
+        and both eventually reach <code>e</code>. So <code>a</code> receives a contribution from each path,
+        and the total derivative is the <strong>sum</strong>.
+      </p>
+      <p data-i18n-html="s3.whyp2">
+        In proper calculus this is the <strong>multivariable chain rule</strong>
+        (the total-derivative theorem). If a value <code>x</code> reaches the output <code>L</code> through
+        intermediate nodes <code>y<span class="sup" style="font-family:inherit">1</span>, y<span class="sup" style="font-family:inherit">2</span>, …, y<span class="sub" style="font-family:inherit">k</span></code>,
+        then:
+      </p>
+    </div>
+    <div class="formula reveal" style="font-size:26px">
+      <span style="font-style:normal">d</span>L<span style="font-style:normal">/d</span>x
+      &nbsp;=&nbsp;
+      <span style="font-size:1.6em;vertical-align:-0.15em">∑</span><span style="font-size:0.6em;vertical-align:sub;font-style:normal">i</span>
+      &nbsp;
+      (<span style="font-style:normal">∂</span>L<span style="font-style:normal">/∂</span>y<span class="sub">i</span>)
+      ·
+      (dy<span class="sub">i</span><span style="font-style:normal">/d</span>x)
+    </div>
+    <div class="prose reveal">
+      <p data-i18n-html="s3.whyp3">
+        That giant summation symbol <strong>Σ</strong> on the right — the thing that says "add up all the paths" —
+        <em>that</em> is the <code>+=</code> in the code. They are the same operation. If you wrote <code>=</code> instead,
+        each new path would overwrite the previous contribution and the gradient would silently come out wrong.
+      </p>
+    </div>
+
+    <div class="callout reveal">
+      <div class="label" data-i18n="s3.callout.label">In one line</div>
+      <p data-i18n-html="s3.callout.body"><strong>The <code>×</code> in the chain rule</strong> is the <code>other.data * out.grad</code> multiplication.
+      <strong>The <code>+</code> in the chain rule</strong> is the <code>+=</code>. They are different jobs, done by different pieces of the code.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== §4 INTERACTIVE GRAPH (centerpiece) ===== -->
+<section id="graph">
+  <div class="wrap wide">
+    <div class="eyebrow reveal" data-i18n="s4.eyebrow">§ 4 — Watch it happen</div>
+    <h2 class="section-title reveal" data-i18n="s4.title">The backward pass, one node at a time.</h2>
+    <div class="wrap" style="padding:0 0 12px">
+      <div class="prose reveal">
+        <p data-i18n-html="s4.intro">
+          Here is the same graph <code>e = (a+b)·(a·b)</code>, rendered the way micrograd's own visualizer draws it:
+          each rectangle is a <code>Value</code> split into <code>data</code> (left) and <code>grad</code> (right).
+          Press <strong>Step</strong> to walk backward through the graph in topological order.
+          Watch the gradients fill in — and pay special attention to <code>a</code>:
+          it lights up <em>twice</em>, once per path.
+        </p>
+      </div>
+    </div>
+
+    <div class="graph-card reveal">
+      <div class="graph-header">
+        <div class="graph-status" id="status" data-i18n-html="s4.status.ready">
+          <span class="phase">Forward pass complete.</span> Output e = 84. Ready to backpropagate.
+        </div>
+        <div class="graph-controls">
+          <button class="btn" id="resetBtn" data-i18n="s4.btn.reset">Reset</button>
+          <button class="btn" id="backBtn" data-i18n="s4.btn.back">◂ Back</button>
+          <button class="btn primary" id="stepBtn" data-i18n="s4.btn.step">Step ▸</button>
+          <button class="btn" id="runBtn" data-i18n="s4.btn.run">Run all</button>
+        </div>
+      </div>
+
+      <div class="graph-canvas">
+        <svg id="graph" viewBox="0 0 940 340" width="940" height="340" role="img" aria-label="interactive computational graph">
+          <g id="graphNodes"></g>
+          <g id="graphEdges"></g>
+        </svg>
+      </div>
+
+      <div class="step-readout" id="readout" data-i18n="s4.readout.placeholder">
+        Press "Step" to begin the backward pass.
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><span class="legend-swatch leaf"></span> <span data-i18n="s4.legend.leaf">leaf (input)</span></div>
+        <div class="legend-item"><span class="legend-swatch computed"></span> <span data-i18n="s4.legend.computed">computed value</span></div>
+        <div class="legend-item"><span class="legend-swatch accent"></span> <span data-i18n="s4.legend.accent">firing now</span></div>
+        <div class="legend-item"><span class="legend-swatch green"></span> <span data-i18n="s4.legend.done">done</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== §5 TOPOLOGICAL SORT ===== -->
+<section id="topo">
+  <div class="wrap">
+    <div class="eyebrow reveal" data-i18n="s5.eyebrow">§ 5 — Topological order</div>
+    <h2 class="section-title reveal" data-i18n="s5.title">Why the order matters — and how the graph finds it.</h2>
+    <div class="prose reveal">
+      <p data-i18n-html="s5.p1">
+        Look back at what just happened. The gradient reached <code>a</code> <em>only after</em>
+        both <code>c</code> and <code>d</code> had finished. That's not a coincidence — it's a hard requirement:
+      </p>
+    </div>
+    <div class="callout reveal">
+      <div class="label" data-i18n="s5.callout.label">The rule</div>
+      <p data-i18n-html="s5.callout.body">A node may run its <code>_backward()</code> only after <strong>every node that uses it</strong>
+      has already run its own. Otherwise <code>node.grad</code> wouldn't yet contain all its contributions.</p>
+    </div>
+    <div class="prose reveal">
+      <p data-i18n-html="s5.p2">
+        micrograd enforces this with a <strong>topological sort</strong>: a linear ordering of the nodes
+        where every node appears after all of its inputs. Build it with a depth-first walk from the output:
+      </p>
+    </div>
+    <div class="code reveal">topo = []
+visited = set()
+<span class="kw">def</span> <span class="fn">build_topo</span>(v):
+    <span class="kw">if</span> v <span class="kw">not in</span> visited:
+        visited.add(v)
+        <span class="kw">for</span> child <span class="kw">in</span> v._prev:   <span class="com" data-i18n="s5.code.c1"># visit parents first…</span>
+            build_topo(child)
+        topo.append(v)          <span class="com" data-i18n="s5.code.c2"># …then append myself</span>
+build_topo(e)                    <span class="com" data-i18n="s5.code.c3"># MUST start from the output</span>
+
+<span class="kw">for</span> v <span class="kw">in</span> reversed(topo):    <span class="com" data-i18n="s5.code.c4"># fire recipes root-to-leaves</span>
+    v._backward()</div>
+    <div class="prose reveal">
+      <p data-i18n-html="s5.p3">
+        Two subtleties worth fixing in your head. First, <code>build_topo</code> must start at the
+        <strong>output</strong> — leaves like <code>a</code> have empty <code>_prev</code>, so starting from one
+        would only ever visit that single node. Second, the resulting <code>topo</code> runs
+        <em>leaves-first</em>; the engine reverses it so recipes fire <em>output-first</em>, which is the order
+        you just stepped through above.
+      </p>
+      <p data-i18n-html="s5.p4">
+        That's it. That's the entire <code>backward()</code> method: build a topo order, set
+        <code>output.grad = 1</code>, walk it backwards, and let each node's pre-staged closure do its one tiny job.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== §6 MLP ===== -->
+<section id="mlp">
+  <div class="wrap">
+    <div class="eyebrow reveal" data-i18n="s6.eyebrow">§ 6 — From a Value to a network</div>
+    <h2 class="section-title reveal" data-i18n="s6.title">Stack them, and you have a neural net.</h2>
+    <div class="prose reveal">
+      <p data-i18n-html="s6.p1">
+        A single <code>Value</code> differentiates itself. A <em>neuron</em> is just a small graph of Values —
+        <code>act = Σ(w·x) + b</code> passed through an activation. A <em>layer</em> is a list of neurons.
+        A <em>network</em> is a list of layers. The composition is so clean it almost reads like a definition:
+      </p>
+    </div>
+
+    <div class="buildup reveal">
+      <div class="buildup-step">
+        <div class="lvl" data-i18n="s6.b1.lvl">atom</div>
+        <div class="name">Value</div>
+        <div class="desc" data-i18n="s6.b1.desc">one number + its grad + its history</div>
+        <div class="arrow">→</div>
+      </div>
+      <div class="buildup-step">
+        <div class="lvl" data-i18n="s6.b2.lvl">unit</div>
+        <div class="name">Neuron</div>
+        <div class="desc" data-i18n="s6.b2.desc">w·x + b, then relu</div>
+        <div class="arrow">→</div>
+      </div>
+      <div class="buildup-step">
+        <div class="lvl" data-i18n="s6.b3.lvl">block</div>
+        <div class="name">Layer</div>
+        <div class="desc" data-i18n="s6.b3.desc">several neurons in parallel</div>
+        <div class="arrow">→</div>
+      </div>
+      <div class="buildup-step">
+        <div class="lvl" data-i18n="s6.b4.lvl">model</div>
+        <div class="name">MLP</div>
+        <div class="desc" data-i18n="s6.b4.desc">several layers in sequence</div>
+      </div>
+    </div>
+
+    <div class="prose reveal">
+      <p data-i18n-html="s6.p2">
+        Because every weight <code>w</code> and bias <code>b</code> is itself a <code>Value</code>, the moment you
+        compute a loss the entire network is automatically a giant computation graph — and the same
+        <code>backward()</code> you just watched fills in every parameter's gradient. Training is then a four-line loop:
+      </p>
+    </div>
+    <div class="code reveal"><span class="kw">for</span> step <span class="kw">in</span> range(epochs):
+    model.zero_grad()                 <span class="com" data-i18n="s6.code.c1"># 1. wipe grads (else they'd += across steps)</span>
+    loss = compute_loss(model, data)  <span class="com" data-i18n="s6.code.c2"># 2. forward</span>
+    loss.backward()                   <span class="com" data-i18n="s6.code.c3"># 3. backward — fills every .grad</span>
+    <span class="kw">for</span> p <span class="kw">in</span> model.parameters():
+        p.data -= lr * p.grad         <span class="com" data-i18n="s6.code.c4"># 4. step downhill — that's SGD</span></div>
+
+    <div class="callout green reveal">
+      <div class="label" data-i18n="s6.callout.label">Why this scales</div>
+      <p data-i18n-html="s6.callout.body">The same six-field object and the same topo-sorted wave of closures that handled <code>a + b</code>
+      also handle a 50-layer ResNet. The mechanics don't change — only the size of the graph does.</p>
+    </div>
+
+    <div class="prose reveal">
+      <p data-i18n-html="s6.p3">
+        micrograd operates on scalars, so it's slow — you'd never train a real model with it. But every idea
+        above — the stored local recipe, the <code>+=</code> over paths, the topological wave — is exactly what
+        PyTorch and JAX do internally. They just batch the work into big matrix operations and hand it to a GPU.
+        Once you've seen it here, at the scale of five numbers, you have the whole picture.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap">
+    <div data-i18n-html="footer.left">Built for learning <code style="font-size:12px">micrograd</code> · a study companion, not affiliated with the project.</div>
+    <div>
+      <a href="https://github.com/karpathy/micrograd" target="_blank" rel="noopener">github.com/karpathy/micrograd ↗</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   i18n — bilingual dictionary (en / zh)
+   ============================================================ */
+const I18N = {
+  "meta.title": {
+    en: "Learning micrograd — How backpropagation actually works",
+    zh: "学习 micrograd —— 反向传播到底是怎么运作的"
+  },
+  "brand": { en: "Learning micrograd", zh: "学习 micrograd" },
+
+  "nav.forward": { en: "Forward", zh: "前向" },
+  "nav.value":   { en: "Value",    zh: "Value" },
+  "nav.operators":{ en: "Operators", zh: "算子" },
+  "nav.graph":   { en: "Graph",   zh: "计算图" },
+  "nav.mlp":     { en: "MLP",     zh: "神经网络" },
+  "nav.back":    { en: "← Blog",  zh: "← 回博客" },
+
+  "hero.eyebrow": { en: "Educational · Backpropagation", zh: "教学 · 反向传播" },
+  "hero.title": {
+    en: "How backpropagation<br>actually works.",
+    zh: "反向传播<br>到底是怎么回事。"
+  },
+  "hero.lede": {
+    en: `A visual walkthrough of <em>micrograd</em> — Andrej Karpathy's ~150-line autograd engine.
+      No matrices, no vectors. Just scalars, a computation graph, and the chain rule
+      you already know. By the end you'll have watched a real backward pass happen, one node at a time.`,
+    zh: `用可视化的方式走进 <em>micrograd</em> —— Andrej Karpathy 那个只有 150 行的自动求导引擎。
+      没有矩阵,也没有向量。只有标量、一张计算图,以及你已经会用的链式法则。
+      看完之后,你会亲眼见证一次真实的反向传播,一个节点一个节点地发生。`
+  },
+
+  /* §1 */
+  "s1.eyebrow": { en: "§ 1 — The forward pass", zh: "§ 1 —— 前向传播" },
+  "s1.title":   { en: "First, we compute a number.", zh: "先算出一个数。" },
+  "s1.p1": {
+    en: `Forget neural networks for a moment. We have two inputs,
+      <code>a = 3</code> and <code>b = 4</code>, and we build up a result through a few simple steps.
+      At each step we remember <strong>which numbers produced it</strong> and <strong>which operation was used</strong> —
+      that memory is what turns arithmetic into a "computation graph".`,
+    zh: `暂时忘掉神经网络。我们有两个输入,<code>a = 3</code> 和 <code>b = 4</code>,
+      通过几个简单步骤逐步算出一个结果。每一步,我们都记下<strong>它是由哪些数算出来的</strong>、<strong>用了什么运算</strong> ——
+      正是这份"记忆",把普通算术变成了一张"计算图"。`
+  },
+  "s1.code.cmt1": { en: "# the example we'll carry through the whole page", zh: "# 这个例子会贯穿整篇文章" },
+  "s1.code.c1": { en: "# 7   ← produced by a, b  via +", zh: "# 7   ← 由 a、b 经 + 得到" },
+  "s1.code.c2": { en: "# 12  ← produced by a, b  via *", zh: "# 12  ← 由 a、b 经 * 得到" },
+  "s1.code.c3": { en: "# 84  ← produced by c, d  via *", zh: "# 84  ← 由 c、d 经 * 得到" },
+  "s1.p2": {
+    en: `Read it left to right: inputs flow into operations, operations produce new values,
+      those values feed the next operations, until we reach the final output <code>e = 84</code>.
+      Notice something important about <strong class="c" style="background:var(--accent-bg);color:var(--accent);padding:2px 6px;border-radius:4px">a</strong> —
+      it's used <em>twice</em>: once to make <code>c</code>, once to make <code>d</code>. Hold onto that thought.`,
+    zh: `从左往右读:输入流入运算,运算产生新的值,这些值又喂给下一个运算,直到得到最终输出 <code>e = 84</code>。
+      请注意 <strong class="c" style="background:var(--accent-bg);color:var(--accent);padding:2px 6px;border-radius:4px">a</strong> 一个关键特点 ——
+      它被用了<em>两次</em>:一次用于算 <code>c</code>,一次用于算 <code>d</code>。记住这一点。`
+  },
+  "s1.graph.e": { en: "e = 84  (output)", zh: "e = 84  (输出)" },
+  "s1.p3": {
+    en: `The forward pass is the easy half. The interesting question — the one backpropagation answers —
+      is the <em>reverse</em>: <strong>"if <code>a</code> wiggled a little, how much would <code>e</code> move?"</strong>
+      In calculus class you'd call that <code>de/da</code>. In code, we call it <code>a.grad</code>.`,
+    zh: `前向传播只是轻松的一半。真正有意思的问题 —— 也是反向传播要回答的问题 ——
+      是<em>反过来的</em>:<strong>"如果 <code>a</code> 动一点点,<code>e</code> 会变化多少?"</strong>
+      在微积分课上,这叫 <code>de/da</code>;在代码里,我们叫它 <code>a.grad</code>。`
+  },
+
+  /* §2 */
+  "s2.eyebrow": { en: "§ 2 — The Value object", zh: "§ 2 —— Value 对象" },
+  "s2.title": { en: "One object that holds a number — and its history.", zh: "一个对象,既装着一个数,也记着它的来历。" },
+  "s2.p1": {
+    en: `Everything in micrograd is a <code>Value</code>. It's just a number wrapped together with four extra fields
+      that record <em>how it came to exist</em>. That's the whole trick: by remembering its own birth,
+      a number becomes a node in a graph that knows how to differentiate itself.`,
+    zh: `micrograd 里一切都是 <code>Value</code>。它本质上就是一个数字,外加四个记录<em>它是怎么诞生的</em>字段。
+      这正是全部奥妙:只要记住自己的来历,一个数字就变成了计算图里的一个节点,而且能自己对自己求导。`
+  },
+  "s2.code.l1": { en: "# the number itself", zh: "# 这个数字本身" },
+  "s2.code.l2": { en: "# d(output)/d(this)  ← filled in during backward", zh: "# d(输出)/d(本节点)  ← 反向传播时填入" },
+  "s2.code.l3": { en: "# how to push grad to my parents", zh: "# 如何把梯度推回给我的父节点" },
+  "s2.code.l4": { en: "# the Values that produced me", zh: "# 产生我的那些 Value" },
+  "s2.code.l5": { en: "# the op that produced me (+, *, ...)", zh: "# 产生我的运算符(+、*、...)" },
+  "s2.p2": {
+    en: "Five fields. Don't gloss over them — the entire engine is just these five fields being read and written.",
+    zh: "五个字段。别一带而过 —— 整个引擎无非就是反复读写这五个字段。"
+  },
+  "s2.table.h1": { en: "Field", zh: "字段" },
+  "s2.table.h2": { en: "Holds", zh: "存什么" },
+  "s2.table.h3": { en: "Plain meaning", zh: "大白话含义" },
+  "s2.table.r1c2": { en: "a float", zh: "一个浮点数" },
+  "s2.table.r1c3": { en: "The number this node represents.", zh: "这个节点所代表的数字。" },
+  "s2.table.r2c2": { en: "a float, starts 0", zh: "浮点数,初始为 0" },
+  "s2.table.r2c3": {
+    en: `How much the final output changes if <em>this</em> node changes. Born at zero, filled in during the backward pass. The "final output" is just whichever node you later call <code>.backward()</code> on.`,
+    zh: `如果<em>这个</em>节点变化一点,最终输出会变多少。出生时为 0,反向传播时填入。所谓"最终输出",就是之后你调用 <code>.backward()</code> 的那个节点。`
+  },
+  "s2.table.r3c2": { en: "set of Values", zh: "一个 Value 的集合" },
+  "s2.table.r3c3": {
+    en: `My parents — the inputs that produced me. Empty for leaves like <code>a</code> and <code>b</code>.`,
+    zh: `我的"父母" —— 产生我的那些输入。对 <code>a</code>、<code>b</code> 这样的叶子节点来说是空的。`
+  },
+  "s2.table.r4c2": { en: "a string", zh: "一个字符串" },
+  "s2.table.r4c3": {
+    en: `The symbol of the operation that made me (<code>'+'</code>, <code>'*'</code>, <code>'ReLU'</code>…).`,
+    zh: `产生我的那个运算符的符号(<code>'+'</code>、<code>'*'</code>、<code>'ReLU'</code>……)。`
+  },
+  "s2.table.r5c2": { en: "a function", zh: "一个函数" },
+  "s2.table.r5c3": {
+    en: "A closure that pushes my received gradient back to my parents. The heart of the engine.",
+    zh: "一个闭包:把收到的梯度推回给我的父节点。整个引擎的心脏。"
+  },
+  "s2.callout.label": { en: "Key insight", zh: "核心洞察" },
+  "s2.callout.body": {
+    en: `A Value is deliberately short-sighted. It only knows its <em>parents</em> (in <code>_prev</code>), and it carries a
+      <code>_backward</code> recipe for handing gradients <em>back</em> to those parents. A leaf like <code>a</code> is the
+      purest case: its <code>_prev</code> is empty and it has no recipe of its own — it's just a mailbox, sitting still while
+      the nodes downstream drop contributions into <code>a.grad</code>. <code>a</code> never even learns that <code>c</code>
+      and <code>d</code> exist. Reverse-mode autodiff is just this wave of recipes firing in the right order, with leaves
+      quietly accumulating at the end.`,
+    zh: `Value 是故意"近视"的。它只知道自己的<em>父节点</em>(存在 <code>_prev</code> 里),并带着一份 <code>_backward</code> "配方",
+      把梯度<em>往回</em>交给这些父节点。像 <code>a</code> 这样的叶子是最纯粹的例子:它的 <code>_prev</code> 是空的,自己也没有配方 ——
+      它只是一个"信箱",安静地待在原地,等下游的节点把贡献一次次塞进 <code>a.grad</code>。
+      <code>a</code> 压根不知道世界上还有 <code>c</code> 和 <code>d</code>。反向模式自动求导,本质上就是这波配方按正确顺序依次触发,
+      最后由叶子们悄悄完成累加。`
+  },
+
+  /* §3 */
+  "s3.eyebrow": { en: "§ 3 — Operators & local gradients", zh: "§ 3 —— 算子与局部梯度" },
+  "s3.title": { en: "Each operation knows one tiny fact.", zh: "每个运算只懂一件小事。" },
+  "s3.p1": {
+    en: `Here is the most important mental shift in the whole subject.
+      When <code>c = a + b</code> runs, the code does <strong>two</strong> things, not one:`,
+    zh: `这是整个主题里最重要的一次思维转换。
+      当 <code>c = a + b</code> 执行时,代码其实做了<strong>两</strong>件事,而不是一件:`
+  },
+  "s3.li1": {
+    en: `<strong>Forward:</strong> computes <code>c.data = a.data + b.data</code> and remembers <code>c._prev = {a, b}</code>.`,
+    zh: `<strong>前向:</strong>计算 <code>c.data = a.data + b.data</code>,并记下 <code>c._prev = {a, b}</code>。`
+  },
+  "s3.li2": {
+    en: `<strong>Stages a recipe:</strong> defines a closure <code>_backward</code> and attaches it to <code>c</code>, <em>to be run later</em>.`,
+    zh: `<strong>备好一份"配方":</strong>定义一个 <code>_backward</code> 闭包,挂到 <code>c</code> 身上,<em>留待以后执行</em>。`
+  },
+  "s3.p2": {
+    en: `That closure doesn't run yet. It's a sticky note left on <code>c</code> saying:
+      <em>"when the time comes, here's how I forward my gradient to my parents."</em>`,
+    zh: `这个闭包现在还不会执行。它就像贴在 <code>c</code> 身上的一张便签,写着:
+      <em>"时候到了,我会按这个方式把梯度转交给我的父节点。"</em>`
+  },
+  "s3.h.add": { en: "Addition: the gradient passes straight through", zh: "加法:梯度原封不动地传过去" },
+  "s3.addcode.c1": { en: "# local derivative d(out)/d(self) = 1", zh: "# 局部导数 d(out)/d(self) = 1" },
+  "s3.addcode.c2": { en: "# local derivative d(out)/d(other) = 1", zh: "# 局部导数 d(out)/d(other) = 1" },
+  "s3.addp": {
+    en: `The local derivative of a sum with respect to either input is <strong>1</strong> — so each parent
+      receives exactly what <code>out</code> received, undiminished. That's the whole <code>+</code> operator.`,
+    zh: `加法对任一输入的局部导数都是 <strong>1</strong> —— 所以每个父节点收到的梯度,
+      和 <code>out</code> 收到的一模一样、毫不衰减。这就是整个 <code>+</code> 运算符的全部。`
+  },
+  "s3.near.label": {
+    en: `Two things this code is <em>not</em> doing`,
+    zh: `这段代码<em>没有</em>在做的两件事`
+  },
+  "s3.near.body": {
+    en: `First, it does <strong>not</strong> compute <code>de/da</code>. The closure only knows the one operation it wraps —
+      here, that <code>c = a + b</code>, so its local fact is simply "both inputs have derivative 1". It has no idea that
+      <code>c</code> will later be multiplied into <code>e</code>. The global derivative <code>de/da</code> is never written
+      by any single closure; it's assembled automatically, piece by piece, as each node multiplies its local fact by whatever
+      gradient arrived from upstream. So <code>2ab + b²</code> never appears anywhere in the code — it emerges from the chain.
+      <br><br>
+      Second, <code>self</code> and <code>other</code> are just Python's names for "left operand" and "right operand" of
+      the <code>+</code> in <code>a + b</code>. For that one call, <code>self</code> <em>is</em> <code>a</code> and
+      <code>other</code> <em>is</em> <code>b</code>; in a different expression they'd be different objects. Their
+      <code>.grad</code> fields already exist — every Value is born with <code>grad = 0</code> — so the <code>+=</code> here
+      is filling in fields that have been waiting empty since construction.`,
+    zh: `第一,它<strong>没有</strong>在算 <code>de/da</code>。这个闭包只认识它所包裹的那一次运算 ——
+      在这里是 <code>c = a + b</code>,所以它掌握的局部事实仅仅是"两个输入的导数都是 1"。它压根不知道 <code>c</code> 之后会被乘进 <code>e</code> 里。
+      全局导数 <code>de/da</code> 从来不是由哪一个闭包写出来的,而是自动拼出来的:每个节点把自己的局部事实乘以上游传来的梯度,一块一块累加而成。
+      所以 <code>2ab + b²</code> 在代码里从头到尾都不存在 —— 它是从链式法则里"涌现"出来的。
+      <br><br>
+      第二,<code>self</code> 和 <code>other</code> 只是 Python 对 <code>a + b</code> 里"左操作数"和"右操作数"的命名而已。
+      对于这一次调用,<code>self</code> <em>就是</em> <code>a</code>,<code>other</code> <em>就是</em> <code>b</code>;
+      换一个表达式,它们就是别的对象。它们的 <code>.grad</code> 字段早就存在了 —— 每个 Value 一出生就是 <code>grad = 0</code> ——
+      所以这里的 <code>+=</code>,填的是从构造那一刻起就一直空着的字段。`
+  },
+  "s3.h.mul": { en: "Multiplication: where the chain rule appears", zh: "乘法:链式法则现身之处" },
+  "s3.mulcode.c1": { en: "# d(out)/d(self) = other", zh: "# d(out)/d(self) = other" },
+  "s3.mulcode.c2": { en: "# d(out)/d(other) = self", zh: "# d(out)/d(other) = self" },
+  "s3.mulp": {
+    en: `For <code>out = self · other</code>, the derivative w.r.t. <code>self</code> is <code>other</code> (and vice versa).
+      So the parent receives <code>other.data * out.grad</code> — that multiplication
+      <em>is</em> the chain rule, written out: <strong>local gradient × upstream gradient</strong>.`,
+    zh: `对于 <code>out = self · other</code>,对 <code>self</code> 求导的结果是 <code>other</code>(反过来也一样)。
+      所以父节点收到的是 <code>other.data * out.grad</code> —— 这个乘法
+      <em>就是</em>链式法则本身:<strong>局部梯度 × 上游梯度</strong>。`
+  },
+  "s3.compp": {
+    en: `And that's the whole toolkit. Subtraction is <code>a + (-b)</code>; division is <code>a · b⁻¹</code>;
+      <code>sin</code>, <code>tanh</code>, <code>exp</code> slot in the same way — each just needs its own one-line
+      derivative in a closure. micrograd ships only <code>+</code>, <code>*</code>, <code>**</code>, and <code>relu</code>
+      because everything else composes from those four, no new machinery required.`,
+    zh: `而这就是全部工具箱了。减法是 <code>a + (-b)</code>;除法是 <code>a · b⁻¹</code>;
+      <code>sin</code>、<code>tanh</code>、<code>exp</code> 都以同样的方式接入 —— 每个只需要在闭包里写一行自己的导数即可。
+      micrograd 只内置了 <code>+</code>、<code>*</code>、<code>**</code> 和 <code>relu</code> 四个算子,
+      因为其它一切都从这四个组合而来,不需要任何新机制。`
+  },
+  "s3.formula1": {
+    en: `grad reaching a parent &nbsp;=&nbsp; <span style="color:var(--accent)">(local derivative)</span>
+      &nbsp;×&nbsp; <span style="color:var(--green)">(gradient the node received)</span>`,
+    zh: `传到父节点的梯度 &nbsp;=&nbsp; <span style="color:var(--accent)">(局部导数)</span>
+      &nbsp;×&nbsp; <span style="color:var(--green)">(本节点收到的梯度)</span>`
+  },
+  "s3.h.why": {
+    en: `The question everyone asks: why <code style="font-size:0.9em">+=</code> and not <code style="font-size:0.9em">=</code>?`,
+    zh: `人人都会问的问题:为什么是 <code style="font-size:0.9em">+=</code> 而不是 <code style="font-size:0.9em">=</code>?`
+  },
+  "s3.whyp1": {
+    en: `Because a node can reach the output through <strong>multiple paths</strong>.
+      Remember <code>a</code> from §1? It feeds <em>both</em> <code>c</code> and <code>d</code>,
+      and both eventually reach <code>e</code>. So <code>a</code> receives a contribution from each path,
+      and the total derivative is the <strong>sum</strong>.`,
+    zh: `因为一个节点可以经由<strong>多条路径</strong>到达输出。
+      还记得 §1 里的 <code>a</code> 吗?它<em>同时</em>喂给了 <code>c</code> 和 <code>d</code>,
+      而两者最终都汇入 <code>e</code>。所以 <code>a</code> 会从每条路径各收到一份贡献,
+      而总导数就是它们的<strong>和</strong>。`
+  },
+  "s3.whyp2": {
+    en: `In proper calculus this is the <strong>multivariable chain rule</strong>
+      (the total-derivative theorem). If a value <code>x</code> reaches the output <code>L</code> through
+      intermediate nodes <code>y<span class="sup" style="font-family:inherit">1</span>, y<span class="sup" style="font-family:inherit">2</span>, …, y<span class="sub" style="font-family:inherit">k</span></code>,
+      then:`,
+    zh: `在严格的微积分里,这就是<strong>多元链式法则</strong>(全导数定理)。
+      如果一个值 <code>x</code> 经过中间节点 <code>y<span class="sup" style="font-family:inherit">1</span>、y<span class="sup" style="font-family:inherit">2</span>、……、y<span class="sub" style="font-family:inherit">k</span></code>
+      到达输出 <code>L</code>,那么:`
+  },
+  "s3.whyp3": {
+    en: `That giant summation symbol <strong>Σ</strong> on the right — the thing that says "add up all the paths" —
+      <em>that</em> is the <code>+=</code> in the code. They are the same operation. If you wrote <code>=</code> instead,
+      each new path would overwrite the previous contribution and the gradient would silently come out wrong.`,
+    zh: `右边那个大大的求和符号 <strong>Σ</strong> —— 也就是"把所有路径加起来"的那部分 ——
+      <em>正是</em>代码里的 <code>+=</code>。它们是同一件事。如果你写成 <code>=</code>,
+      每条新路径都会覆盖上一条的贡献,梯度就会悄悄地算错。`
+  },
+  "s3.callout.label": { en: "In one line", zh: "一句话总结" },
+  "s3.callout.body": {
+    en: `<strong>The <code>×</code> in the chain rule</strong> is the <code>other.data * out.grad</code> multiplication.
+      <strong>The <code>+</code> in the chain rule</strong> is the <code>+=</code>. They are different jobs, done by different pieces of the code.`,
+    zh: `<strong>链式法则里的"乘"</strong>,对应的是 <code>other.data * out.grad</code> 这个乘法。
+      <strong>链式法则里的"加"</strong>,对应的就是 <code>+=</code>。这是两件不同的事,由代码里不同的部分各自承担。`
+  },
+
+  /* §4 */
+  "s4.eyebrow": { en: "§ 4 — Watch it happen", zh: "§ 4 —— 亲眼见证它发生" },
+  "s4.title": { en: "The backward pass, one node at a time.", zh: "反向传播,一个节点一个节点地展开。" },
+  "s4.intro": {
+    en: `Here is the same graph <code>e = (a+b)·(a·b)</code>, rendered the way micrograd's own visualizer draws it:
+      each rectangle is a <code>Value</code> split into <code>data</code> (left) and <code>grad</code> (right).
+      Press <strong>Step</strong> to walk backward through the graph in topological order.
+      Watch the gradients fill in — and pay special attention to <code>a</code>:
+      it lights up <em>twice</em>, once per path.`,
+    zh: `这就是我们那张图 <code>e = (a+b)·(a·b)</code>,按照 micrograd 自带可视化器的方式来画:
+      每个矩形是一个 <code>Value</code>,左半边是 <code>data</code>,右半边是 <code>grad</code>。
+      按 <strong>Step</strong> 按钮,沿着拓扑顺序在图里倒着走一遍。
+      看着梯度一个个填进来 —— 特别留意 <code>a</code>:
+      它会亮起<em>两次</em>,每条路径各一次。`
+  },
+  "s4.status.ready": {
+    en: `<span class="phase">Forward pass complete.</span> Output e = 84. Ready to backpropagate.`,
+    zh: `<span class="phase">前向传播完成。</span> 输出 e = 84。可以开始反向传播了。`
+  },
+  "s4.btn.reset": { en: "Reset", zh: "重置" },
+  "s4.btn.back":  { en: "◂ Back", zh: "◂ 上一步" },
+  "s4.btn.step":  { en: "Step ▸", zh: "单步 ▸" },
+  "s4.btn.run":   { en: "Run all", zh: "自动播放" },
+  "s4.readout.placeholder": {
+    en: `Press "Step" to begin the backward pass.`,
+    zh: `按 "单步" 开始反向传播。`
+  },
+  "s4.legend.leaf":     { en: "leaf (input)",     zh: "叶子(输入)" },
+  "s4.legend.computed": { en: "computed value",   zh: "计算得到的值" },
+  "s4.legend.accent":   { en: "firing now",       zh: "正在触发" },
+  "s4.legend.done":     { en: "done",             zh: "已完成" },
+
+  /* §5 */
+  "s5.eyebrow": { en: "§ 5 — Topological order", zh: "§ 5 —— 拓扑顺序" },
+  "s5.title": { en: "Why the order matters — and how the graph finds it.", zh: "顺序为什么重要 —— 以及图是怎么找到它的。" },
+  "s5.p1": {
+    en: `Look back at what just happened. The gradient reached <code>a</code> <em>only after</em>
+      both <code>c</code> and <code>d</code> had finished. That's not a coincidence — it's a hard requirement:`,
+    zh: `回头看看刚才发生的事。梯度到达 <code>a</code>,<em>是在</em> <code>c</code> 和 <code>d</code>
+      <em>都算完之后</em>才发生的。这不是巧合 —— 而是一条硬性要求:`
+  },
+  "s5.callout.label": { en: "The rule", zh: "规则" },
+  "s5.callout.body": {
+    en: `A node may run its <code>_backward()</code> only after <strong>every node that uses it</strong>
+      has already run its own. Otherwise <code>node.grad</code> wouldn't yet contain all its contributions.`,
+    zh: `一个节点只有在<strong>所有用到它的节点</strong>都各自执行完毕之后,才能运行自己的 <code>_backward()</code>。
+      否则 <code>node.grad</code> 还没收齐它应有的全部贡献。`
+  },
+  "s5.p2": {
+    en: `micrograd enforces this with a <strong>topological sort</strong>: a linear ordering of the nodes
+      where every node appears after all of its inputs. Build it with a depth-first walk from the output:`,
+    zh: `micrograd 用<strong>拓扑排序</strong>来保证这一点:把所有节点排成一条线,
+      让每个节点都排在它的所有输入之后。从输出出发做一次深度优先遍历就能得到它:`
+  },
+  "s5.code.c1": { en: "# visit parents first…", zh: "# 先访问父节点……" },
+  "s5.code.c2": { en: "# …then append myself", zh: "# ……再把我自己加进去" },
+  "s5.code.c3": { en: "# MUST start from the output", zh: "# 必须从输出节点开始" },
+  "s5.code.c4": { en: "# fire recipes root-to-leaves", zh: "# 按根到叶子的顺序触发配方" },
+  "s5.p3": {
+    en: `Two subtleties worth fixing in your head. First, <code>build_topo</code> must start at the
+      <strong>output</strong> — leaves like <code>a</code> have empty <code>_prev</code>, so starting from one
+      would only ever visit that single node. Second, the resulting <code>topo</code> runs
+      <em>leaves-first</em>; the engine reverses it so recipes fire <em>output-first</em>, which is the order
+      you just stepped through above.`,
+    zh: `有两个细节值得记牢。第一,<code>build_topo</code> 必须从<strong>输出</strong>开始 ——
+      像 <code>a</code> 这样的叶子节点 <code>_prev</code> 是空的,从它开始的话只会访问到这一个节点。
+      第二,得到的 <code>topo</code> 是<em>叶子在前</em>的顺序;引擎再把它翻转过来,
+      让配方按<em>输出在前</em>的顺序触发 —— 也就是你刚才一步步点出来的那个顺序。`
+  },
+  "s5.p4": {
+    en: `That's it. That's the entire <code>backward()</code> method: build a topo order, set
+      <code>output.grad = 1</code>, walk it backwards, and let each node's pre-staged closure do its one tiny job.`,
+    zh: `就是这样。这就是整个 <code>backward()</code> 方法:建好拓扑顺序,把 <code>output.grad = 1</code>,
+      倒着走一遍,让每个节点事先备好的闭包去做它那一件小事。`
+  },
+
+  /* §6 */
+  "s6.eyebrow": { en: "§ 6 — From a Value to a network", zh: "§ 6 —— 从 Value 到神经网络" },
+  "s6.title": { en: "Stack them, and you have a neural net.", zh: "把它们叠起来,就是神经网络。" },
+  "s6.p1": {
+    en: `A single <code>Value</code> differentiates itself. A <em>neuron</em> is just a small graph of Values —
+      <code>act = Σ(w·x) + b</code> passed through an activation. A <em>layer</em> is a list of neurons.
+      A <em>network</em> is a list of layers. The composition is so clean it almost reads like a definition:`,
+    zh: `一个 <code>Value</code> 能自己对自己求导。一个<em>神经元</em>不过是几个 Value 组成的小图 ——
+      <code>act = Σ(w·x) + b</code> 再过一个激活函数。一个<em>层</em>是一组神经元。
+      一个<em>网络</em>是一组层。这种组合干净得几乎像一段定义:`
+  },
+  "s6.b1.lvl":  { en: "atom",   zh: "原子" },
+  "s6.b1.desc": { en: "one number + its grad + its history", zh: "一个数 + 梯度 + 来历" },
+  "s6.b2.lvl":  { en: "unit",   zh: "单元" },
+  "s6.b2.desc": { en: "w·x + b, then relu", zh: "w·x + b,再过 relu" },
+  "s6.b3.lvl":  { en: "block",  zh: "模块" },
+  "s6.b3.desc": { en: "several neurons in parallel", zh: "若干个神经元并列" },
+  "s6.b4.lvl":  { en: "model",  zh: "模型" },
+  "s6.b4.desc": { en: "several layers in sequence", zh: "若干层串联" },
+  "s6.p2": {
+    en: `Because every weight <code>w</code> and bias <code>b</code> is itself a <code>Value</code>, the moment you
+      compute a loss the entire network is automatically a giant computation graph — and the same
+      <code>backward()</code> you just watched fills in every parameter's gradient. Training is then a four-line loop:`,
+    zh: `因为每个权重 <code>w</code> 和偏置 <code>b</code> 本身都是一个 <code>Value</code>,所以一旦你算出损失,
+      整个网络就自动变成了一张巨大的计算图 —— 而你刚才看到的那个 <code>backward()</code>,
+      会把每个参数的梯度都填上。于是训练就变成了一个四行的循环:`
+  },
+  "s6.code.c1": { en: "# 1. wipe grads (else they'd += across steps)", zh: "# 1. 清零梯度(否则会跨步累加)" },
+  "s6.code.c2": { en: "# 2. forward", zh: "# 2. 前向" },
+  "s6.code.c3": { en: "# 3. backward — fills every .grad", zh: "# 3. 反向 —— 填满每个 .grad" },
+  "s6.code.c4": { en: "# 4. step downhill — that's SGD", zh: "# 4. 往下走一步 —— 这就是 SGD" },
+  "s6.callout.label": { en: "Why this scales", zh: "为什么它能扩展" },
+  "s6.callout.body": {
+    en: `The same six-field object and the same topo-sorted wave of closures that handled <code>a + b</code>
+      also handle a 50-layer ResNet. The mechanics don't change — only the size of the graph does.`,
+    zh: `那个能处理 <code>a + b</code> 的、带若干字段的对象,以及那波按拓扑顺序触发的闭包,
+      同样也能处理一个 50 层的 ResNet。机制丝毫没变 —— 变的只是图的规模。`
+  },
+  "s6.p3": {
+    en: `micrograd operates on scalars and walks the graph one node at a time, so it's slow — you'd never train a real
+      model with it. (That serial walk is also exactly why the <code>+=</code> accumulations never race each other: there
+      is no parallelism at the node level to worry about. Real frameworks keep that serial node order and instead parallelize
+      <em>inside</em> each operation — one giant matrix multiply spread across thousands of GPU cores.) But every idea
+      above — the stored local recipe, the <code>+=</code> over paths, the topological wave — is exactly what PyTorch and
+      JAX do internally. They just batch the work into big matrix operations and hand it to a GPU.
+      Once you've seen it here, at the scale of five numbers, you have the whole picture.`,
+    zh: `micrograd 只处理标量,而且是一个节点一个节点地串行走完整张图,所以很慢 —— 你绝不会用它训练真正的模型。
+      (这种串行遍历,也正是那些 <code>+=</code> 累加彼此不会"撞车"的原因:节点层面根本没有并行可言。
+      真正的框架保留了这种串行的节点顺序,转而把并行做在每个运算<em>内部</em> —— 把一次巨大的矩阵乘法摊到成千上万个 GPU 核心上。)
+      但上面讲到的每一个思想 —— 存下来的局部"配方"、跨路径的 <code>+=</code>、那波拓扑顺序的触发 ——
+      正是 PyTorch 和 JAX 内部在做的事。它们只是把工作打包成大的矩阵运算,交给 GPU 罢了。
+      一旦你在这里、在五个数字的尺度上理解了它,你就掌握了全貌。`
+  },
+
+  "footer.left": {
+    en: `Built for learning <code style="font-size:12px">micrograd</code> · a study companion, not affiliated with the project.`,
+    zh: `为学习 <code style="font-size:12px">micrograd</code> 而建 · 学习辅助页面,与项目无任何关联。`
+  },
+
+  /* ===== graph step explanations (bilingual) ===== */
+  "g.step0": {
+    en: `Start at the output. Set e.grad = 1  (de/de = 1).\nNow we walk backwards, distributing this gradient.`,
+    zh: `从输出开始。令 e.grad = 1(因为 de/de = 1)。\n接下来我们倒着走,把这个梯度分发下去。`
+  },
+  "g.step1": {
+    en: `e = c × d fires its _backward.\n  e → c : local d(c)/d(e)=d=12, so c.grad += 1×12 = 12\n  e → d : local d(d)/d(e)=c=7,  so d.grad += 1×7  = 7`,
+    zh: `e = c × d 触发它的 _backward。\n  e → c : 局部 d(c)/d(e)=d=12,所以 c.grad += 1×12 = 12\n  e → d : 局部 d(d)/d(e)=c=7, 所以 d.grad += 1×7  = 7`
+  },
+  "g.step2": {
+    en: `d = a × b fires its _backward.\n  d → a : local = b = 4, so a.grad += 7×4 = 28   ← path #1 into a\n  d → b : local = a = 3, so b.grad += 7×3 = 21`,
+    zh: `d = a × b 触发它的 _backward。\n  d → a : 局部 = b = 4,所以 a.grad += 7×4 = 28   ← 流入 a 的第 1 条路径\n  d → b : 局部 = a = 3,所以 b.grad += 7×3 = 21`
+  },
+  "g.step3": {
+    en: `c = a + b fires its _backward.\n  c → a : local = 1, so a.grad += 12×1 = 12   ← path #2 into a (28+12 = 40)\n  c → b : local = 1, so b.grad += 12×1 = 12`,
+    zh: `c = a + b 触发它的 _backward。\n  c → a : 局部 = 1,所以 a.grad += 12×1 = 12   ← 流入 a 的第 2 条路径(28+12 = 40)\n  c → b : 局部 = 1,所以 b.grad += 12×1 = 12`
+  },
+  "g.step4": {
+    en: `Done. Leaves a, b have no _backward — they only received.\n\nFinal gradients:  a.grad = 40   b.grad = 33\n  (check: da via two paths: 28 + 12 = 40 ✓)`,
+    zh: `完成。叶子 a、b 没有 _backward —— 它们只是被动接收。\n\n最终梯度:  a.grad = 40   b.grad = 33\n  (验证:a 经两条路径:28 + 12 = 40 ✓)`
+  },
+  "g.status.stepping": {
+    en: (n) => `<span class="phase">Stepping…</span> firing <code style="font-family:inherit">${n}</code>'s _backward()`,
+    zh: (n) => `<span class="phase">单步中……</span> 触发 <code style="font-family:inherit">${n}</code> 的 _backward()`
+  },
+  "g.status.done": {
+    en: `<span class="phase green">Backward pass complete.</span> All gradients computed.`,
+    zh: `<span class="phase green">反向传播完成。</span> 所有梯度已算出。`
+  }
+};
+
+/* ============================================================
+   Language application
+   ============================================================ */
+function t(key) {
+  const entry = I18N[key];
+  if (!entry) return key;
+  return entry[currentLang] || entry.en || key;
+}
+
+function applyLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  document.title = t('meta.title');
+
+  // text + html attributes
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    el.textContent = val;
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    el.innerHTML = t(key);
+  });
+
+  // toggle active state
+  document.querySelectorAll('.lang-toggle button').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+
+  // persist
+  try { localStorage.setItem('micrograd-lang', lang); } catch(e) {}
+
+  // refresh graph readout if present
+  refreshGraphText();
+}
+
+/* ============================================================
+   Interactive computation graph
+   example: a=3, b=4, c=a+b=7, d=a*b=12, e=c*d=84
+   backward (topo): e -> d -> c -> b -> a
+     grads: e=1, d=7, c=12, b=33, a=40
+     a receives contributions from BOTH c (+12) and d (+28)
+   ============================================================ */
+const W = 940, H = 340;
+const Y = { a: 95, b: 245, c: 95, d: 245, e: 170 };
+const X = { a: 40, b: 40, c: 360, d: 360, e: 660 };
+const NODE_W = 130, NODE_H = 64;
+
+const NODES = {
+  a: { data: 3,  grad: 40, leaf: true,  label: 'a' },
+  b: { data: 4,  grad: 33, leaf: true,  label: 'b' },
+  c: { data: 7,  grad: 12, leaf: false, label: 'c', op: '+', opAt: { x: 255, y: 95 } },
+  d: { data: 12, grad: 7,  leaf: false, label: 'd', op: '×', opAt: { x: 255, y: 245 } },
+  e: { data: 84, grad: 1,  leaf: false, label: 'e', op: '×', opAt: { x: 555, y: 170 } },
+};
+const EDGES = [
+  { from: 'a', to: 'c' }, { from: 'b', to: 'c' },
+  { from: 'a', to: 'd' }, { from: 'b', to: 'd' },
+  { from: 'c', to: 'e' }, { from: 'd', to: 'e' },
+];
+const STEP_KEYS = ['g.step0','g.step1','g.step2','g.step3','g.step4'];
+const STEPS = [
+  { fire: 'e',  setGrad: { e: 1 },        explainKey: 'g.step0' },
+  { fire: 'e',  phase: 'distribute', setGrad: { c: 12, d: 7 }, explainKey: 'g.step1' },
+  { fire: 'd',  setGrad: { a: 28, b: 21 },explainKey: 'g.step2' },
+  { fire: 'c',  setGrad: { a: 12, b: 12 },explainKey: 'g.step3' },
+  { fire: 'done',                         explainKey: 'g.step4' }
+];
+
+const ns = 'http://www.w3.org/2000/svg';
+const edgesG = document.getElementById('graphEdges');
+const nodesG = document.getElementById('graphNodes');
+
+function elNS(name, attrs={}, parent=nodesG) {
+  const e = document.createElementNS(ns, name);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  parent.appendChild(e);
+  return e;
+}
+
+function nodeAnchor(id, side) {
+  const x = X[id], y = Y[id];
+  return side === 'right' ? { x: x + NODE_W, y: y + NODE_H/2 } : { x: x, y: y + NODE_H/2 };
+}
+
+EDGES.forEach((ed, i) => {
+  const start = nodeAnchor(ed.from, 'right');
+  const end   = nodeAnchor(ed.to,   'left');
+  const op = NODES[ed.to].opAt;
+  let d;
+  if (op) {
+    d = `M ${start.x} ${start.y} C ${op.x-30} ${start.y}, ${op.x-30} ${op.y}, ${op.x} ${op.y}`;
+    d += ` M ${op.x} ${op.y} C ${end.x-40} ${op.y}, ${end.x-40} ${end.y}, ${end.x} ${end.y}`;
+  } else {
+    d = `M ${start.x} ${start.y} C ${(start.x+end.x)/2} ${start.y}, ${(start.x+end.x)/2} ${end.y}, ${end.x} ${end.y}`;
+  }
+  elNS('path', { d, class: 'edge', id: `edge-${i}` }, edgesG);
+});
+
+Object.entries(NODES).forEach(([id, n]) => {
+  if (n.opAt) {
+    elNS('circle', { class: 'op-circle', id: `op-${id}`, cx: n.opAt.x, cy: n.opAt.y, r: 22 }, nodesG);
+    const tt = elNS('text', { class: 'op-text', id: `optext-${id}`, x: n.opAt.x, y: n.opAt.y + 8, 'text-anchor': 'middle' }, nodesG);
+    tt.textContent = n.op;
+  }
+});
+
+Object.entries(NODES).forEach(([id, n]) => {
+  const x = X[id], y = Y[id];
+  const g = elNS('g', { id: `node-${id}` });
+  elNS('rect', { class: `node-rect ${n.leaf ? 'leaf' : ''}`, id: `rect-${id}`, x, y, width: NODE_W, height: NODE_H, rx: 7 }, g);
+  elNS('line', { class: 'node-divider', x1: x + NODE_W/2, y1: y, x2: x + NODE_W/2, y2: y + NODE_H }, g);
+  const lbl = elNS('text', { class: 'node-label', x: x + 8, y: y + 16 }, g); lbl.textContent = n.label;
+  const dv = elNS('text', { class: 'node-data', id: `data-${id}`, x: x + 10, y: y + 42 }, g); dv.textContent = `${n.data}`;
+  const dl = elNS('text', { class: 'node-label', x: x + NODE_W/2 + 8, y: y + 16 }, g); dl.textContent = 'grad';
+  const gv = elNS('text', { class: 'node-grad empty', id: `grad-${id}`, x: x + NODE_W/2 + 8, y: y + 42 }, g); gv.textContent = '·';
+});
+
+/* ---- state machine (declarative: render(n) is a pure function of stepIdx) ---- */
+const stepBtn  = document.getElementById('stepBtn');
+const backBtn  = document.getElementById('backBtn');
+const runBtn   = document.getElementById('runBtn');
+const resetBtn = document.getElementById('resetBtn');
+const statusEl = document.getElementById('status');
+const readout  = document.getElementById('readout');
+
+let stepIdx = 0, runTimer = null;
+
+/* Derive the full settled state after `n` steps, then paint it.
+   n ranges from 0 (nothing done) to STEPS.length (all done).
+   The node/edge that the most recent step "fired" is shown as active;
+   everything from earlier steps is shown as fired/done. */
+function render(n) {
+  // --- compute derived state from n ---
+  const grads = {};            // accumulated grad per node
+  const fired = new Set();     // nodes whose _backward has fully completed
+  const doneEdges = new Set(); // edge indices marked fired
+  let activeFire = null;       // the node currently "firing" (most recent step)
+  let activeTargets = new Set(); // nodes receiving grad this step (for contrib highlight)
+
+  for (let i = 0; i < n; i++) {
+    const s = STEPS[i];
+    activeFire = s.fire;
+    activeTargets = new Set(s.setGrad ? Object.keys(s.setGrad) : []);
+    if (s.setGrad) {
+      for (const [id, val] of Object.entries(s.setGrad)) {
+        grads[id] = (grads[id] || 0) + val;
+      }
+    }
+    // a node is considered "fired" (its recipe done) once its step completes,
+    // EXCEPT the most recent step's node, which stays "active".
+    if (i < n - 1) {
+      if (s.fire !== 'done') fired.add(s.fire);
+    }
+  }
+
+  // --- paint nodes ---
+  Object.entries(NODES).forEach(([id, node]) => {
+    const rect = document.getElementById(`rect-${id}`);
+    let cls = `node-rect ${node.leaf ? 'leaf' : ''}`;
+    if (id === activeFire)                 cls = 'node-rect active';
+    else if (activeTargets.has(id))        cls = 'node-rect active';
+    else if (fired.has(id))                cls = 'node-rect fired';
+    else if (n >= STEPS.length && node.leaf) cls = 'node-rect fired';
+    rect.setAttribute('class', cls);
+
+    const gradEl = document.getElementById(`grad-${id}`);
+    if (grads[id] !== undefined) {
+      gradEl.textContent = grads[id].toFixed(0);
+      gradEl.setAttribute('class', 'node-grad');
+    } else {
+      gradEl.textContent = '·';
+      gradEl.setAttribute('class', 'node-grad empty');
+    }
+  });
+
+  // --- paint op circles ---
+  Object.entries(NODES).forEach(([id, node]) => {
+    if (!node.opAt) return;
+    const op = document.getElementById(`op-${id}`);
+    let cls = 'op-circle';
+    if (id === activeFire)        cls = 'op-circle active';
+    else if (fired.has(id))       cls = 'op-circle fired';
+    op.setAttribute('class', cls);
+  });
+
+  // --- paint edges ---
+  // an edge (from->to) is "done" if the `from` node's recipe has run (from in fired,
+  // or from is the activeFire of a completed step). It's "contrib" if it's part of
+  // the most recent step's distribution.
+  EDGES.forEach((ed, i) => {
+    const path = document.getElementById(`edge-${i}`);
+    let cls = 'edge';
+    const fromDone = fired.has(ed.from) || (activeFire === ed.from && n > 0 && ed.from !== STEPS[n-1] && false);
+    // simpler: an edge is fired once the source node's step is among completed steps (not the active one)
+    const sourceCompleted = fired.has(ed.from);
+    const isActiveContrib = (activeFire === ed.from) && activeTargets.has(ed.to);
+    if (isActiveContrib)      cls = 'edge contrib';
+    else if (sourceCompleted) cls = 'edge fired';
+    else if (n >= STEPS.length) cls = 'edge fired'; // final state: all green
+    path.setAttribute('class', cls);
+  });
+
+  // --- status + readout ---
+  if (n === 0) {
+    statusEl.innerHTML = t('s4.status.ready');
+    readout.textContent = t('s4.readout.placeholder');
+  } else if (n >= STEPS.length) {
+    statusEl.innerHTML = t('g.status.done');
+    readout.textContent = t(STEPS[n-1].explainKey);
+  } else {
+    statusEl.innerHTML = t('g.status.stepping')(STEPS[n-1].fire);
+    readout.textContent = t(STEPS[n-1].explainKey);
+  }
+
+  // --- button enabled states ---
+  backBtn.disabled = (n === 0);
+  stepBtn.disabled = (n >= STEPS.length);
+}
+
+function gotoStep(n, direction) {
+  const target = Math.max(0, Math.min(STEPS.length, n));
+  const advancing = direction === 'forward' && target === stepIdx + 1;
+  stepIdx = target;
+  // when not advancing forward (back/reset/jump), kill any in-flight ghost animations
+  if (!advancing) clearGhosts();
+  render(stepIdx);
+  if (advancing) playTransfers(stepIdx - 1); // animate the step we just completed
+}
+
+function reset() {
+  if (runTimer) { clearInterval(runTimer); runTimer = null; runBtn.textContent = t('s4.btn.run'); }
+  // clear any in-flight ghosts
+  clearGhosts();
+  gotoStep(0);
+}
+
+/* ---- gradient-transfer animation (forward steps only) ----
+   When step i fires, for each (target <- contribution) in STEPS[i].setGrad,
+   a "ghost" number travels backward along the edge from the firing node to
+   the target. On arrival the target's grad pulses. */
+const ghostLayer = (function() {
+  const g = document.createElementNS(ns, 'g');
+  g.setAttribute('id', 'ghostLayer');
+  // append to graphNodes (a known-working <g>) rather than the <svg> root,
+  // and clear via removeChild (innerHTML='' corrupts dynamically-created SVG <g> in Chromium)
+  document.getElementById('graphNodes').appendChild(g);
+  return g;
+})();
+
+function clearGhosts() {
+  while (ghostLayer.firstChild) ghostLayer.removeChild(ghostLayer.firstChild);
+}
+
+function findEdgeIndex(fromId, toId) {
+  for (let i = 0; i < EDGES.length; i++) {
+    if (EDGES[i].from === fromId && EDGES[i].to === toId) return i;
+  }
+  return -1;
+}
+
+function playTransfers(stepIndex) {
+  if (stepIndex < 0 || stepIndex >= STEPS.length) return;
+  const s = STEPS[stepIndex];
+  if (s.fire === 'done' || !s.setGrad) return;
+
+  // clear any ghosts still in flight from a previous step
+  clearGhosts();
+
+  // For step 0 (e.grad = 1) there's no upstream source — it's the seed.
+  // Skip the travel animation; just pulse e.
+  if (s.phase !== 'distribute' && Object.keys(s.setGrad).join() === 'e') {
+    pulseGrad('e');
+    return;
+  }
+
+  for (const [targetId, contribution] of Object.entries(s.setGrad)) {
+    const edgeIdx = findEdgeIndex(targetId, s.fire); // edge stored as input->output; we want target(input) <- fire(output)
+    // Note: EDGES are {from: input, to: output}. Gradient flows output->input,
+    // so travel from the fire (output) end toward the target (input) end.
+    const edgePath = edgeIdx >= 0 ? document.getElementById(`edge-${edgeIdx}`) : null;
+    if (!edgePath) { pulseGrad(targetId); continue; }
+
+    spawnGhost(edgePath, contribution, () => pulseGrad(targetId));
+  }
+}
+
+function spawnGhost(edgePath, value, onArrive) {
+  const len = edgePath.getTotalLength();
+  const txt = `+${value}`;
+  // badge radius depends on text width so it always frames the number
+  const r = Math.max(16, 9 + txt.length * 5.5);
+
+  // build a <g> = circle + text, positioned via transform on the group
+  const g = document.createElementNS(ns, 'g');
+  g.setAttribute('class', 'grad-ghost');
+  g.style.opacity = '0';
+
+  const bg = document.createElementNS(ns, 'circle');
+  bg.setAttribute('class', 'grad-ghost-bg');
+  bg.setAttribute('cx', 0); bg.setAttribute('cy', 0); bg.setAttribute('r', r);
+  g.appendChild(bg);
+
+  const label = document.createElementNS(ns, 'text');
+  label.setAttribute('class', 'grad-ghost-text');
+  label.setAttribute('text-anchor', 'middle');
+  label.setAttribute('dominant-baseline', 'central');
+  label.setAttribute('x', 0); label.setAttribute('y', 1);
+  label.textContent = txt;
+  g.appendChild(label);
+
+  ghostLayer.appendChild(g);
+
+  const dur = 750;
+  const start = performance.now();
+
+  function frame(now) {
+    const t = Math.min(1, (now - start) / dur);
+    // ease-in-out so the badge visibly accelerates then settles
+    const eased = t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2) / 2;
+    // travel from end (t=1, output/fire side) back to start (t=0, input/target side)
+    const p = edgePath.getPointAtLength(len * (1 - eased));
+    // lift the badge slightly above the edge line so it doesn't sit on it
+    g.setAttribute('transform', `translate(${p.x}, ${p.y - 14})`);
+    // fade in fast (first 12%), hold, fade out last 18%
+    let op;
+    if (t < 0.12) op = t / 0.12;
+    else if (t > 0.82) op = (1 - t) / 0.18;
+    else op = 1;
+    g.style.opacity = Math.max(0, op);
+    if (t < 1) {
+      requestAnimationFrame(frame);
+    } else {
+      g.remove();
+      if (onArrive) onArrive();
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+function pulseGrad(id) {
+  const el = document.getElementById(`grad-${id}`);
+  if (!el) return;
+  el.classList.remove('grad-pulse');
+  // force reflow so the animation restarts even if class was just removed
+  void el.getBoundingClientRect();
+  el.classList.add('grad-pulse');
+}
+
+function stepForward(direction) {
+  if (runTimer) return; // don't allow manual step while auto-running
+  gotoStep(stepIdx + 1, direction);
+}
+
+function stepBack() {
+  if (runTimer) return;
+  gotoStep(stepIdx - 1); // no direction → no animation, instant snap
+}
+
+stepBtn.addEventListener('click', () => stepForward('forward'));
+backBtn.addEventListener('click', stepBack);
+resetBtn.addEventListener('click', reset);
+runBtn.addEventListener('click', () => {
+  if (runTimer) { clearInterval(runTimer); runTimer = null; runBtn.textContent = t('s4.btn.run'); return; }
+  if (stepIdx >= STEPS.length) return;
+  runBtn.textContent = currentLang === 'zh' ? '暂停' : 'Pause';
+  runTimer = setInterval(() => {
+    if (stepIdx >= STEPS.length) { clearInterval(runTimer); runTimer = null; runBtn.textContent = t('s4.btn.run'); return; }
+    gotoStep(stepIdx + 1, 'forward');
+  }, 1500);
+});
+
+function refreshGraphText() {
+  // re-render status & readout for current language (visual classes unchanged)
+  render(stepIdx);
+  if (runTimer) runBtn.textContent = currentLang === 'zh' ? '暂停' : 'Pause';
+}
+
+/* ---- language toggle wiring ---- */
+let currentLang = 'en';
+document.querySelectorAll('.lang-toggle button').forEach(b => {
+  b.addEventListener('click', () => applyLang(b.dataset.lang));
+});
+
+/* ---- scroll reveal ---- */
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+/* ---- init: detect preferred language ---- */
+(function init() {
+  let saved = null;
+  try { saved = localStorage.getItem('micrograd-lang'); } catch(e) {}
+  if (saved === 'en' || saved === 'zh') {
+    currentLang = saved;
+  } else {
+    const nav = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+    currentLang = nav.startsWith('zh') ? 'zh' : 'en';
+  }
+  applyLang(currentLang);
+  reset();
+})();
+</script>
+</body>
+</html>
