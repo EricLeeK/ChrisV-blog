@@ -1,42 +1,45 @@
+<p align="center">
+  <img src="./assets/readme/hero.gif" width="100%" alt="Notes on engineering, AI, design, and the things in between. Conceptual overview.">
+</p>
+
 # ChrisV Blog
 
-Personal blog for ChrisV, a geotechnical engineering graduate student exploring AI, agents, NLP, design, and art.
+A personal journal at the intersection of geotechnical engineering, AI, agents, design, and art. Built with Astro, with content kept in the repository.
 
-## Stack
+## Explore the content
 
-- [Astro](https://astro.build/)
-- [Tailwind CSS](https://tailwindcss.com/)
+| Collection | What lives here |
+| --- | --- |
+| [Articles](src/content/articles/) | Longer explanations and learning notes, including micrograd and entropy |
+| [Projects](src/content/projects/) | Notes on the tools and research projects I work on |
+| [Resources](src/content/resources/) | Useful tools and references |
+| [Random](src/content/random/) | Smaller observations and experiments |
 
-## Getting Started
+The homepage, collection pages, and about page are in [`src/pages/`](src/pages/). Content configuration is in [`src/content.config.ts`](src/content.config.ts).
 
-Install dependencies, then start the development server:
+## Run locally
 
 ```sh
 npm install
 npm run dev
 ```
 
-The dev server runs at `http://localhost:4321` by default.
+Open the local address printed by Astro, normally `http://localhost:4321`.
 
-## Commands
+## Build and preview
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Install dependencies                             |
-| `npm run dev`             | Start local dev server at `localhost:4321`       |
-| `npm run build`           | Build the production site to `./dist/`           |
-| `npm run preview`         | Preview the production build locally             |
-| `npm run astro ...`       | Run Astro CLI commands                           |
-| `npm run astro -- --help` | Show Astro CLI help                              |
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the development server |
+| `npm run build` | Generate the static site in `dist/` |
+| `npm run preview` | Preview the production build locally |
+| `npm run astro -- --help` | Inspect Astro commands |
 
-## Deployment
+The generated `dist/` directory can be deployed to a static host. Site styles and typography live in [`src/styles/global.css`](src/styles/global.css).
 
-The static build output is written to `./dist/` and can be deployed to any static host such as Vercel, Netlify, or GitHub Pages.
+<details>
+<summary>Static overview</summary>
 
-For Vercel, run:
+[Open the static SVG](./assets/readme/hero.svg).
 
-```sh
-vercel --prod
-```
-
-Or connect the repository in the Vercel dashboard for automatic deployments.
+</details>
