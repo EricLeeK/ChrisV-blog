@@ -16,9 +16,11 @@
     "inject:lecture-nav": "node scripts/inject-lecture-nav.js"
   },
   "dependencies": {
+    "@astrojs/rss": "^4.0.19",
     "@chinese-fonts/hwmct": "^3.0.0",
     "astro": "^6.4.7",
     "astro-icon": "^1.1.5",
+    "markdown-it": "^15.0.3",
     "simple-icons": "^16.23.0"
   },
   "devDependencies": {
