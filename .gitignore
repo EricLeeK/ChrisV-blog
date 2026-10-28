@@ -33,3 +33,8 @@ yarn-error.log*
 
 # superpower
 .superpowers/
+# agent tooling & scratch materials (not part of the site)
+.impeccable/
+.playwright-mcp/
+hello-agents-cn-markdown/
+global-workspace-translation/

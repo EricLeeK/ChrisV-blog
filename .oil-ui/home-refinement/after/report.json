@@ -1,0 +1,48 @@
+[
+  {
+    "file": "page-390x844.png",
+    "state": null,
+    "size": "390x844",
+    "zoom": 1,
+    "animationWaitMs": 0,
+    "issues": [],
+    "lint": [
+      {
+        "rule": "eyebrow",
+        "label": "标题上方的眉标",
+        "count": 1,
+        "examples": [
+          "p.home-eyebrow「CHRISV · 研究与创作」"
+        ]
+      }
+    ]
+  },
+  {
+    "file": "page-1280x900.png",
+    "state": null,
+    "size": "1280x900",
+    "zoom": 1,
+    "animationWaitMs": 0,
+    "issues": [],
+    "lint": [
+      {
+        "rule": "eyebrow",
+        "label": "标题上方的眉标",
+        "count": 1,
+        "examples": [
+          "p.home-eyebrow「CHRISV · 研究与创作」"
+        ]
+      },
+      {
+        "rule": "longMeasure",
+        "label": "正文行太长",
+        "count": 3,
+        "examples": [
+          "p「在 Claude Platform 上构建智能体」（每行约 56 字）",
+          "p「DeepMind 报告解读:一份关于'机器智能能」（每行约 56 字）",
+          "p「用可视化方式走进 micrograd —— Ka」（每行约 56 字）"
+        ]
+      }
+    ]
+  }
+]

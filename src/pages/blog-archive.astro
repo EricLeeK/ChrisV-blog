@@ -1,0 +1,7 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import EditorialIndex from '../components/EditorialIndex.astro';
+import { getCollection } from 'astro:content';
+const items = (await getCollection('blogArchive')).sort((a,b) => b.data.date.getTime() - a.data.date.getTime());
+---
+<BaseLayout title="优秀博客转存 — ChrisV" description="收藏值得阅读的博客，翻译正文与配图，保留原文来源。"><EditorialIndex items={items} kind="blog-archive" /></BaseLayout>

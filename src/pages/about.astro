@@ -2,26 +2,25 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import SocialLinks from '../components/SocialLinks.astro';
-import DashedLine from '../components/DashedLine.astro';
 ---
 
 <BaseLayout title="关于 — ChrisV">
-  <SectionHeader tag="ABOUT" title="关于我" />
+  <SectionHeader title="关于我" description="智能系统、设计与艺术之间的一点探索。" />
 
-  <section class="container-inner pb-16">
-    <div class="flex flex-col items-center gap-6 text-center">
+  <section class="reading-width about-page">
+    <div class="about-layout"><aside class="about-profile">
       <img
-        src="/images/logo.jpg"
+        src="/images/supertt-logo.svg"
         alt="ChrisV avatar"
         width="96"
         height="96"
         class="h-24 w-24 rounded-full object-cover"
       />
       <h2 class="text-2xl text-[var(--color-0)]">ChrisV</h2>
-      <SocialLinks class="justify-center" />
+      <SocialLinks class="justify-center" /></aside><div class="about-writing">
 
       <div
-        class="max-w-[520px] space-y-4 text-base leading-relaxed text-[var(--color-300)] text-balance"
+        class="about-prose"
       >
         <p>我是一名传统工科的硕士研究生，但心思常常不在同一处。</p>
         <p>
@@ -36,10 +35,10 @@ import DashedLine from '../components/DashedLine.astro';
         </p>
       </div>
 
-      <DashedLine class="max-w-[120px]" />
+      <hr class="about-divider" />
 
       <div
-        class="max-w-[520px] space-y-4 text-base leading-relaxed text-[var(--color-300)] text-balance"
+        class="about-prose about-english" lang="en"
       >
         <p>
           I am a master's student in traditional engineering, though my mind
@@ -64,6 +63,6 @@ import DashedLine from '../components/DashedLine.astro';
           aesthetics, feel free to wander around.
         </p>
       </div>
-    </div>
+    </div></div>
   </section>
 </BaseLayout>

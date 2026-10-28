@@ -1,128 +1,45 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SectionHeader from '../components/SectionHeader.astro';
+import NotePaper from '../components/NotePaper.astro';
 import { getCollection, render } from 'astro:content';
-import { formatDate } from '../lib/utils';
-
-const notes = (await getCollection('random')).sort(
-  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
-);
-
-const notesWithContent = await Promise.all(
-  notes.map(async (note) => {
-    const { Content } = await render(note);
-    return { note, Content };
-  })
-);
-
-const allTags = Array.from(new Set(notes.flatMap((note) => note.data.tags))).sort();
+import { dateLabel, noteTitle, noteExcerpt } from '../lib/reading';
+import { Icon } from 'astro-icon/components';
+import '../styles/reading.css';
+const notes = (await getCollection('random')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const latest = notes[0];
+const rendered = latest ? await render(latest) : undefined;
+const Content = rendered?.Content;
+const older = notes.slice(1);
+const years = [...new Set(older.map(note => note.data.date.getFullYear()))];
+const tags = [...new Set(notes.flatMap(note => note.data.tags))];
 ---
-
-<BaseLayout title="碎碎念 — ChrisV">
-  <SectionHeader
-    tag="RANDOM"
-    title="碎碎念"
-    description="Short thoughts, sparks, and reading excerpts."
-  />
-
-  <section class="container-inner pb-16">
-    {
-      allTags.length > 0 && (
-        <div class="mb-8 flex flex-wrap items-center gap-2" data-tag-bar>
-          <button
-            type="button"
-            data-tag="all"
-            aria-pressed="true"
-            class="rounded-[36px] px-3 py-1 text-xs transition-all bg-[var(--color-0)] text-[var(--color-999)]"
-          >
-            全部
-          </button>
-          {allTags.map((tag) => (
-            <button
-              type="button"
-              data-tag={tag}
-              aria-pressed="false"
-              class="rounded-[36px] border border-[var(--border)] bg-[var(--color-900)] px-3 py-1 text-xs text-[var(--color-500)] transition-all hover:opacity-90"
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
-      )
-    }
-
-    <div class="flex flex-col gap-8" data-notes-list>
-      {
-        notesWithContent.map(({ note, Content }) => (
-          <article
-            class="rounded-[6px] border border-[var(--border)] bg-[var(--card-color)] p-6"
-            data-tags={note.data.tags.join(',')}
-          >
-            <div class="flex flex-wrap items-center gap-3">
-              <time
-                class="ricoui-tag text-[var(--color-500)]"
-                datetime={note.data.date.toISOString()}
-              >
-                {formatDate(note.data.date)}
-              </time>
-              {note.data.tags.map((tag) => (
-                <span class="ricoui-tag text-[var(--color-500)]">{tag}</span>
-              ))}
-            </div>
-            <div class="prose mt-4 max-w-none text-[var(--color-300)]">
-              <Content />
-            </div>
-          </article>
-        ))
-      }
-    </div>
+<BaseLayout title="手记 — ChrisV" description="记录思考、灵感与生活片段。" reading>
+  <section class="notes-index reading-width" data-notes-index>
+    <header class="index-heading notes-heading"><div><h1>手记</h1><p>留一些空白，给日常与偶然的念头。</p></div><span class="collection-count">{notes.length} 封手记</span></header>
+    {tags.length > 0 && <div class="note-filters"><label>按标签阅读 <select data-note-tag><option value="">全部手记</option>{tags.map(tag => <option value={tag}>{tag}</option>)}</select></label><span data-note-count aria-live="polite">{notes.length} 封</span></div>}
+    {latest && Content && <div class="latest-letter" data-note-item data-tags={JSON.stringify(latest.data.tags)}><NotePaper note={latest} number={notes.length} preview><Content /></NotePaper></div>}
+    {older.length > 0 && <section class="letter-archive" aria-label="往期手记"><h2>往期手记</h2>{years.map(year => <div class="archive-year" data-archive-year><h3>{year}</h3><div>{older.filter(note => note.data.date.getFullYear() === year).map(note => <article data-note-item data-tags={JSON.stringify(note.data.tags)}><time datetime={note.data.date.toISOString()}>{dateLabel(note.data.date)}</time><h4><a href={`/random/${note.id}`}>{noteTitle(note)}</a></h4><p>{noteExcerpt(note)}</p><a class="archive-read" href={`/random/${note.id}`}>手记 / {String(notes.length - notes.indexOf(note)).padStart(3, '0')} · 阅读全文</a></article>)}</div></div>)}</section>}
+    <p class="notes-empty" data-note-empty hidden={notes.length > 0}>这里暂时没有手记。{notes.length > 0 && <button type="button" data-note-reset>查看全部手记</button>}</p>
+    <footer class="notes-end"><span>写下的，都是生活的回声。</span><a href="/articles">去读文稿<Icon name="lucide:arrow-right" aria-hidden="true" /></a></footer>
   </section>
 </BaseLayout>
-
-<script is:inline>
-  (function () {
-    function ready(fn) {
-      if (document.readyState !== 'loading') fn();
-      else document.addEventListener('DOMContentLoaded', fn);
+<script>
+  const select = document.querySelector<HTMLSelectElement>('[data-note-tag]');
+  if (select) {
+    const items = [...document.querySelectorAll<HTMLElement>('[data-note-item]')];
+    const params = new URLSearchParams(location.search);
+    select.value = params.get('tag') || '';
+    function update() {
+      let count = 0;
+      items.forEach(item => { const matches = !select!.value || JSON.parse(item.dataset.tags || '[]').includes(select!.value); item.hidden = !matches; if(matches) count++; });
+      document.querySelectorAll<HTMLElement>('[data-archive-year]').forEach(group => { group.hidden = !group.querySelector('[data-note-item]:not([hidden])'); });
+      const archive = document.querySelector<HTMLElement>('.letter-archive');
+      if (archive) archive.hidden = !archive.querySelector('[data-note-item]:not([hidden])');
+      document.querySelector<HTMLElement>('[data-note-empty]')!.hidden = count > 0;
+      document.querySelector<HTMLElement>('[data-note-count]')!.textContent = `${count} 封`;
     }
-
-    ready(function () {
-      var tagBar = document.querySelector('[data-tag-bar]');
-      var notesList = document.querySelector('[data-notes-list]');
-      if (!tagBar || !notesList) return;
-
-      var buttons = tagBar.querySelectorAll('button[data-tag]');
-      var notes = notesList.querySelectorAll('article[data-tags]');
-
-      var activeClasses = ['bg-[var(--color-0)]', 'text-[var(--color-999)]'];
-      var inactiveClasses = ['border', 'border-[var(--border)]', 'bg-[var(--color-900)]', 'text-[var(--color-500)]'];
-
-      function setActive(button) {
-        buttons.forEach(function (btn) {
-          btn.setAttribute('aria-pressed', 'false');
-          btn.classList.remove.apply(btn.classList, activeClasses);
-          btn.classList.add.apply(btn.classList, inactiveClasses);
-        });
-        button.setAttribute('aria-pressed', 'true');
-        button.classList.remove.apply(button.classList, inactiveClasses);
-        button.classList.add.apply(button.classList, activeClasses);
-      }
-
-      function applyFilter(tag) {
-        notes.forEach(function (note) {
-          var tags = (note.getAttribute('data-tags') || '').split(',');
-          var visible = tag === 'all' || tags.indexOf(tag) !== -1;
-          note.style.display = visible ? '' : 'none';
-        });
-      }
-
-      buttons.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          var tag = btn.getAttribute('data-tag');
-          setActive(btn);
-          applyFilter(tag);
-        });
-      });
-    });
-  })();
+    select.addEventListener('change', () => { update(); const url = new URL(location.href); if(select.value) url.searchParams.set('tag', select.value); else url.searchParams.delete('tag'); history.replaceState(null, '', url); });
+    document.querySelector('[data-note-reset]')?.addEventListener('click', () => { select.value = ''; select.dispatchEvent(new Event('change')); });
+    update();
+  }
 </script>

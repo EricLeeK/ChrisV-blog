@@ -5,18 +5,18 @@
 
 :root {
   /* Colors — dark mode default */
-  --color-0: #f7f5f3;
-  --color-100: #101010;
-  --color-200: #303030;
-  --color-300: #d6d5d4;
-  --color-400: #505050;
-  --color-500: #909090;
+  --color-0: #e6e1d6;
+  --color-100: #252624;
+  --color-200: #30312e;
+  --color-300: #aaa69b;
+  --color-400: #aaa69b;
+  --color-500: #aaa69b;
   --color-600: #707070;
   --color-700: #e0e0e0;
   --color-800: #303030;
-  --color-900: #19191b;
-  --color-999: #19191b;
-  --color-999-rgb: 25, 25, 27;
+  --color-900: #252624;
+  --color-999: #1b1c1c;
+  --color-999-rgb: 27, 28, 28;
 
   --accent-light: #ececec;
   --accent-regular: #606060;
@@ -29,7 +29,7 @@
   --color-white: #fff;
   --color-primary-lighter: #e0ecfd;
   --color-primary-light: #73abf9;
-  --color-primary-main: #499ad5;
+  --color-primary-main: #d5aa82;
   --color-purple: #6127ff;
   --color-blue: #499ad5;
   --color-cyan: #00d0ff;
@@ -38,7 +38,7 @@
   --color-green: #1bc47d;
   --color-orange: #ff5a19;
   --color-errors: #ff2c60;
-  --border: #323232;
+  --border: #3e403d;
   --border-color: rgb(49, 48, 53);
   --card-color: rgba(40, 80, 120, 0.15);
   --card-color-selected: rgba(60, 90, 125, 0.3);
@@ -78,8 +78,8 @@
 }
 
 .theme-dark {
-  --card-color: rgba(30, 45, 70, 0.32);
-  --card-color-selected: rgba(45, 65, 95, 0.42);
+  --card-color: #252624;
+  --card-color-selected: #30312e;
 }
 
 @media (max-width: 1440px) {
@@ -119,22 +119,23 @@
 
 /* Light mode override — warm paper palette */
 :root:not(.theme-dark) {
-  --color-0: #2a2620;
-  --color-100: #e8e0d2;
-  --color-200: #f7f3eb;
-  --color-300: #6b6558;
-  --color-400: #8a8272;
-  --color-500: #a8a091;
+  --color-0: #302d27;
+  --color-100: #fffdf8;
+  --color-200: #f0ece3;
+  --color-300: #736c60;
+  --color-400: #736c60;
+  --color-500: #736c60;
   --color-600: #c4bdb0;
   --color-700: #ddd7cc;
   --color-800: #ede6da;
-  --color-900: #f5efe4;
-  --color-999: #f7f1e6;
-  --color-999-rgb: 247, 241, 230;
-  --border: #e0d8c8;
+  --color-900: #fffdf8;
+  --color-999: #faf8f3;
+  --color-999-rgb: 250, 248, 243;
+  --border: #ded9cf;
+  --color-primary-main: #96603c;
 
-  --card-color: rgba(255, 252, 245, 0.72);
-  --card-color-selected: rgba(255, 250, 240, 0.88);
+  --card-color: #fffdf8;
+  --card-color-selected: #f0ece3;
 
   --accent-light: #8a8272;
   --accent-regular: #5a5448;
@@ -259,7 +260,7 @@
 }
 
 @utility container-inner {
-  width: min(var(--max-width), 100% - var(--pad-inner) * 2);
+  width: min(1080px, 100% - 80px);
   margin-inline: auto;
 }
 
@@ -273,48 +274,12 @@ html {
 
 body {
   position: relative;
-  font-family: var(--font-body);
-  font-weight: 300;
+  font-family: var(--font-system);
+  font-weight: 400;
   color: var(--color-0);
   background-color: var(--color-999);
   line-height: 1.6;
   transition: background-color var(--theme-transition), color var(--theme-transition);
-}
-
-body::before,
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-}
-
-body::before {
-  z-index: -2;
-  background-color: var(--color-999);
-  background-image: url('/images/rainbow-bg.jpg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  transition: background var(--theme-transition);
-}
-
-.theme-dark body::before {
-  background-image: url('/images/fractal-bg.jpg');
-}
-
-body::after {
-  z-index: -1;
-  background: rgba(255, 255, 255, 0.35);
-  opacity: 1;
-  transition: opacity var(--theme-transition), background var(--theme-transition);
-}
-
-.theme-dark body::after {
-  background: radial-gradient(ellipse at 20% 20%, rgba(25, 25, 35, 0.55) 0%, transparent 55%),
-              radial-gradient(ellipse at 80% 80%, rgba(15, 15, 30, 0.65) 0%, transparent 55%),
-              rgba(10, 10, 18, 0.72);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -379,4 +344,8 @@ img, picture, video, canvas, svg {
   body::before {
     background-attachment: scroll;
   }
+}
+
+@media (max-width: 700px) {
+  .container-inner { width: calc(100% - 40px); }
 }

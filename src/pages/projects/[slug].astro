@@ -1,64 +1,14 @@
 ---
 import { type CollectionEntry, getCollection, render } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { Icon } from 'astro-icon/components';
-
+import ReadingLayout from '../../layouts/ReadingLayout.astro';
 export async function getStaticPaths() {
-  const posts = await getCollection('projects');
-  return posts.map((post) => ({
-    params: { slug: post.id },
-    props: { post },
-  }));
+  const posts = (await getCollection('projects')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+  return posts.map((post, index) => ({ params: { slug: post.id }, props: { post, next: posts[index + 1] } }));
 }
-
-interface Props {
-  post: CollectionEntry<'projects'>;
-}
-
-const { post } = Astro.props;
-const { Content } = await render(post);
+interface Props { post: CollectionEntry<'projects'>; next?: CollectionEntry<'projects'>; }
+const { post, next } = Astro.props;
+const { Content, headings } = await render(post);
 ---
-
-<BaseLayout title={`${post.data.title} — ChrisV`} description={post.data.description}>
-  <article class="mx-auto max-w-3xl px-6 py-16">
-    <header class="mb-12 text-center">
-      <div class="mb-4 text-xs uppercase tracking-widest" style="font-family: var(--font-tag); color: var(--color-500);">{post.data.category}</div>
-      <h1 class="mb-4 text-4xl font-semibold" style="color: var(--color-0);">{post.data.title}</h1>
-      <time class="text-sm" datetime={post.data.date.toISOString()} style="color: var(--color-500);">{post.data.date.toLocaleDateString('zh-CN')}</time>
-      {post.data.description && (
-        <p class="mx-auto mt-6 max-w-2xl text-base leading-relaxed" style="color: var(--color-300);">{post.data.description}</p>
-      )}
-      {(post.data.website || post.data.link) && (
-        <div class="mt-6 flex flex-wrap justify-center gap-3">
-          {post.data.website && (
-            <a
-              href={post.data.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-medium transition-colors"
-              style="background-color: var(--color-yellow); color: var(--color-100);"
-            >
-              <Icon name="lucide:external-link" class="h-4 w-4" aria-hidden="true" />
-              <span>在线体验</span>
-            </a>
-          )}
-          {post.data.link && (
-            <a
-              href={post.data.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-medium transition-colors"
-              style="border-color: var(--border); color: var(--color-0);"
-            >
-              <Icon name="simple-icons:github" class="h-4 w-4 fill-current" aria-hidden="true" />
-              <span>GitHub</span>
-            </a>
-          )}
-        </div>
-      )}
-    </header>
-    <div class="prose prose-invert max-w-none" style="color: var(--color-300);">
-      <Content />
-    </div>
-  </article>
-</BaseLayout>
+<ReadingLayout {...post.data} kind="projects" body={post.body} headings={headings} next={next ? { title: next.data.title, href: `/projects/${next.id}` } : undefined}>
+  <Content />
+</ReadingLayout>

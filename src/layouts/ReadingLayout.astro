@@ -1,0 +1,93 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import ReadingOutline from '../components/ReadingOutline.astro';
+import { Icon } from 'astro-icon/components';
+import type { MarkdownHeading } from 'astro';
+import { dateLabel, readingMinutes } from '../lib/reading';
+import '../styles/reading.css';
+interface Props {
+  title: string;
+  description: string;
+  date: Date;
+  category: string;
+  tags: string[];
+  body?: string;
+  headings: MarkdownHeading[];
+  kind: 'articles' | 'projects' | 'blog-archive';
+  cover?: string;
+  website?: string;
+  link?: string;
+  externalUrl?: string;
+  next?: { title: string; href: string };
+}
+const { title, description, date, category, tags, body, headings, kind, cover, website, link, externalUrl, next } = Astro.props;
+const toc = headings.filter(heading => heading.depth === 2 || heading.depth === 3);
+const project = kind === 'projects';
+const collectionLabel = project ? '项目' : kind === 'blog-archive' ? '优秀博客转存' : '文稿';
+---
+<BaseLayout title={`${title} — ChrisV`} description={description} reading>
+  <div class="reading-progress" aria-hidden="true"><span data-progress></span></div>
+  <div class="reading-width reading-detail">
+    <a class="back-link" href={`/${kind}`}><Icon name="lucide:arrow-left" aria-hidden="true" />返回{collectionLabel}</a>
+    <div class:list={['reading-columns', { 'has-toc': toc.length > 0 }]}>
+      <article class="longform">
+        <header class="article-heading">
+          <h1>{title}</h1>
+          <div class="article-meta"><time datetime={date.toISOString()}>{dateLabel(date)}</time><span>{category}</span><span>{externalUrl ? '交互阅读' : `约 ${readingMinutes(body)} 分钟`}</span></div>
+          <p class="article-deck">{description}</p>
+          <slot name="provenance" />
+          {(website || link || externalUrl) && <div class="project-actions">
+            {website && <a class="primary-action" href={website} target="_blank" rel="noopener noreferrer">在线体验<Icon name="lucide:arrow-up-right" aria-hidden="true" /></a>}
+            {link && <a href={link} target="_blank" rel="noopener noreferrer"><Icon name="lucide:github" aria-hidden="true" />查看源码</a>}
+            {externalUrl && <a class="primary-action" href={externalUrl}>打开交互讲义<Icon name="lucide:arrow-up-right" aria-hidden="true" /></a>}
+          </div>}
+        </header>
+        {cover && <figure class="article-cover"><img src={cover} alt={`${title}封面`} width="1200" height="675" fetchpriority="high" /></figure>}
+        {toc.length > 0 && <details class="mobile-toc"><summary>本文目录 · {toc.filter(h => h.depth === 2).length} 个章节</summary><ReadingOutline headings={toc} mobile /></details>}
+        <div class="reading-prose" data-article-body><slot /></div>
+        <footer class="article-end"><div class="end-rule"><span>读到这里，谢谢你。</span></div><div class="article-tags">{tags.map(tag => <a href={`/${kind}?tag=${encodeURIComponent(tag)}`}>#{tag}</a>)}</div><div class="article-end-actions"><span>ChrisV · {date.getFullYear()}</span><a href="#main-content">回到开头<Icon name="lucide:arrow-up" aria-hidden="true" /></a></div></footer>
+        {next && <a class="next-reading" href={next.href}><span>继续阅读</span><strong>{next.title}</strong><Icon name="lucide:arrow-right" aria-hidden="true" /></a>}
+      </article>
+      {toc.length > 0 && <aside class="desktop-toc"><ReadingOutline headings={toc} /><a class="toc-top" href="#main-content">回到开头<Icon name="lucide:arrow-up" aria-hidden="true" /></a></aside>}
+    </div>
+  </div>
+</BaseLayout>
+<script>
+  const body = document.querySelector<HTMLElement>('[data-article-body]');
+  const progress = document.querySelector<HTMLElement>('[data-progress]');
+  let queued = false;
+  function updateReading() {
+    const article = document.querySelector('article.longform');
+    if (article && progress) {
+      const top = article.getBoundingClientRect().top + scrollY;
+      const length = article.getBoundingClientRect().height - innerHeight + 100;
+      progress.style.transform = `scaleX(${Math.min(1, Math.max(0, (scrollY - top + 100) / Math.max(1, length)))})`;
+    }
+    queued = false;
+  }
+  addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(updateReading); } }, { passive: true });
+  addEventListener('resize', updateReading);
+  updateReading();
+  body?.querySelectorAll('pre').forEach(pre => {
+    const wrap = document.createElement('div');
+    wrap.className = 'code-wrap';
+    pre.before(wrap);
+    wrap.append(pre);
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'copy-code';
+    button.textContent = '复制代码';
+    button.setAttribute('aria-live', 'polite');
+    button.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(pre.querySelector('code')?.textContent || pre.textContent || ''); button.textContent = '已复制'; }
+      catch { button.textContent = '复制失败，请手动选择'; }
+      setTimeout(() => { button.textContent = '复制代码'; }, 2200);
+    });
+    wrap.prepend(button);
+  });
+  body?.querySelectorAll('table').forEach(table => {
+    const wrap = document.createElement('div');
+    wrap.className = 'table-scroll'; wrap.tabIndex = 0; wrap.setAttribute('role', 'region'); wrap.setAttribute('aria-label', '可横向滚动的表格');
+    table.before(wrap); wrap.append(table);
+  });
+</script>

@@ -12,9 +12,10 @@ export const nav = [
   { label: '首页', href: '/' },
   { label: '文章', href: '/articles' },
   { label: '项目', href: '/projects' },
+  { label: '手记', href: '/random' },
+  { label: '优秀博客转存', href: '/blog-archive' },
   { label: '资源', href: '/resources' },
   { label: '关于', href: '/about' },
-  { label: '碎碎念', href: '/random' },
 ];
 
 export const social = [
@@ -75,7 +76,7 @@ export const categories = [
     id: 'random',
     number: '03',
     tag: 'RANDOM',
-    title: '碎碎念',
+    title: '手记',
     description: '记录思考、灵感与生活片段',
     href: '/random',
     icon: '/images/random-icon.png',

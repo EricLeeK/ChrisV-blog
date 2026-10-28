@@ -1,0 +1,25 @@
+---
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NotePaper from '../../components/NotePaper.astro';
+import { noteTitle, noteExcerpt } from '../../lib/reading';
+import '../../styles/reading.css';
+export async function getStaticPaths() {
+  const notes = (await getCollection('random')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+  return notes.map((note, index) => ({ params: { slug: note.id }, props: { note, number: notes.length - index, newer: notes[index - 1], older: notes[index + 1] } }));
+}
+interface Props { note: CollectionEntry<'random'>; number: number; newer?: CollectionEntry<'random'>; older?: CollectionEntry<'random'>; }
+const { note, number, newer, older } = Astro.props;
+const { Content } = await render(note);
+---
+<BaseLayout title={`${noteTitle(note)} — 手记 · ChrisV`} description={noteExcerpt(note)} reading>
+  <div class="letter-detail reading-width">
+    <a class="back-link" href="/random"><Icon name="lucide:arrow-left" aria-hidden="true" />返回手记</a>
+    <NotePaper note={note} number={number}><Content /></NotePaper>
+    <nav class="letter-pagination" aria-label="相邻手记">
+      {newer ? <a href={`/random/${newer.id}`}><span>上一封</span>{noteTitle(newer)}</a> : <a href="/random">所有手记</a>}
+      {older ? <a href={`/random/${older.id}`}><span>下一封</span>{noteTitle(older)}</a> : <span>这是最早的一封。</span>}
+    </nav>
+  </div>
+</BaseLayout>

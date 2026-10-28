@@ -1,0 +1,28 @@
+[
+  {
+    "file": "page.png",
+    "state": null,
+    "size": "1280x900",
+    "zoom": 1,
+    "animationWaitMs": 0,
+    "issues": [],
+    "lint": [
+      {
+        "rule": "sideStripe",
+        "label": "彩色单侧边线",
+        "count": 1,
+        "examples": [
+          "div.note「说明：两次截图之间还出现了其他已有页面变化，例如」（3px）"
+        ]
+      },
+      {
+        "rule": "longMeasure",
+        "label": "正文行太长",
+        "count": 1,
+        "examples": [
+          "div.note「说明：两次截图之间还出现了其他已有页面变化，例如」（每行约 77 字）"
+        ]
+      }
+    ]
+  }
+]

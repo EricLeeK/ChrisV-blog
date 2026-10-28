@@ -1,24 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SectionHeader from '../components/SectionHeader.astro';
-import FilterBar from '../components/FilterBar.astro';
-import CardGrid from '../components/CardGrid.astro';
+import EditorialIndex from '../components/EditorialIndex.astro';
+import '../styles/reading.css';
 import { getCollection } from 'astro:content';
-
-const projects = (await getCollection('projects')).sort(
-  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
-);
+const items = (await getCollection('projects')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 ---
-
-<BaseLayout title="项目 — ChrisV">
-  <SectionHeader
-    tag="PROJECTS"
-    title="项目"
-    description="Experiments with AI agents, NLP pipelines, creative coding, and design systems."
-  />
-
-  <section class="container-inner pb-16">
-    <FilterBar active="ai" />
-    <CardGrid items={projects} />
-  </section>
-</BaseLayout>
+<BaseLayout title="项目 — ChrisV" reading><EditorialIndex items={items} kind="projects" /></BaseLayout>

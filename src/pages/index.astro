@@ -1,32 +1,27 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SectionHeader from '../components/SectionHeader.astro';
-import CategoryCards from '../components/CategoryCards.astro';
-import FilterBar from '../components/FilterBar.astro';
-import CardGrid from '../components/CardGrid.astro';
+import SocialLinks from '../components/SocialLinks.astro';
+import ContentRows from '../components/ContentRows.astro';
+import { Icon } from 'astro-icon/components';
 import { getCollection } from 'astro:content';
 import { site } from '../data/site';
-
+import { dateLabel, noteTitle, noteExcerpt } from '../lib/reading';
 const articles = await getCollection('articles');
 const projects = await getCollection('projects');
-
-const allItems = [...articles, ...projects].sort(
-  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
-);
+const archived = await getCollection('blogArchive');
+const notes = (await getCollection('random')).sort((a,b) => b.data.date.getTime() - a.data.date.getTime());
+const allItems = [...articles, ...projects, ...archived].sort((a,b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 6);
+const latestNote = notes[0];
+const paths = [{title:'文稿', description:'读过的论文，想明白的事情。', href:'/articles', count:`${articles.length} 篇文稿`}, {title:'优秀博客转存', description:'译好的博客，连同中文配图一起收藏。', href:'/blog-archive', count:`${archived.length} 篇转存`}, {title:'项目', description:'从一个想法，到可以使用的东西。', href:'/projects', count:`${projects.length} 个项目`}, {title:'手记', description:'留给生活、灵感和偶然的念头。', href:'/random', count:`${notes.length} 封手记`}];
 ---
-
 <BaseLayout>
-  <SectionHeader
-    tag={site.tag}
-    title={site.heroTitle}
-    description={site.subtitle}
-    showSocial
-  />
-
-  <CategoryCards />
-
-  <section class="container-inner pb-16">
-    <FilterBar active="all" />
-    <CardGrid items={allItems} />
-  </section>
+  <div class="reading-width home-page">
+    <section class="home-intro">
+      <div><h1>{site.heroTitle}</h1><p class="home-description">{site.subtitle}</p><SocialLinks /></div>
+      <a class="home-profile" href="/about"><img src="/images/supertt-logo.svg" width="72" height="72" alt="ChrisV" /><div><strong>ChrisV</strong><p>一边建造，一边思考。</p><span>关于我<Icon name="lucide:arrow-up-right" aria-hidden="true" /></span></div></a>
+    </section>
+    <nav class="home-paths" aria-label="探索内容">{paths.map(path => <a href={path.href}><div><h2>{path.title}</h2><Icon name="lucide:arrow-up-right" aria-hidden="true" /></div><p>{path.description}</p><span>{path.count}</span></a>)}</nav>
+    <section class="home-recent" aria-labelledby="recent-title"><header class="section-heading"><h2 id="recent-title">近期更新</h2><a href="/articles">所有文稿<Icon name="lucide:arrow-right" aria-hidden="true" /></a></header><div class="editorial-entries" data-view-mode="compact"><ContentRows items={allItems} /></div></section>
+    {latestNote && <section class="home-note" aria-labelledby="home-note-title"><div><h2 id="home-note-title">随想随记</h2><p>有些念头，先记下来。</p><a href="/random">所有手记<Icon name="lucide:arrow-right" aria-hidden="true" /></a></div><article><time datetime={latestNote.data.date.toISOString()}>{dateLabel(latestNote.data.date)}</time><h3><a href={`/random/${latestNote.id}`}>{noteTitle(latestNote)}</a></h3><p>{noteExcerpt(latestNote)}</p><a class="home-note-read" href={`/random/${latestNote.id}`}>展开手记<Icon name="lucide:arrow-right" aria-hidden="true" /></a></article></section>}
+  </div>
 </BaseLayout>

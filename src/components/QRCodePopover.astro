@@ -77,17 +77,17 @@ const iconMap: Record<string, string> = {
 
       if (!trigger || !popover) return;
 
-      function open() {
+      const open = () => {
         popover.classList.remove('pointer-events-none', 'opacity-0', 'scale-95');
         popover.classList.add('pointer-events-auto', 'opacity-100', 'scale-100');
         trigger.setAttribute('aria-expanded', 'true');
-      }
+      };
 
-      function close() {
+      const close = () => {
         popover.classList.add('pointer-events-none', 'opacity-0', 'scale-95');
         popover.classList.remove('pointer-events-auto', 'opacity-100', 'scale-100');
         trigger.setAttribute('aria-expanded', 'false');
-      }
+      };
 
       trigger.addEventListener('click', (e) => {
         e.preventDefault();

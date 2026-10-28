@@ -1,49 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
+import { Icon } from 'astro-icon/components';
 import { getCollection } from 'astro:content';
-
-const resources = (await getCollection('resources')).sort((a, b) => {
-  const categoryCompare = a.data.category.localeCompare(b.data.category);
-  if (categoryCompare !== 0) return categoryCompare;
-  return a.data.title.localeCompare(b.data.title);
-});
+const resources = (await getCollection('resources')).sort((a,b) => a.data.category.localeCompare(b.data.category) || a.data.title.localeCompare(b.data.title));
+const categories = [...new Set(resources.map(resource => resource.data.category))];
 ---
-
 <BaseLayout title="资源 — ChrisV">
-  <SectionHeader
-    tag="RESOURCES"
-    title="资源"
-    description="Curated tools, papers, bookmarks, and inspiration."
-  />
-
-  <section class="container-inner pb-16">
-    <div
-      class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-    >
-      {
-        resources.map((resource) => (
-          <a
-            href={resource.data.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="group flex flex-col rounded-[6px] border border-[var(--border)] bg-[var(--card-color)] p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-main)]"
-          >
-            <span class="ricoui-tag text-[var(--color-500)]">
-              {resource.data.category}
-            </span>
-            <h3 class="mt-2 text-lg text-[var(--color-0)] group-hover:text-[var(--color-primary-main)]">
-              {resource.data.title}
-            </h3>
-            <p class="mt-2 line-clamp-3 text-sm leading-relaxed text-[var(--color-300)]">
-              {resource.data.description}
-            </p>
-            <span class="mt-auto pt-4 text-sm text-[var(--color-blue)]">
-              访问链接 →
-            </span>
-          </a>
-        ))
-      }
-    </div>
-  </section>
+  <SectionHeader title="资源" description="把值得留下的工具、论文与灵感，放在这里。" />
+  <div class="reading-width resource-page">{categories.map(category => <section class="resource-group"><h2>{category}</h2><div>{resources.filter(resource => resource.data.category === category).map(resource => <a class="resource-entry" href={resource.data.url} target="_blank" rel="noopener noreferrer"><div><h3>{resource.data.title}</h3><p>{resource.data.description}</p><span>{new URL(resource.data.url).hostname}</span></div><Icon name="lucide:arrow-up-right" aria-hidden="true" /></a>)}</div></section>)}<footer class="resource-end">陆续收集，也欢迎交流你喜欢的工具与读物。<a href="/about">找到我<Icon name="lucide:arrow-right" aria-hidden="true" /></a></footer></div>
 </BaseLayout>

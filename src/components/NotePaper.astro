@@ -1,0 +1,18 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+import { dateLabel, noteTitle } from '../lib/reading';
+interface Props { note: CollectionEntry<'random'>; number: number; preview?: boolean; }
+const { note, number, preview = false } = Astro.props;
+---
+<article class:list={['note-paper', { 'note-preview': preview }]}>
+  {note.data.cover && <img class="note-cover" src={note.data.cover} alt="" width="1200" height="600" />}
+  <div class="letter-top"><time datetime={note.data.date.toISOString()}>{dateLabel(note.data.date)}</time><span class="letter-number">手记 / {String(number).padStart(3, '0')}</span></div>
+  <header class="letter-heading">
+    {preview ? <h2><a href={`/random/${note.id}`}>{noteTitle(note)}</a></h2> : <h1>{noteTitle(note)}</h1>}
+    {(note.data.weather || note.data.mood) && <p class="letter-atmosphere">{[note.data.weather, note.data.mood].filter(Boolean).join(' · ')}</p>}
+  </header>
+  <div class="letter-body reading-prose"><slot /></div>
+  <footer class="letter-signoff"><span class="letter-signature">ChrisV</span><span>写于 {note.data.date.toLocaleDateString('zh-CN', { timeZone: 'Asia/Shanghai', year: 'numeric', month: 'long' })}</span></footer>
+  <div class="letter-bottom"><div class="article-tags">{note.data.tags.map(tag => <a href={`/random?tag=${encodeURIComponent(tag)}`}>#{tag}</a>)}</div>{preview && <a class="read-letter" href={`/random/${note.id}`}>展开这封手记<Icon name="lucide:arrow-right" aria-hidden="true" /></a>}</div>
+</article>

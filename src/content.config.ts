@@ -42,9 +42,33 @@ const resources = defineCollection({
 const random = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/random' }),
   schema: z.object({
+    title: z.string().optional(),
+    description: z.string().optional(),
+    mood: z.string().optional(),
+    weather: z.string().optional(),
+    cover: z.string().optional(),
     date: z.coerce.date(),
     tags: z.array(z.string()).default([]),
   }),
 });
 
-export const collections = { articles, projects, resources, random };
+const blogArchive = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/blogArchive' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    date: z.coerce.date(),
+    originalDate: z.coerce.date().optional(),
+    category: z.string().default('博客转译'),
+    tags: z.array(z.string()).default([]),
+    cover: z.string().optional(),
+    sourceUrl: z.string().url(),
+    sourceAuthor: z.string(),
+    sourceSite: z.string(),
+    translator: z.string().optional(),
+    htmlFile: z.string().optional(),
+    snapshot: z.string().optional(),
+  }),
+});
+
+export const collections = { articles, projects, resources, random, blogArchive };

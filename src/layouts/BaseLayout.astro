@@ -1,14 +1,18 @@
 ---
 import '../styles/global.css';
+import '../styles/reading.css';
+import '../styles/site.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
 
 interface Props {
   title?: string;
   description?: string;
+  reading?: boolean;
 }
 
-const { title = 'ChrisV', description = 'A researcher who builds, designs, and writes about intelligent systems.' } = Astro.props;
+const { title = 'ChrisV', description = 'A researcher who builds, designs, and writes about intelligent systems.', reading = true } = Astro.props;
 ---
 
 <!doctype html>
@@ -20,16 +24,19 @@ const { title = 'ChrisV', description = 'A researcher who builds, designs, and w
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="alternate" type="application/rss+xml" title={`${site.title} · 文章 RSS`} href={new URL('rss.xml', Astro.site)} />
+    <link rel="alternate" type="application/rss+xml" title={`${site.title} · 优秀博客转存 RSS`} href={new URL('blog-archive.xml', Astro.site)} />
     <script is:inline>
       (function () {
-        const saved = localStorage.getItem('theme');
+        let saved;
+        try { saved = localStorage.getItem('theme'); } catch { /* Use system preference when storage is unavailable. */ }
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         const dark = saved ? saved === 'dark' : prefersDark;
         document.documentElement.classList.toggle('theme-dark', dark);
       })();
     </script>
   </head>
-  <body class="flex min-h-screen flex-col bg-canvas text-ink">
+  <body class="flex min-h-screen flex-col bg-canvas text-ink" data-reading={reading || undefined}>
     <a
       href="#main-content"
       class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:rounded focus:bg-[var(--color-0)] focus:px-4 focus:py-2 focus:text-[var(--color-999)]"

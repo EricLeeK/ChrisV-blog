@@ -1,0 +1,27 @@
+---
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+import type { MarkdownHeading } from 'astro';
+import ReadingLayout from '../../layouts/ReadingLayout.astro';
+import { dateLabel } from '../../lib/reading';
+export async function getStaticPaths() {
+  const posts = (await getCollection('blogArchive')).sort((a,b) => b.data.date.getTime() - a.data.date.getTime());
+  return posts.map((post,index) => ({params:{slug:post.id},props:{post,next:posts[index+1]}}));
+}
+interface Props { post: CollectionEntry<'blogArchive'>; next?: CollectionEntry<'blogArchive'>; }
+const { post, next } = Astro.props;
+const files = import.meta.glob('/src/content/blogArchive/*.html', {query:'?raw',import:'default',eager:true}) as Record<string,string>;
+const html = post.data.htmlFile ? files[`/src/content/blogArchive/${post.data.htmlFile}`] : undefined;
+if(post.data.htmlFile && !html) throw new Error(`未找到转存正文：${post.data.htmlFile}`);
+const { Content, headings: markdownHeadings } = await render(post);
+const headings: MarkdownHeading[] = html ? [...html.matchAll(/<h([23]) id="([^"]+)"[^>]*>([\s\S]*?)<\/h\1>/g)].map(match => ({depth:Number(match[1]),slug:match[2],text:match[3].replace(/<[^>]+>/g,'').replaceAll('&amp;','&').replaceAll('&nbsp;',' ')})) : markdownHeadings;
+const body = html ? html.replace(/<[^>]+>/g,' ') : post.body;
+---
+<ReadingLayout {...post.data} kind="blog-archive" body={body} headings={headings} next={next ? {title:next.data.title,href:`/blog-archive/${next.id}`} : undefined}>
+  <div slot="provenance" class="archive-provenance">
+    <p>原作：{post.data.sourceAuthor} · {post.data.sourceSite}{post.data.originalDate && <> · {dateLabel(post.data.originalDate)}</>}</p>
+    <p>{post.data.translator ? `${post.data.translator} 整理转译` : '中文转译'} · 中文正文与配图随文存档</p>
+    <div class="archive-source-links"><a href={post.data.sourceUrl} target="_blank" rel="noopener noreferrer">阅读原文<Icon name="lucide:arrow-up-right" aria-hidden="true" /></a>{post.data.snapshot && <a href={post.data.snapshot} target="_blank" rel="noopener noreferrer">打开完整 HTML 存档<Icon name="lucide:external-link" aria-hidden="true" /></a>}</div>
+  </div>
+  {html ? <Fragment set:html={html} /> : <Content />}
+</ReadingLayout>

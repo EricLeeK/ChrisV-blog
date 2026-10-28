@@ -1,4 +1,6 @@
 ---
+title: "翻译之间，还差一层约定"
+description: "从 Minecraft Wiki 双语查询想到的：让模型理解玩家共同使用的语言。"
 date: 2026-05-21
 tags: ["spark", "minecraft", "wiki", "translation"]
 ---

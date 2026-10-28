@@ -1,0 +1,20 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+import { dateLabel, readingMinutes } from '../lib/reading';
+import { getFilterSlugs } from '../lib/utils';
+interface Props { items: (CollectionEntry<'articles'> | CollectionEntry<'projects'> | CollectionEntry<'blogArchive'>)[]; }
+const { items } = Astro.props;
+const href = (item: Props['items'][number]) => `/${item.collection === 'blogArchive' ? 'blog-archive' : item.collection}/${item.id}`;
+---
+    {items.map(item => (
+      <article class="editorial-row" data-entry data-category={item.data.category} data-tags={JSON.stringify(item.data.tags)} data-search-text={`${item.data.title} ${item.data.description} ${item.data.tags.join(' ')}`.toLocaleLowerCase()} data-date={item.data.date.getTime()} data-filter-slugs={getFilterSlugs(item.data.category, item.data.tags)}>
+        <time class="entry-date" datetime={item.data.date.toISOString()}>{dateLabel(item.data.date)}</time>
+        <a class="entry-body" href={href(item)}>
+          <h2>{item.data.title}<Icon name="lucide:arrow-up-right" aria-hidden="true" /></h2>
+          <p>{item.data.description}</p>
+          <div class="entry-meta"><span>{item.data.category}</span><span class="meta-divider" aria-hidden="true">/</span><span>{item.collection === 'blogArchive' ? `${item.data.sourceSite} · 中文转译` : item.collection === 'projects' ? item.data.tags.slice(0, 3).join(' · ') : 'externalUrl' in item.data && item.data.externalUrl ? '交互讲义' : `约 ${readingMinutes(item.body)} 分钟`}</span></div>
+        </a>
+        {item.data.cover && <a class="entry-cover" href={href(item)} tabindex="-1" aria-hidden="true"><img src={item.data.cover} alt="" loading="lazy" width="240" height="160" /></a>}
+      </article>
+    ))}
