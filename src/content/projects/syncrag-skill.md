@@ -4,7 +4,7 @@ description: "为拥有数万项能力的 AI Agent 建立低延迟技能检索�
 date: 2026-05-02
 category: "AI Agents"
 tags: ["RAG", "SkillGraph", "retrieval", "HTML"]
-cover: "/images/syncrag-skill-cover.png"
+cover: "/images/syncrag-skill-cover.jpg"
 link: "https://github.com/EricLeeK/SynCRAG-skill"
 openSource: true
 ---

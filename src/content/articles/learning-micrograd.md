@@ -4,7 +4,7 @@ description: "用可视化方式走进 micrograd —— Karpathy 那个只有 15
 date: 2026-08-03
 category: "AI 理论"
 tags: ["深度学习", "反向传播", "自动求导", "micrograd", "可视化"]
-cover: "/images/learning-micrograd-cover.png"
+cover: "/images/learning-micrograd-cover.jpg"
 externalUrl: "/lectures/micrograd/learn.html"
 ---
 

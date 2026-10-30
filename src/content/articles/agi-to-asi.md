@@ -4,7 +4,7 @@ description: "DeepMind 报告解读:一份关于'机器智能能走多远'的地
 date: 2026-08-04
 category: "AI 探索"
 tags: ["AGI", "ASI", "超级智能", "DeepMind", "长文解读"]
-cover: "/images/agi-to-asi-cover-cartoon.png"
+cover: "/images/agi-to-asi-cover-cartoon.jpg"
 externalUrl: "/lectures/agi-to-asi/index.html"
 ---
 
