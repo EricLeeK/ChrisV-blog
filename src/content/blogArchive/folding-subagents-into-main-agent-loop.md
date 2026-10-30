@@ -9,7 +9,7 @@ sourceAuthor: "Diane Sarkis"
 sourceSite: "Claude / Anthropic"
 sourceUrl: "https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop"
 translator: "ChrisV"
-cover: "/blog-archive/folding-subagents-into-main-agent-loop/cover.png"
+cover: "/blog-archive/folding-subagents-into-main-agent-loop/cover.jpg"
 htmlFile: "folding-subagents-into-main-agent-loop.html"
 snapshot: "/blog-archive/folding-subagents-into-main-agent-loop/source.html"
 ---
