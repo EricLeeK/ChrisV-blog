@@ -4,7 +4,7 @@ description: "把有效的 AI 编程协作方法封装成可安装的 Skills，�
 date: 2026-05-26
 category: "AI Agents"
 tags: ["Codex", "skills", "open-source", "AI-coding"]
-cover: "/images/supertt-skills-cover.png"
+cover: "/images/supertt-skills-cover.jpg"
 link: "https://github.com/EricLeeK/SuperTT_Skills"
 openSource: true
 ---

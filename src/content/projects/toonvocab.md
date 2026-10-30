@@ -4,7 +4,7 @@ description: "把文章里的陌生词，变成带中英日释义、发音、图
 date: 2026-02-03
 category: "Creative Coding"
 tags: ["vocabulary", "language-learning", "cartoon-UI", "AI-translation"]
-cover: "/images/toonvocab-cover.png"
+cover: "/images/toonvocab-cover.jpg"
 link: "https://github.com/EricLeeK/ToonVocab"
 openSource: true
 ---

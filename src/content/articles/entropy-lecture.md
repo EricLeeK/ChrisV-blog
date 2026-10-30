@@ -4,7 +4,7 @@ description: "三讲系列：从压缩的极限、信息与熵，到交叉熵与
 date: 2026-06-17
 category: "数理"
 tags: ["信息论", "熵", "压缩", "数学"]
-cover: "/images/entropy-lecture-cover.png"
+cover: "/images/entropy-lecture-cover.jpg"
 externalUrl: "/lectures/entropy/entropy-block1.html"
 ---
 

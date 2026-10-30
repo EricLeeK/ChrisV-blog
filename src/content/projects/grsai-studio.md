@@ -4,7 +4,7 @@ description: "把零散的 AI 生图调用变成一套可管理、可复用的�
 date: 2026-06-12
 category: "AI Agents"
 tags: ["image-generation", "FastAPI", "SQLite", "SPA"]
-cover: "/images/grsai-studio-cover.png"
+cover: "/images/grsai-studio-cover.jpg"
 link: "https://github.com/EricLeeK/grsai-studio"
 openSource: true
 ---

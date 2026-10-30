@@ -4,7 +4,7 @@ description: "把岩土有限元放进可自动微分的计算图：从 Drucker�
 date: 2026-03-25
 category: "Research Tools"
 tags: ["JAX", "FEM", "geomechanics", "differentiable"]
-cover: "/images/jax-fem4geo-cover.png"
+cover: "/images/jax-fem4geo-cover.jpg"
 link: "https://github.com/EricLeeK/JAX-FEM4Geo"
 openSource: true
 ---
