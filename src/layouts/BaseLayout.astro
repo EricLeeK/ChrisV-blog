@@ -45,7 +45,12 @@ const imageType = image?.endsWith('.png')
       </>
     )}
     <meta name="generator" content={Astro.generator} />
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="icon" type="image/png" href="/favicon.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/icon-192.png" sizes="192x192" />
+    <link rel="icon" type="image/png" href="/icon-512.png" sizes="512x512" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="alternate" type="application/rss+xml" title={`${site.title} · 文章 RSS`} href={new URL('rss.xml', Astro.site)} />
     <link rel="alternate" type="application/rss+xml" title={`${site.title} · 优秀博客转存 RSS`} href={new URL('blog-archive.xml', Astro.site)} />
     <script is:inline>
