@@ -10,9 +10,18 @@ interface Props {
   title?: string;
   description?: string;
   reading?: boolean;
+  image?: string;
 }
 
-const { title = 'ChrisV', description = 'A researcher who builds, designs, and writes about intelligent systems.', reading = true } = Astro.props;
+const { title = 'ChrisV', description = 'A researcher who builds, designs, and writes about intelligent systems.', reading = true, image } = Astro.props;
+const imageUrl = image ? new URL(image, Astro.site).href : undefined;
+const imageType = image?.endsWith('.png')
+  ? 'image/png'
+  : image?.endsWith('.jpg') || image?.endsWith('.jpeg')
+    ? 'image/jpeg'
+    : image?.endsWith('.webp')
+      ? 'image/webp'
+      : undefined;
 ---
 
 <!doctype html>
@@ -22,8 +31,26 @@ const { title = 'ChrisV', description = 'A researcher who builds, designs, and w
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {imageUrl && (
+      <>
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={Astro.url} />
+        <meta property="og:image" content={imageUrl} />
+        {imageType && <meta property="og:image:type" content={imageType} />}
+        <meta property="og:image:alt" content={title} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={imageUrl} />
+        <meta name="twitter:image:alt" content={title} />
+      </>
+    )}
     <meta name="generator" content={Astro.generator} />
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="icon" type="image/png" href="/favicon.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/icon-192.png" sizes="192x192" />
+    <link rel="icon" type="image/png" href="/icon-512.png" sizes="512x512" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="alternate" type="application/rss+xml" title={`${site.title} · 文章 RSS`} href={new URL('rss.xml', Astro.site)} />
     <link rel="alternate" type="application/rss+xml" title={`${site.title} · 优秀博客转存 RSS`} href={new URL('blog-archive.xml', Astro.site)} />
     <script is:inline>

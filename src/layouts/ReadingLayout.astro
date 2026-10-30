@@ -25,7 +25,7 @@ const toc = headings.filter(heading => heading.depth === 2 || heading.depth === 
 const project = kind === 'projects';
 const collectionLabel = project ? '项目' : kind === 'blog-archive' ? '优秀博客转存' : '文稿';
 ---
-<BaseLayout title={`${title} — ChrisV`} description={description} reading>
+<BaseLayout title={`${title} — ChrisV`} description={description} reading image={cover}>
   <div class="reading-progress" aria-hidden="true"><span data-progress></span></div>
   <div class="reading-width reading-detail">
     <a class="back-link" href={`/${kind}`}><Icon name="lucide:arrow-left" aria-hidden="true" />返回{collectionLabel}</a>
