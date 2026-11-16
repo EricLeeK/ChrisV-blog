@@ -34,7 +34,7 @@ const collectionLabel = project ? '项目' : kind === 'blog-archive' ? '优秀�
         <header class="article-heading">
           <h1>{title}</h1>
           <div class="article-meta"><time datetime={date.toISOString()}>{dateLabel(date)}</time><span>{category}</span><span>{externalUrl ? '交互阅读' : `约 ${readingMinutes(body)} 分钟`}</span></div>
-          <p class="article-deck">{description}</p>
+          {description && <p class="article-deck">{description}</p>}
           <slot name="provenance" />
           {(website || link || externalUrl) && <div class="project-actions">
             {website && <a class="primary-action" href={website} target="_blank" rel="noopener noreferrer">在线体验<Icon name="lucide:arrow-up-right" aria-hidden="true" /></a>}
